@@ -34,3 +34,6 @@ python server/app.py --port 5178   # 打开 http://127.0.0.1:5178/
 ## 没做的
 - Vue/Pinia 版本冲突没处理：uni-app 锁定了 vue 3.4，强行升级有风险，仍然用 `--legacy-peer-deps` 安装。
 - 小程序端（src/）没有改。
+
+## 安装方式
+完整项目超过 25MB，因为 web-preview/vendor 里的字体和笔顺数据就有 73MB，所以这个压缩包只放改动的文件。把压缩包里的 little-pen-v2/ 覆盖到原项目根目录即可；也可以在原仓库里执行 `git apply v2.patch`。
