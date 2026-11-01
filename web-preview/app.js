@@ -388,26 +388,54 @@ function renderGridBar() {
     bar.append(b);
   }
 }
+function renderModeCards() {
+  const box = $("mode-cards"),
+    show = ["hanzi", "cizu"].includes(type);
+  box.hidden = !show;
+  box.replaceChildren();
+  if (!show) return;
+  const current = EditorPanel.modeOf(state);
+  for (const m of EditorPanel.MODES) {
+    const b = el("button", "mode-card" + (current === m.id ? " active" : ""));
+    b.type = "button";
+    b.setAttribute("aria-pressed", String(current === m.id));
+    b.append(el("strong", "", m.title), el("small", "", m.desc));
+    b.onclick = () => {
+      state = EditorPanel.applyMode(state, m.id);
+      renderQuickPractice(false);
+      renderControls();
+      schedule();
+    };
+    box.append(b);
+  }
+}
 function renderControls() {
   renderGridBar();
-  for (const id of ["paper-controls", "writing-controls", "toggle-controls", "advanced-controls"])
+  renderModeCards();
+  for (const id of [
+    "primary-controls",
+    "paper-controls",
+    "writing-controls",
+    "toggle-controls",
+    "advanced-controls",
+  ])
     $(id).replaceChildren();
-  const paper = $("paper-controls"),
-    writing = $("writing-controls"),
-    toggles = $("toggle-controls"),
-    advanced = $("advanced-controls");
+  const primary = $("primary-controls"),
+    paper = $("paper-controls"),
+    fontBox = $("writing-controls"),
+    traceBox = $("advanced-controls");
   if (type === "paragraph" && ["trace", "answers"].includes(state.mathLayout)) {
-    range(paper, "size", "数字大小", 8, 20, 0.5, "mm");
+    range(primary, "size", "数字大小", 8, 20, 0.5, "mm");
+    toggle(primary, "fillPage", "铺满 A4 纸");
     action(paper, "页边距", state.padding.join(", "), openMargins);
     action(paper, "页眉与姓名栏", state.showHeader ? "已开启" : "添加", openHeader);
-    action(writing, "字体", D.fonts[state.font]?.name || "系统字体", openFonts);
-    color(writing, "traceColor", "描红颜色");
-    select(writing, "fontWeight", "字体粗细", [
+    color(paper, "lineColor", "边框颜色");
+    action(fontBox, "字体", D.fonts[state.font]?.name || "系统字体", openFonts);
+    select(fontBox, "fontWeight", "字体粗细", [
       ["normal", "常规"],
       ["bold", "加粗"],
     ]);
-    color(advanced, "lineColor", "边框颜色");
-    toggle(toggles, "fillPage", "铺满 A4 纸");
+    color(traceBox, "traceColor", "描红颜色");
     $("readings-open").hidden = true;
     $("font-manage").hidden = false;
     return;
@@ -415,37 +443,22 @@ function renderControls() {
   const paragraph = ["duanluo", "paragraph"].includes(type),
     control = type === "pen-control",
     guided = type === "alphabet" && state.alphabetGuides,
-    cn = D.types[type].group === "cn";
-  if (cn)
-    select(
-      paper,
-      "cellType",
-      "方格类型",
-      type === "duanluo" ? [["hxg", "横线格"], ...D.chineseGrids] : D.chineseGrids,
-    );
-  else if (["word", "paragraph"].includes(type)) select(paper, "cellType", "方格类型", D.englishGrids);
-  range(
-    paper,
+    cn = D.types[type].group === "cn",
+    chips = cn && type !== "duanluo",
+    tracing = !state.practiceMode || state.practiceMode === "trace";
+  // ---- always visible ----
+  if (cn && !chips) select(primary, "cellType", "格子", [["hxg", "横线格"], ...D.chineseGrids]);
+  else if (["word", "paragraph"].includes(type)) select(primary, "cellType", "格子", D.englishGrids);
+  const sizeArgs = [
     "size",
-    cn || control ? "方格大小" : "行高",
+    chips ? "自定义大小" : cn || control ? "方格大小" : "行高",
     D.types[type].group === "en" && activeCourse?.subject !== "math" && !state.mathLayout ? 8 : 6,
     ["hanzi", "cizu", "bihua", "pen-control"].includes(type) ? 30 : 20,
     0.5,
     "mm",
-  );
-  range(paper, "rowGap", "行间距", 0, 10, 0.5, "mm");
-  action(paper, "页边距", state.padding.join(", "), openMargins);
-  action(paper, "页眉与姓名栏", state.showHeader ? "已开启" : "添加", openHeader);
-  if (!control && !guided) {
-    action(
-      writing,
-      type === "bihua" ? "示例字体" : "字体",
-      D.fonts[state.font]?.name || "系统字体",
-      openFonts,
-    );
-    range(writing, "scale", "字体大小", 48, 128, 1, "%");
-  }
-  if (!paragraph && (!state.practiceMode || state.practiceMode === "trace")) {
+  ];
+  if (!chips) range(primary, ...sizeArgs);
+  if (!paragraph && tracing) {
     const geom = E.geometry(type, state),
       max =
         type === "pinyin" || type === "number"
@@ -453,103 +466,75 @@ function renderControls() {
           : D.types[type].group === "en"
             ? geom.cols * 3
             : geom.cols;
-    range(writing, "traceNum", "描红数量", 0, Math.max(max, state.traceNum));
+    range(primary, "traceNum", "每行描红个数", 0, Math.max(max, state.traceNum));
   }
-  if (["hanzi", "cizu"].includes(type)) {
-    const row = settingRow("练习方式"),
-      modes = el("select");
-    modes.setAttribute("aria-label", "练习方式");
-    for (const [value, text] of [
-      ["trace", "描红练习"],
-      ["copy", "看范字临写"],
-      ["quiz", "看拼音写字"],
-      ["answer", "测验答案版（另行导出）"],
-    ]) {
-      const o = el("option", "", text);
-      o.value = value;
-      modes.append(o);
-    }
-    modes.value = state.practiceMode || "trace";
-    modes.onchange = () => {
-      state.practiceMode = modes.value;
-      if (["quiz", "answer"].includes(modes.value)) {
-        state.showPinyin = true;
-        state.showBishun = false;
-      }
-      renderQuickPractice(false);
-      renderControls();
-      schedule();
-    };
-    row.append(modes);
-    writing.append(row);
+  if (["hanzi", "cizu"].includes(type)) toggle(primary, "showPinyin", "显示拼音");
+  if (type === "alphabet") toggle(primary, "pair", "大小写成对");
+  toggle(primary, "fillPage", "铺满整页");
+  // ---- 更多设置 · 纸张与排版 ----
+  if (chips) {
+    select(paper, "cellType", "全部格子样式", D.chineseGrids);
+    range(paper, ...sizeArgs);
   }
-  if (!paragraph && (!state.practiceMode || state.practiceMode === "trace")) {
-    const row = settingRow("描红布局"),
-      presets = el("select");
-    presets.setAttribute("aria-label", "描红布局");
-    for (const [v, t] of [
-      ["", "选择描红布局"],
-      ["short", "少量描红，留空自写"],
-      ["trace", "整行描红"],
-    ]) {
-      const option = el("option", "", t);
-      option.value = v;
-      presets.append(option);
-    }
-    presets.disabled = !!state.fillPage;
-    presets.onchange = () => {
-      if (!presets.value) return;
-      state.traceNum = presets.value === "short" ? 3 : 100;
-      state.leading = true;
-      renderControls();
-      schedule();
-    };
-    writing.append(row);
-    row.append(presets);
-  }
-  if (!state.practiceMode || state.practiceMode === "trace") color(writing, "traceColor", "描红颜色");
-  if (
-    ["hanzi", "cizu", "alphabet", "word", "number", "pinyin"].includes(type) &&
-    (!state.practiceMode || state.practiceMode === "trace")
-  ) {
-    toggle(writing, "fadeTrace", "渐隐描红");
-    if (state.fadeTrace)
-      select(writing, "fadeStyle", "渐隐布局", [
-        ["more-trace", "多描一点"],
-        ["more-write", "多自己写"],
-      ]);
-  }
+  range(paper, "rowGap", "行间距", 0, 10, 0.5, "mm");
+  action(paper, "页边距", state.padding.join(", "), openMargins);
+  action(paper, "页眉与姓名栏", state.showHeader ? "已开启" : "添加", openHeader);
+  toggle(paper, "blankRow", "隔行留空");
+  if (["hanzi", "cizu", "number"].includes(type)) toggle(paper, "blankCol", "隔列留空");
+  color(paper, "lineColor", control ? "方格颜色" : "格子线颜色");
+  // ---- 更多设置 · 字体 ----
   if (!control && !guided) {
-    select(advanced, "fontWeight", "字体粗细", [
+    action(
+      fontBox,
+      type === "bihua" ? "示例字体" : "字体",
+      D.fonts[state.font]?.name || "系统字体",
+      openFonts,
+    );
+    range(fontBox, "scale", "字在格中大小", 48, 128, 1, "%");
+    select(fontBox, "fontWeight", "字体粗细", [
       ["normal", "常规"],
       ["bold", "加粗"],
     ]);
-    range(advanced, "offset", "上下偏移", -50, 50, 1, "%");
+    range(fontBox, "offset", "上下位置微调", -50, 50, 1, "%");
   } else if (control)
-    select(writing, "fontWeight", "描红粗细", [
+    select(fontBox, "fontWeight", "描红粗细", [
       ["normal", "常规"],
       ["bold", "加粗"],
     ]);
-  color(advanced, "lineColor", control ? "方格颜色" : "线条颜色");
   if (type === "duanluo" && state.cellType === "hxg")
-    range(advanced, "letterSpace", "字间距", -10, 10, 1, "px");
-  toggle(toggles, "fillPage", "铺满 A4 纸");
-  if (["hanzi", "cizu"].includes(type)) toggle(toggles, "showPinyin", "显示拼音");
-  if (type === "hanzi") toggle(toggles, "showBishun", "显示笔顺");
-  if (!paragraph && !control && (!state.practiceMode || state.practiceMode === "trace"))
-    toggle(toggles, "leading", "首字高亮");
-  toggle(toggles, "blankRow", "插入空行");
-  if (["hanzi", "cizu", "number"].includes(type)) toggle(toggles, "blankCol", "插入空列");
+    range(fontBox, "letterSpace", "字间距", -10, 10, 1, "px");
+  // ---- 更多设置 · 描红细节 ----
+  if (tracing) color(traceBox, "traceColor", "描红颜色");
+  if (!paragraph && !control && tracing) toggle(traceBox, "leading", "第一个字用深色范字");
+  if (type === "hanzi") toggle(traceBox, "showBishun", "加一行笔顺");
+  if (["alphabet", "word", "number", "pinyin"].includes(type) && tracing)
+    toggle(traceBox, "fadeTrace", "渐隐描红");
+  if (state.fadeTrace && tracing)
+    select(traceBox, "fadeStyle", "渐隐方式", [
+      ["more-trace", "多描一点"],
+      ["more-write", "多自己写"],
+    ]);
+  if (["hanzi", "cizu"].includes(type) && ["quiz", "answer"].includes(state.practiceMode))
+    action(
+      traceBox,
+      "答案版",
+      state.practiceMode === "answer" ? "正在看答案版 · 切回题目" : "切换为答案版",
+      () => {
+        state.practiceMode = state.practiceMode === "answer" ? "quiz" : "answer";
+        renderControls();
+        schedule();
+      },
+    );
   if (type === "alphabet") {
-    toggle(toggles, "pair", "大小写成对");
-    toggle(writing, "alphabetGuides", "字母起笔提示");
+    toggle(traceBox, "alphabetGuides", "字母起笔提示");
     if (state.alphabetGuides)
-      select(writing, "guideStyle", "书写引导", [
+      select(traceBox, "guideStyle", "书写引导", [
         ["dotted", "点线描红"],
         ["solid", "实线描红"],
       ]);
   }
-  if (control) toggle(writing, "controlGuides", "起点与方向提示");
+  if (control) toggle(traceBox, "controlGuides", "起点与方向提示");
+  if (!traceBox.children.length) traceBox.append(el("p", "more-empty", "当前练习方式没有额外描红选项"));
   $("readings-open").hidden = !(["hanzi", "cizu"].includes(type) && state.showPinyin);
   $("font-manage").hidden = control || guided;
 }
@@ -945,7 +930,9 @@ function renderQuickPractice(compact) {
       check.disabled = false;
     }
   };
-  box.append(check);
+  $("more-tools").querySelector(".font-check")?.remove();
+  check.classList.add("font-check");
+  $("more-tools").append(check);
   if (state.mathLayout) {
     const label = el("label", "", "计算排版 "),
       layout = el("select");
@@ -978,51 +965,12 @@ function renderQuickPractice(compact) {
     box.append(label);
   }
   if (!activeCourse) {
-    const adjust = el("button", "button outline", compact ? "调整纸张与字体" : "收起详细设置");
-    adjust.type = "button";
-    adjust.setAttribute("aria-expanded", String(!compact));
-    adjust.onclick = () => renderQuickPractice(!compact);
-    box.append(adjust);
     if (state.showHeader) {
       const header = el("button", "button outline", "编辑页眉");
       header.onclick = openHeader;
       box.append(header);
     }
     return;
-  }
-  box.append(el("span", "", "本课练法"));
-  for (const option of LearningRules.presets(type)) {
-    const b = el("button", "button outline", option.title);
-    b.type = "button";
-    b.setAttribute(
-      "aria-pressed",
-      String((state.practiceMode || "trace") === option.id && !(option.id === "trace" && state.fadeTrace)),
-    );
-    b.onclick = () => {
-      state = LearningRules.presetConfig(courseDefaults(), type, option.id, activeCourse.grade);
-      renderQuickPractice(true);
-      renderControls();
-      schedule();
-    };
-    box.append(b);
-  }
-  if (["hanzi", "cizu"].includes(type)) {
-    const fade = el("button", "button outline", "渐隐练习");
-    fade.type = "button";
-    fade.setAttribute(
-      "aria-pressed",
-      String(!!state.fadeTrace && (state.practiceMode || "trace") === "trace"),
-    );
-    fade.onclick = () => {
-      state = LearningRules.presetConfig(courseDefaults(), type, "trace", activeCourse.grade);
-      state.fadeTrace = true;
-      state.fadeStyle = "more-trace";
-      state.traceNum = 8;
-      renderQuickPractice(compact);
-      renderControls();
-      schedule();
-    };
-    box.append(fade);
   }
   if (
     activeCourse.subject === "en" &&
@@ -1083,11 +1031,6 @@ function renderQuickPractice(compact) {
     };
     box.append(answers);
   }
-  const adjust = el("button", "button outline", compact ? "调整纸张与字体" : "收起详细设置");
-  adjust.type = "button";
-  adjust.setAttribute("aria-expanded", String(!compact));
-  adjust.onclick = () => renderQuickPractice(!compact);
-  box.append(adjust);
 }
 function openHeader() {
   const dialog = el("dialog"),
