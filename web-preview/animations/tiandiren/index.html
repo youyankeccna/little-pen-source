@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f8f6ef">
+  <meta name="description" content="跟小伙伴一起认识天、地、人、你、我、他。带中文配音、角色换位和六道互动练习的原创教学动画。">
+  <title>天地人 · 汉字小旅行 · 小小笔尖</title>
+  <link rel="icon" href="../../assets/icons/plant-2.svg">
+  <link rel="stylesheet" href="../../vendor/wenkai.css">
+  <link rel="stylesheet" href="style.css">
+  <script defer src="vendor/motion-14.3.0.js"></script>
+  <script defer src="lesson.js"></script>
+  <script defer src="player.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="../../"><span class="brand-mark" aria-hidden="true">✳</span>小小笔尖<span class="brand-divider"></span><span class="series-name">汉字小旅行</span></a>
+    <span class="edition">一年级上册 <span>/</span> 第一单元</span>
+  </header>
+  <main>
+    <div class="lesson-heading">
+      <div><p class="eyebrow"><span></span> 和世界打个招呼</p><h1>抬头见天，低头见地。</h1><p class="intro">看看、听听、说一说，汉字就在你身边。</p></div>
+      <div class="lesson-stamp"><span>第 01 课</span><strong>天地人</strong><small>认识 6 个汉字</small></div>
+    </div>
+    <section class="player" aria-label="天地人互动动画">
+      <div class="stage" id="stage" data-view="world" data-focus="">
+        <div id="illustration" aria-hidden="true"></div>
+        <div class="stage-top"><span class="stage-label"><i></i><span id="chapter-label">汉字小旅行 · 第一站</span></span><span id="scene-count">约 4 分钟 · 可随时暂停</span></div>
+        <div class="scene-copy" id="scene-copy">
+          <p id="scene-kicker">第一站 · 认识我们的世界</p>
+          <h2 id="scene-title" class="cover-title"><span>天</span><span>地</span><span>人</span></h2>
+          <div class="word-display" id="word-display" hidden></div>
+          <p id="cover-description">天有多高，地有多大？<br>和小伙伴一起，发现身边的汉字。</p>
+          <button class="start-button" id="start"><span aria-hidden="true">▶</span> 开始旅行</button>
+        </div>
+        <div id="conversation" hidden><div class="speech-bubble" id="speech-bubble"></div><div id="role-labels"></div></div>
+        <div class="cover-note" id="cover-note"><span>天 · 地 · 人 · 你 · 我 · 他</span><small>用眼睛发现，也用声音表达</small></div>
+        <div class="finish-panel" id="finish-panel" hidden><p class="finish-flower" aria-hidden="true">✳</p><h2>小小发现家，就是你！</h2><p id="finish-result"></p><p>和家人说一说，明天再来认一认。</p><button id="restart" class="start-button">再旅行一次 <span aria-hidden="true">↻</span></button></div>
+        <div class="pause-indicator" id="pause-indicator" hidden>已暂停，准备好再继续</div>
+      </div>
+      <div class="caption-area">
+        <div class="caption-icon" aria-hidden="true">“</div>
+        <div class="caption-copy"><span id="instruction">准备好了吗？点击“开始旅行”，跟着声音一起发现。</span><p id="caption" aria-live="polite">一场可以开口、可以动手、也可以慢慢想的汉字旅行。</p></div>
+        <button id="replay" class="icon-button" aria-label="重听这一段" title="重听这一段" disabled>↻</button>
+      </div>
+      <div class="interaction" id="interaction" hidden>
+        <div class="answer-options" id="answer-options" role="group" aria-label="请选择答案"></div>
+        <div class="feedback-row"><p id="feedback" role="status">想一想，准备好再选。这里没有倒计时。</p><button id="continue" class="continue-button" hidden>继续旅行 <span aria-hidden="true">→</span></button></div>
+      </div>
+      <div class="player-controls">
+        <button class="play-control" id="play" aria-label="播放" disabled><span id="play-icon" aria-hidden="true">▶</span><span id="play-label">播放</span></button>
+        <div class="progress-track" role="progressbar" aria-label="动画进度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="progress-fill"></div></div>
+        <span class="progress-text" id="progress-text">准备出发</span>
+        <div class="secondary-controls"><button id="previous" class="icon-button" aria-label="上一段" title="上一段" disabled>‹</button><button id="next" class="icon-button" aria-label="下一段" title="下一段" disabled>›</button><button id="sound" class="text-control" aria-pressed="true">声音开</button><button id="fullscreen" class="icon-button" aria-label="全屏播放" title="全屏播放">⛶</button></div>
+      </div>
+    </section>
+    <nav class="chapter-nav" id="chapter-nav" aria-label="选择动画章节"></nav>
+    <section class="after-lesson"><div class="after-icon" aria-hidden="true">✦</div><div><h2>把发现带回生活里</h2><p>看完后，请孩子指指天、指指地，再和家人换着说“你”和“我”。</p></div><span class="after-tag">不急着写，先认识</span></section>
+    <details class="parent-notes"><summary>给陪伴的大人：本课内容与使用说明 <span>＋</span></summary><div><p>本课参照所提供的统编语文一年级上册第 8 页，认识“天、地、人、你、我、他”。场景、对话与练习为原创教学补充，不代替教材；本课不加入额外书写任务。</p><p>互动版在练习处等待孩子选择；答错后会提示并允许重试。章节跳转不计作完成练习，完成数量不等于已经掌握。画面不使用摄像头或麦克风，不自动评价孩子的跟读。</p><p>声音为电脑合成配音。可关闭声音，或随时暂停、重听。建议由家长陪伴试看；网页切到后台会暂停。支持键盘 Tab、回车和空格操作。</p><a id="video-download" href="tiandiren.mp4" hidden download>下载配音视频（观看版） →</a></div></details>
+  </main>
+  <footer><span>小小笔尖 · 汉字小旅行</span><span>原创教学样片 · 让每一个汉字，都有一次小发现</span></footer>
+</body>
+</html>

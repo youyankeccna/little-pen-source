@@ -1,0 +1,22 @@
+{
+  "pages": [
+    { "path": "pages/learning/index", "style": { "navigationBarTitleText": "小小笔尖" } },
+    { "path": "pages/home/index", "style": { "navigationBarTitleText": "智能字帖生成", "navigationStyle": "custom" } },
+    { "path": "pages/create/index", "style": { "navigationBarTitleText": "选择字帖类型" } },
+    { "path": "pages/config/index", "style": { "navigationBarTitleText": "配置字帖" } },
+    { "path": "pages/preview/index", "style": { "navigationBarTitleText": "预览字帖" } },
+    { "path": "pages/templates/index", "style": { "navigationBarTitleText": "模板中心" } },
+    { "path": "pages/history/index", "style": { "navigationBarTitleText": "历史记录" } },
+    { "path": "pages/profile/index", "style": { "navigationBarTitleText": "个人中心" } },
+    { "path": "pages/checkin/index", "style": { "navigationBarTitleText": "每日打卡" } },
+    { "path": "pages/retrain/index", "style": { "navigationBarTitleText": "错字回炉" } },
+    { "path": "pages/content/index", "style": { "navigationBarTitleText": "内容包" } },
+    { "path": "pages/practice/index", "style": { "navigationBarTitleText": "拍照评估" } },
+    { "path": "pages/assignment/index", "style": { "navigationBarTitleText": "老师作业" } }
+  ],
+  "globalStyle": {
+    "navigationBarTextStyle": "black",
+    "navigationBarBackgroundColor": "#fff",
+    "backgroundColor": "#f5f5f5"
+  }
+}

@@ -1,0 +1,585 @@
+{
+  "checkedAt": "2026-10-15",
+  "repository": "wuwangzhang1216/ChinaTextbookStudyFree",
+  "commit": "a4cfe46cf50c87f0c29ebbe0abd780c7e818bf98",
+  "decision": "not-approved-for-2026-textbook-import",
+  "rightsSource": "https://github.com/wuwangzhang1216/ChinaTextbookStudyFree#教材来源与版权",
+  "rightsFinding": "README明确第三方教材文本及图片属于各权利人，MIT不授予教材内容使用权。",
+  "knownMismatch": {
+    "book": "PEP四年级上册",
+    "candidateFirstUnit": "My classroom",
+    "publisherCurrentFirstUnit": "Helping at home",
+    "publisherSource": "https://www.pep.com.cn/zslth/yyptzy/xypep/4s/"
+  },
+  "note": "仅保存目录核对元数据，未导入课文、教材图片或AI练习。目录标题不能证明逐课内容或2026版次。",
+  "books": [
+    {
+      "path": "output/chinese/outlines/义务教育教科书·语文一年级上册.json",
+      "source": "https://github.com/wuwangzhang1216/ChinaTextbookStudyFree/blob/a4cfe46cf50c87f0c29ebbe0abd780c7e818bf98/output/chinese/outlines/%E4%B9%89%E5%8A%A1%E6%95%99%E8%82%B2%E6%95%99%E7%A7%91%E4%B9%A6%C2%B7%E8%AF%AD%E6%96%87%E4%B8%80%E5%B9%B4%E7%BA%A7%E4%B8%8A%E5%86%8C.json",
+      "approvedForImport": false,
+      "unitTitles": [
+        "我上学了（入学教育）",
+        "识字（一）",
+        "汉语拼音（一）：单韵母与声母",
+        "汉语拼音（二）：复韵母与鼻韵母",
+        "课文（一）：感受自然与生活",
+        "识字（二）：会意字与生活识字",
+        "课文（二）：观察与成长",
+        "期末归纳与综合运用"
+      ],
+      "isbn": null,
+      "edition": null,
+      "status": "outline-only-edition-unverified"
+    },
+    {
+      "path": "output/chinese/outlines/义务教育教科书·语文一年级下册.json",
+      "source": "https://github.com/wuwangzhang1216/ChinaTextbookStudyFree/blob/a4cfe46cf50c87f0c29ebbe0abd780c7e818bf98/output/chinese/outlines/%E4%B9%89%E5%8A%A1%E6%95%99%E8%82%B2%E6%95%99%E7%A7%91%E4%B9%A6%C2%B7%E8%AF%AD%E6%96%87%E4%B8%80%E5%B9%B4%E7%BA%A7%E4%B8%8B%E5%86%8C.json",
+      "approvedForImport": false,
+      "unitTitles": [
+        "识字（一）",
+        "愿望",
+        "伙伴",
+        "家人",
+        "识字（二）",
+        "夏天",
+        "习惯",
+        "科学"
+      ],
+      "isbn": null,
+      "edition": null,
+      "status": "outline-only-edition-unverified"
+    },
+    {
+      "path": "output/chinese/outlines/义务教育教科书·语文三年级上册.json",
+      "source": "https://github.com/wuwangzhang1216/ChinaTextbookStudyFree/blob/a4cfe46cf50c87f0c29ebbe0abd780c7e818bf98/output/chinese/outlines/%E4%B9%89%E5%8A%A1%E6%95%99%E8%82%B2%E6%95%99%E7%A7%91%E4%B9%A6%C2%B7%E8%AF%AD%E6%96%87%E4%B8%89%E5%B9%B4%E7%BA%A7%E4%B8%8A%E5%86%8C.json",
+      "approvedForImport": false,
+      "unitTitles": [
+        "学校生活",
+        "金秋时节",
+        "童话世界",
+        "预测与推想",
+        "留心观察",
+        "祖国之美",
+        "认识自然",
+        "美好的品质"
+      ],
+      "isbn": null,
+      "edition": null,
+      "status": "outline-only-edition-unverified"
+    },
+    {
+      "path": "output/chinese/outlines/义务教育教科书·语文三年级下册.json",
+      "source": "https://github.com/wuwangzhang1216/ChinaTextbookStudyFree/blob/a4cfe46cf50c87f0c29ebbe0abd780c7e818bf98/output/chinese/outlines/%E4%B9%89%E5%8A%A1%E6%95%99%E8%82%B2%E6%95%99%E7%A7%91%E4%B9%A6%C2%B7%E8%AF%AD%E6%96%87%E4%B8%89%E5%B9%B4%E7%BA%A7%E4%B8%8B%E5%86%8C.json",
+      "approvedForImport": false,
+      "unitTitles": [
+        "可爱生灵",
+        "寓言故事",
+        "中华传统文化",
+        "观察与发现",
+        "大胆想象",
+        "多彩童年",
+        "奇妙世界",
+        "有趣的故事"
+      ],
+      "isbn": null,
+      "edition": null,
+      "status": "outline-only-edition-unverified"
+    },
+    {
+      "path": "output/chinese/outlines/义务教育教科书·语文二年级上册.json",
+      "source": "https://github.com/wuwangzhang1216/ChinaTextbookStudyFree/blob/a4cfe46cf50c87f0c29ebbe0abd780c7e818bf98/output/chinese/outlines/%E4%B9%89%E5%8A%A1%E6%95%99%E8%82%B2%E6%95%99%E7%A7%91%E4%B9%A6%C2%B7%E8%AF%AD%E6%96%87%E4%BA%8C%E5%B9%B4%E7%BA%A7%E4%B8%8A%E5%86%8C.json",
+      "approvedForImport": false,
+      "unitTitles": [
+        "大自然的秘密",
+        "识字",
+        "儿童生活",
+        "家乡",
+        "思维方法",
+        "伟人与榜样",
+        "想象",
+        "相处"
+      ],
+      "isbn": null,
+      "edition": null,
+      "status": "outline-only-edition-unverified"
+    },
+    {
+      "path": "output/chinese/outlines/义务教育教科书·语文二年级下册.json",
+      "source": "https://github.com/wuwangzhang1216/ChinaTextbookStudyFree/blob/a4cfe46cf50c87f0c29ebbe0abd780c7e818bf98/output/chinese/outlines/%E4%B9%89%E5%8A%A1%E6%95%99%E8%82%B2%E6%95%99%E7%A7%91%E4%B9%A6%C2%B7%E8%AF%AD%E6%96%87%E4%BA%8C%E5%B9%B4%E7%BA%A7%E4%B8%8B%E5%86%8C.json",
+      "approvedForImport": false,
+      "unitTitles": [
+        "春天",
+        "劳动与奉献",
+        "传统文化与识字",
+        "童心与想象",
+        "办法与道理",
+        "大自然的秘密",
+        "改变",
+        "世界之初"
+      ],
+      "isbn": null,
+      "edition": null,
+      "status": "outline-only-edition-unverified"
+    },
+    {
+      "path": "output/chinese/outlines/义务教育教科书·语文五年级上册.json",
+      "source": "https://github.com/wuwangzhang1216/ChinaTextbookStudyFree/blob/a4cfe46cf50c87f0c29ebbe0abd780c7e818bf98/output/chinese/outlines/%E4%B9%89%E5%8A%A1%E6%95%99%E8%82%B2%E6%95%99%E7%A7%91%E4%B9%A6%C2%B7%E8%AF%AD%E6%96%87%E4%BA%94%E5%B9%B4%E7%BA%A7%E4%B8%8A%E5%86%8C.json",
+      "approvedForImport": false,
+      "unitTitles": [
+        "万物有情",
+        "提高阅读速度",
+        "民间故事",
+        "家国情怀",
+        "介绍一种事物",
+        "舐犊之情",
+        "四时景物皆成趣",
+        "读书明智"
+      ],
+      "isbn": null,
+      "edition": null,
+      "status": "outline-only-edition-unverified"
+    },
+    {
+      "path": "output/chinese/outlines/义务教育教科书·语文五年级下册.json",
+      "source": "https://github.com/wuwangzhang1216/ChinaTextbookStudyFree/blob/a4cfe46cf50c87f0c29ebbe0abd780c7e818bf98/output/chinese/outlines/%E4%B9%89%E5%8A%A1%E6%95%99%E8%82%B2%E6%95%99%E7%A7%91%E4%B9%A6%C2%B7%E8%AF%AD%E6%96%87%E4%BA%94%E5%B9%B4%E7%BA%A7%E4%B8%8B%E5%86%8C.json",
+      "approvedForImport": false,
+      "unitTitles": [
+        "童年往事",
+        "古典名著之旅",
+        "遨游汉字王国",
+        "家国情怀",
+        "把一个人的特点写具体",
+        "思维的火花",
+        "异域风情",
+        "幽默与风趣"
+      ],
+      "isbn": null,
+      "edition": null,
+      "status": "outline-only-edition-unverified"
+    },
+    {
+      "path": "output/chinese/outlines/义务教育教科书·语文六年级上册.json",
+      "source": "https://github.com/wuwangzhang1216/ChinaTextbookStudyFree/blob/a4cfe46cf50c87f0c29ebbe0abd780c7e818bf98/output/chinese/outlines/%E4%B9%89%E5%8A%A1%E6%95%99%E8%82%B2%E6%95%99%E7%A7%91%E4%B9%A6%C2%B7%E8%AF%AD%E6%96%87%E5%85%AD%E5%B9%B4%E7%BA%A7%E4%B8%8A%E5%86%8C.json",
+      "approvedForImport": false,
+      "unitTitles": [
+        "从所读的内容想开去",
+        "重温革命岁月",
+        "有目的地阅读",
+        "小说欣赏",
+        "围绕中心意思写",
+        "保护环境",
+        "艺术的魅力",
+        "初识鲁迅"
+      ],
+      "isbn": null,
+      "edition": null,
+      "status": "outline-only-edition-unverified"
+    },
+    {
+      "path": "output/chinese/outlines/义务教育教科书·语文六年级下册.json",
+      "source": "https://github.com/wuwangzhang1216/ChinaTextbookStudyFree/blob/a4cfe46cf50c87f0c29ebbe0abd780c7e818bf98/output/chinese/outlines/%E4%B9%89%E5%8A%A1%E6%95%99%E8%82%B2%E6%95%99%E7%A7%91%E4%B9%A6%C2%B7%E8%AF%AD%E6%96%87%E5%85%AD%E5%B9%B4%E7%BA%A7%E4%B8%8B%E5%86%8C.json",
+      "approvedForImport": false,
+      "unitTitles": [
+        "民风民俗",
+        "外国文学名著",
+        "让真情在笔尖流露",
+        "人物品质",
+        "科学精神",
+        "难忘小学生活"
+      ],
+      "isbn": null,
+      "edition": null,
+      "status": "outline-only-edition-unverified"
+    },
+    {
+      "path": "output/chinese/outlines/义务教育教科书·语文四年级上册.json",
+      "source": "https://github.com/wuwangzhang1216/ChinaTextbookStudyFree/blob/a4cfe46cf50c87f0c29ebbe0abd780c7e818bf98/output/chinese/outlines/%E4%B9%89%E5%8A%A1%E6%95%99%E8%82%B2%E6%95%99%E7%A7%91%E4%B9%A6%C2%B7%E8%AF%AD%E6%96%87%E5%9B%9B%E5%B9%B4%E7%BA%A7%E4%B8%8A%E5%86%8C.json",
+      "approvedForImport": false,
+      "unitTitles": [
+        "自然之美",
+        "提问策略",
+        "处处留心皆学问",
+        "神话故事",
+        "我手写我心",
+        "童年记忆",
+        "家国情怀",
+        "历史故事与人生启示"
+      ],
+      "isbn": null,
+      "edition": null,
+      "status": "outline-only-edition-unverified"
+    },
+    {
+      "path": "output/chinese/outlines/义务教育教科书·语文四年级下册.json",
+      "source": "https://github.com/wuwangzhang1216/ChinaTextbookStudyFree/blob/a4cfe46cf50c87f0c29ebbe0abd780c7e818bf98/output/chinese/outlines/%E4%B9%89%E5%8A%A1%E6%95%99%E8%82%B2%E6%95%99%E7%A7%91%E4%B9%A6%C2%B7%E8%AF%AD%E6%96%87%E5%9B%9B%E5%B9%B4%E7%BA%A7%E4%B8%8B%E5%86%8C.json",
+      "approvedForImport": false,
+      "unitTitles": [
+        "乡村生活",
+        "自然奥秘与科技奇观",
+        "现代诗歌",
+        "动物朋友",
+        "妙笔写美景",
+        "成长的足迹",
+        "为人处世",
+        "童话世界"
+      ],
+      "isbn": null,
+      "edition": null,
+      "status": "outline-only-edition-unverified"
+    },
+    {
+      "path": "output/english/outlines/义务教育教科书·英语（PEP）（三年级起点）三年级上册.json",
+      "source": "https://github.com/wuwangzhang1216/ChinaTextbookStudyFree/blob/a4cfe46cf50c87f0c29ebbe0abd780c7e818bf98/output/english/outlines/%E4%B9%89%E5%8A%A1%E6%95%99%E8%82%B2%E6%95%99%E7%A7%91%E4%B9%A6%C2%B7%E8%8B%B1%E8%AF%AD%EF%BC%88PEP%EF%BC%89%EF%BC%88%E4%B8%89%E5%B9%B4%E7%BA%A7%E8%B5%B7%E7%82%B9%EF%BC%89%E4%B8%89%E5%B9%B4%E7%BA%A7%E4%B8%8A%E5%86%8C.json",
+      "approvedForImport": false,
+      "unitTitles": [
+        "Hello!",
+        "Colours",
+        "Look at me!",
+        "We love animals",
+        "Let's eat!",
+        "Happy birthday!"
+      ],
+      "isbn": null,
+      "edition": null,
+      "status": "outline-only-edition-unverified"
+    },
+    {
+      "path": "output/english/outlines/义务教育教科书·英语（PEP）（三年级起点）五年级上册.json",
+      "source": "https://github.com/wuwangzhang1216/ChinaTextbookStudyFree/blob/a4cfe46cf50c87f0c29ebbe0abd780c7e818bf98/output/english/outlines/%E4%B9%89%E5%8A%A1%E6%95%99%E8%82%B2%E6%95%99%E7%A7%91%E4%B9%A6%C2%B7%E8%8B%B1%E8%AF%AD%EF%BC%88PEP%EF%BC%89%EF%BC%88%E4%B8%89%E5%B9%B4%E7%BA%A7%E8%B5%B7%E7%82%B9%EF%BC%89%E4%BA%94%E5%B9%B4%E7%BA%A7%E4%B8%8A%E5%86%8C.json",
+      "approvedForImport": false,
+      "unitTitles": [
+        "What’s he like?",
+        "My week",
+        "What would you like?",
+        "What can you do?",
+        "There is a big bed",
+        "In a nature park"
+      ],
+      "isbn": null,
+      "edition": null,
+      "status": "outline-only-edition-unverified"
+    },
+    {
+      "path": "output/english/outlines/义务教育教科书·英语（PEP）（三年级起点）六年级上册.json",
+      "source": "https://github.com/wuwangzhang1216/ChinaTextbookStudyFree/blob/a4cfe46cf50c87f0c29ebbe0abd780c7e818bf98/output/english/outlines/%E4%B9%89%E5%8A%A1%E6%95%99%E8%82%B2%E6%95%99%E7%A7%91%E4%B9%A6%C2%B7%E8%8B%B1%E8%AF%AD%EF%BC%88PEP%EF%BC%89%EF%BC%88%E4%B8%89%E5%B9%B4%E7%BA%A7%E8%B5%B7%E7%82%B9%EF%BC%89%E5%85%AD%E5%B9%B4%E7%BA%A7%E4%B8%8A%E5%86%8C.json",
+      "approvedForImport": false,
+      "unitTitles": [
+        "How can I get there?",
+        "Ways to go to school",
+        "My weekend plan",
+        "I have a pen pal",
+        "What does he do?",
+        "How do you feel?",
+        "Recycle & Summary"
+      ],
+      "isbn": null,
+      "edition": null,
+      "status": "outline-only-edition-unverified"
+    },
+    {
+      "path": "output/english/outlines/义务教育教科书·英语（PEP）（三年级起点）四年级上册.json",
+      "source": "https://github.com/wuwangzhang1216/ChinaTextbookStudyFree/blob/a4cfe46cf50c87f0c29ebbe0abd780c7e818bf98/output/english/outlines/%E4%B9%89%E5%8A%A1%E6%95%99%E8%82%B2%E6%95%99%E7%A7%91%E4%B9%A6%C2%B7%E8%8B%B1%E8%AF%AD%EF%BC%88PEP%EF%BC%89%EF%BC%88%E4%B8%89%E5%B9%B4%E7%BA%A7%E8%B5%B7%E7%82%B9%EF%BC%89%E5%9B%9B%E5%B9%B4%E7%BA%A7%E4%B8%8A%E5%86%8C.json",
+      "approvedForImport": false,
+      "unitTitles": [
+        "My classroom",
+        "My schoolbag",
+        "My friends",
+        "My home",
+        "Dinner's ready",
+        "Meet my family!"
+      ],
+      "isbn": null,
+      "edition": null,
+      "status": "outline-only-edition-unverified"
+    },
+    {
+      "path": "output/english/outlines/义务教育教科书·英语（三年级起点）三年级下册.json",
+      "source": "https://github.com/wuwangzhang1216/ChinaTextbookStudyFree/blob/a4cfe46cf50c87f0c29ebbe0abd780c7e818bf98/output/english/outlines/%E4%B9%89%E5%8A%A1%E6%95%99%E8%82%B2%E6%95%99%E7%A7%91%E4%B9%A6%C2%B7%E8%8B%B1%E8%AF%AD%EF%BC%88%E4%B8%89%E5%B9%B4%E7%BA%A7%E8%B5%B7%E7%82%B9%EF%BC%89%E4%B8%89%E5%B9%B4%E7%BA%A7%E4%B8%8B%E5%86%8C.json",
+      "approvedForImport": false,
+      "unitTitles": [
+        "Welcome back to school!",
+        "My family",
+        "At the zoo",
+        "Where is my car?",
+        "Do you like pears?",
+        "How many?"
+      ],
+      "isbn": null,
+      "edition": null,
+      "status": "outline-only-edition-unverified"
+    },
+    {
+      "path": "output/english/outlines/义务教育教科书·英语（三年级起点）五年级下册.json",
+      "source": "https://github.com/wuwangzhang1216/ChinaTextbookStudyFree/blob/a4cfe46cf50c87f0c29ebbe0abd780c7e818bf98/output/english/outlines/%E4%B9%89%E5%8A%A1%E6%95%99%E8%82%B2%E6%95%99%E7%A7%91%E4%B9%A6%C2%B7%E8%8B%B1%E8%AF%AD%EF%BC%88%E4%B8%89%E5%B9%B4%E7%BA%A7%E8%B5%B7%E7%82%B9%EF%BC%89%E4%BA%94%E5%B9%B4%E7%BA%A7%E4%B8%8B%E5%86%8C.json",
+      "approvedForImport": false,
+      "unitTitles": [
+        "My day",
+        "My favourite season",
+        "My school calendar",
+        "When is the art show?",
+        "Whose dog is it?",
+        "Work quietly!"
+      ],
+      "isbn": null,
+      "edition": null,
+      "status": "outline-only-edition-unverified"
+    },
+    {
+      "path": "output/english/outlines/义务教育教科书·英语（三年级起点）六年级下册.json",
+      "source": "https://github.com/wuwangzhang1216/ChinaTextbookStudyFree/blob/a4cfe46cf50c87f0c29ebbe0abd780c7e818bf98/output/english/outlines/%E4%B9%89%E5%8A%A1%E6%95%99%E8%82%B2%E6%95%99%E7%A7%91%E4%B9%A6%C2%B7%E8%8B%B1%E8%AF%AD%EF%BC%88%E4%B8%89%E5%B9%B4%E7%BA%A7%E8%B5%B7%E7%82%B9%EF%BC%89%E5%85%AD%E5%B9%B4%E7%BA%A7%E4%B8%8B%E5%86%8C.json",
+      "approvedForImport": false,
+      "unitTitles": [
+        "Unit 1 How tall are you?",
+        "Unit 2 Last weekend",
+        "Unit 3 Where did you go?",
+        "Unit 4 Then and now",
+        "Recycle & Review"
+      ],
+      "isbn": null,
+      "edition": null,
+      "status": "outline-only-edition-unverified"
+    },
+    {
+      "path": "output/english/outlines/义务教育教科书·英语（三年级起点）四年级下册.json",
+      "source": "https://github.com/wuwangzhang1216/ChinaTextbookStudyFree/blob/a4cfe46cf50c87f0c29ebbe0abd780c7e818bf98/output/english/outlines/%E4%B9%89%E5%8A%A1%E6%95%99%E8%82%B2%E6%95%99%E7%A7%91%E4%B9%A6%C2%B7%E8%8B%B1%E8%AF%AD%EF%BC%88%E4%B8%89%E5%B9%B4%E7%BA%A7%E8%B5%B7%E7%82%B9%EF%BC%89%E5%9B%9B%E5%B9%B4%E7%BA%A7%E4%B8%8B%E5%86%8C.json",
+      "approvedForImport": false,
+      "unitTitles": [
+        "My school",
+        "What time is it?",
+        "Weather",
+        "At the farm",
+        "My clothes",
+        "Shopping"
+      ],
+      "isbn": null,
+      "edition": null,
+      "status": "outline-only-edition-unverified"
+    },
+    {
+      "path": "output/math/outlines/义务教育教科书 · 数学一年级上册.json",
+      "source": "https://github.com/wuwangzhang1216/ChinaTextbookStudyFree/blob/a4cfe46cf50c87f0c29ebbe0abd780c7e818bf98/output/math/outlines/%E4%B9%89%E5%8A%A1%E6%95%99%E8%82%B2%E6%95%99%E7%A7%91%E4%B9%A6%20%C2%B7%20%E6%95%B0%E5%AD%A6%E4%B8%80%E5%B9%B4%E7%BA%A7%E4%B8%8A%E5%86%8C.json",
+      "approvedForImport": false,
+      "unitTitles": [
+        "准备课",
+        "位置",
+        "1~5的认识和加减法",
+        "认识图形（一）",
+        "6~10的认识和加减法",
+        "11~20各数的认识",
+        "认识钟表",
+        "20以内的进位加法",
+        "总复习"
+      ],
+      "isbn": null,
+      "edition": null,
+      "status": "outline-only-edition-unverified"
+    },
+    {
+      "path": "output/math/outlines/义务教育教科书 · 数学三年级上册.json",
+      "source": "https://github.com/wuwangzhang1216/ChinaTextbookStudyFree/blob/a4cfe46cf50c87f0c29ebbe0abd780c7e818bf98/output/math/outlines/%E4%B9%89%E5%8A%A1%E6%95%99%E8%82%B2%E6%95%99%E7%A7%91%E4%B9%A6%20%C2%B7%20%E6%95%B0%E5%AD%A6%E4%B8%89%E5%B9%B4%E7%BA%A7%E4%B8%8A%E5%86%8C.json",
+      "approvedForImport": false,
+      "unitTitles": [
+        "时、分、秒",
+        "万以内的加法和减法（一）",
+        "测量",
+        "万以内的加法和减法（二）",
+        "倍的认识",
+        "多位数乘一位数",
+        "长方形和正方形",
+        "分数的初步认识",
+        "数学广角——集合",
+        "总复习"
+      ],
+      "isbn": null,
+      "edition": null,
+      "status": "outline-only-edition-unverified"
+    },
+    {
+      "path": "output/math/outlines/义务教育教科书 · 数学二年级上册.json",
+      "source": "https://github.com/wuwangzhang1216/ChinaTextbookStudyFree/blob/a4cfe46cf50c87f0c29ebbe0abd780c7e818bf98/output/math/outlines/%E4%B9%89%E5%8A%A1%E6%95%99%E8%82%B2%E6%95%99%E7%A7%91%E4%B9%A6%20%C2%B7%20%E6%95%B0%E5%AD%A6%E4%BA%8C%E5%B9%B4%E7%BA%A7%E4%B8%8A%E5%86%8C.json",
+      "approvedForImport": false,
+      "unitTitles": [
+        "长度单位",
+        "100以内的加法和减法（二）",
+        "角的初步认识",
+        "表内乘法（一）",
+        "观察物体（一）",
+        "表内乘法（二）",
+        "认识时间",
+        "数学广角——搭配（一）",
+        "总复习"
+      ],
+      "isbn": null,
+      "edition": null,
+      "status": "outline-only-edition-unverified"
+    },
+    {
+      "path": "output/math/outlines/义务教育教科书 · 数学五年级上册.json",
+      "source": "https://github.com/wuwangzhang1216/ChinaTextbookStudyFree/blob/a4cfe46cf50c87f0c29ebbe0abd780c7e818bf98/output/math/outlines/%E4%B9%89%E5%8A%A1%E6%95%99%E8%82%B2%E6%95%99%E7%A7%91%E4%B9%A6%20%C2%B7%20%E6%95%B0%E5%AD%A6%E4%BA%94%E5%B9%B4%E7%BA%A7%E4%B8%8A%E5%86%8C.json",
+      "approvedForImport": false,
+      "unitTitles": [
+        "小数乘法",
+        "位置",
+        "小数除法",
+        "可能性",
+        "简易方程",
+        "多边形的面积",
+        "数学广角——植树问题",
+        "总复习"
+      ],
+      "isbn": null,
+      "edition": null,
+      "status": "outline-only-edition-unverified"
+    },
+    {
+      "path": "output/math/outlines/义务教育教科书 · 数学六年级上册.json",
+      "source": "https://github.com/wuwangzhang1216/ChinaTextbookStudyFree/blob/a4cfe46cf50c87f0c29ebbe0abd780c7e818bf98/output/math/outlines/%E4%B9%89%E5%8A%A1%E6%95%99%E8%82%B2%E6%95%99%E7%A7%91%E4%B9%A6%20%C2%B7%20%E6%95%B0%E5%AD%A6%E5%85%AD%E5%B9%B4%E7%BA%A7%E4%B8%8A%E5%86%8C.json",
+      "approvedForImport": false,
+      "unitTitles": [
+        "分数乘法",
+        "位置与方向（二）",
+        "分数除法",
+        "比",
+        "圆",
+        "百分数（一）",
+        "扇形统计图",
+        "数学广角——数与形",
+        "总复习"
+      ],
+      "isbn": null,
+      "edition": null,
+      "status": "outline-only-edition-unverified"
+    },
+    {
+      "path": "output/math/outlines/义务教育教科书 · 数学四年级上册.json",
+      "source": "https://github.com/wuwangzhang1216/ChinaTextbookStudyFree/blob/a4cfe46cf50c87f0c29ebbe0abd780c7e818bf98/output/math/outlines/%E4%B9%89%E5%8A%A1%E6%95%99%E8%82%B2%E6%95%99%E7%A7%91%E4%B9%A6%20%C2%B7%20%E6%95%B0%E5%AD%A6%E5%9B%9B%E5%B9%B4%E7%BA%A7%E4%B8%8A%E5%86%8C.json",
+      "approvedForImport": false,
+      "unitTitles": [
+        "大数的认识",
+        "公顷和平方千米",
+        "角的度量",
+        "三位数乘两位数",
+        "平行四边形和梯形",
+        "除数是两位数的除法",
+        "条形统计图",
+        "数学广角——优化",
+        "总复习"
+      ],
+      "isbn": null,
+      "edition": null,
+      "status": "outline-only-edition-unverified"
+    },
+    {
+      "path": "output/math/outlines/义务教育教科书·数学一年级下册.json",
+      "source": "https://github.com/wuwangzhang1216/ChinaTextbookStudyFree/blob/a4cfe46cf50c87f0c29ebbe0abd780c7e818bf98/output/math/outlines/%E4%B9%89%E5%8A%A1%E6%95%99%E8%82%B2%E6%95%99%E7%A7%91%E4%B9%A6%C2%B7%E6%95%B0%E5%AD%A6%E4%B8%80%E5%B9%B4%E7%BA%A7%E4%B8%8B%E5%86%8C.json",
+      "approvedForImport": false,
+      "unitTitles": [
+        "认识图形（二）",
+        "20以内的退位减法",
+        "分类与整理",
+        "100以内数的认识",
+        "认识人民币",
+        "100以内的加法和减法（一）",
+        "找规律",
+        "总复习"
+      ],
+      "isbn": null,
+      "edition": null,
+      "status": "outline-only-edition-unverified"
+    },
+    {
+      "path": "output/math/outlines/义务教育教科书·数学三年级下册.json",
+      "source": "https://github.com/wuwangzhang1216/ChinaTextbookStudyFree/blob/a4cfe46cf50c87f0c29ebbe0abd780c7e818bf98/output/math/outlines/%E4%B9%89%E5%8A%A1%E6%95%99%E8%82%B2%E6%95%99%E7%A7%91%E4%B9%A6%C2%B7%E6%95%B0%E5%AD%A6%E4%B8%89%E5%B9%B4%E7%BA%A7%E4%B8%8B%E5%86%8C.json",
+      "approvedForImport": false,
+      "unitTitles": [
+        "位置与方向（一）",
+        "除数是一位数的除法",
+        "复式统计表",
+        "两位数乘两位数",
+        "面积",
+        "年、月、日",
+        "小数的初步认识",
+        "数学广角——搭配（二）",
+        "总复习"
+      ],
+      "isbn": null,
+      "edition": null,
+      "status": "outline-only-edition-unverified"
+    },
+    {
+      "path": "output/math/outlines/义务教育教科书·数学二年级下册.json",
+      "source": "https://github.com/wuwangzhang1216/ChinaTextbookStudyFree/blob/a4cfe46cf50c87f0c29ebbe0abd780c7e818bf98/output/math/outlines/%E4%B9%89%E5%8A%A1%E6%95%99%E8%82%B2%E6%95%99%E7%A7%91%E4%B9%A6%C2%B7%E6%95%B0%E5%AD%A6%E4%BA%8C%E5%B9%B4%E7%BA%A7%E4%B8%8B%E5%86%8C.json",
+      "approvedForImport": false,
+      "unitTitles": [
+        "数据收集整理",
+        "表内除法（一）",
+        "图形的运动（一）",
+        "表内除法（二）",
+        "混合运算",
+        "有余数的除法",
+        "万以内数的认识",
+        "克和千克",
+        "数学广角——推理",
+        "总复习"
+      ],
+      "isbn": null,
+      "edition": null,
+      "status": "outline-only-edition-unverified"
+    },
+    {
+      "path": "output/math/outlines/义务教育教科书·数学五年级下册.json",
+      "source": "https://github.com/wuwangzhang1216/ChinaTextbookStudyFree/blob/a4cfe46cf50c87f0c29ebbe0abd780c7e818bf98/output/math/outlines/%E4%B9%89%E5%8A%A1%E6%95%99%E8%82%B2%E6%95%99%E7%A7%91%E4%B9%A6%C2%B7%E6%95%B0%E5%AD%A6%E4%BA%94%E5%B9%B4%E7%BA%A7%E4%B8%8B%E5%86%8C.json",
+      "approvedForImport": false,
+      "unitTitles": [
+        "观察物体（三）",
+        "因数与倍数",
+        "长方体和正方体",
+        "分数的意义和性质",
+        "图形的运动（三）",
+        "分数的加法和减法",
+        "折线统计图",
+        "数学广角——找次品",
+        "总复习"
+      ],
+      "isbn": null,
+      "edition": null,
+      "status": "outline-only-edition-unverified"
+    },
+    {
+      "path": "output/math/outlines/义务教育教科书·数学六年级下册.json",
+      "source": "https://github.com/wuwangzhang1216/ChinaTextbookStudyFree/blob/a4cfe46cf50c87f0c29ebbe0abd780c7e818bf98/output/math/outlines/%E4%B9%89%E5%8A%A1%E6%95%99%E8%82%B2%E6%95%99%E7%A7%91%E4%B9%A6%C2%B7%E6%95%B0%E5%AD%A6%E5%85%AD%E5%B9%B4%E7%BA%A7%E4%B8%8B%E5%86%8C.json",
+      "approvedForImport": false,
+      "unitTitles": [
+        "负数",
+        "百分数（二）",
+        "圆柱与圆锥",
+        "比例",
+        "数学广角——鸽巢问题",
+        "整理和复习"
+      ],
+      "isbn": null,
+      "edition": null,
+      "status": "outline-only-edition-unverified"
+    },
+    {
+      "path": "output/math/outlines/义务教育教科书·数学四年级下册.json",
+      "source": "https://github.com/wuwangzhang1216/ChinaTextbookStudyFree/blob/a4cfe46cf50c87f0c29ebbe0abd780c7e818bf98/output/math/outlines/%E4%B9%89%E5%8A%A1%E6%95%99%E8%82%B2%E6%95%99%E7%A7%91%E4%B9%A6%C2%B7%E6%95%B0%E5%AD%A6%E5%9B%9B%E5%B9%B4%E7%BA%A7%E4%B8%8B%E5%86%8C.json",
+      "approvedForImport": false,
+      "unitTitles": [
+        "四则运算",
+        "观察物体（二）",
+        "运算定律",
+        "小数的意义和性质",
+        "三角形",
+        "小数的加法和减法",
+        "图形的运动（二）",
+        "平均数与条形统计图",
+        "数学广角——鸡兔同笼",
+        "总复习"
+      ],
+      "isbn": null,
+      "edition": null,
+      "status": "outline-only-edition-unverified"
+    }
+  ]
+}

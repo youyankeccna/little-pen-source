@@ -1,0 +1,38 @@
+{
+  "checkedAt": "2026-10-15",
+  "sample": "PEP四年级英语上册",
+  "status": "no-complete-edition-verified-sample-obtained",
+  "sources": [
+    {
+      "url": "https://basic.smartedu.cn/tchMaterial",
+      "error": "HTTP Error 403: Forbidden"
+    },
+    {
+      "url": "https://www.pep.com.cn/",
+      "error": "<urlopen error _ssl.c:1063: The handshake operation timed out>"
+    },
+    {
+      "url": "https://www.kebenwang.cn/book/65/chapter/984",
+      "httpStatus": 200,
+      "finalUrl": "https://www.kebenwang.cn/book/65/chapter/984",
+      "title": "Unit 1 Helping at home - 人教版PEP四年级英语上册 - 中小学课本网",
+      "finding": "正文图片为chapter-default占位图，没有实际章节内容",
+      "placeholderConfirmed": true
+    },
+    {
+      "url": "https://www.dzkbw.org/book/4760.html",
+      "httpStatus": 200,
+      "finalUrl": "https://www.dzkbw.org/book/4760.html",
+      "title": "四年级英语上册(2026秋版)(PEP)电子课本免费下载-人教版四年级英语上册(2026秋版)(PEP)书电子课本PDF下载-电子课本网",
+      "finding": "目录匹配，下载指向夸克分享，未取得PDF及版权页"
+    },
+    {
+      "url": "https://pan.quark.cn/s/d6c2c27ee1b7",
+      "httpStatus": 200,
+      "finalUrl": "https://pan.quark.cn/s/d6c2c27ee1b7",
+      "title": "夸克网盘分享",
+      "finding": "分享入口可响应；静态HTML未提供可核验文件清单，不据此认定教材存在"
+    }
+  ],
+  "importedTextbookContent": false
+}

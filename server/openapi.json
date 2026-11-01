@@ -1,0 +1,2223 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "小小笔尖家长试用版API",
+    "version": "1.7.0",
+    "description": "本地Python服务；浏览器Cookie会话。写请求必须同源Origin。支持离线恢复码找回；手机／邮箱验证码、OAuth及服务端渲染尚未开通。JSON成功{data,requestId}；错误{error:{code,message},requestId}。JSON请求示例与快照字段见DEVELOPMENT_STATUS.md。 支持用户提供OCR素材与24个英语版本；版本枚举随发布清单editionOptions生成。快照config.fillPage为可选布尔值：重复排版填满末页，描红模式横向铺满；不改源文字，测验仍隐藏汉字。 偏好写入可选studyContext:{grade:0..6,subject:cn/math/en,term:upper/lower}；不传时保留已有学习设置，/me返回studyContext。 v19：账号含children和activeChildId；学习、偏好、收藏、快照、输出与练习包按孩子隔离。私有请求可携带X-Child-Id，服务端验证孩子属于当前账号；未传则使用账号的当前孩子。旧数据迁入default档案。"
+  },
+  "servers": [
+    {
+      "url": "/api/v1"
+    }
+  ],
+  "paths": {
+    "/me": {
+      "get": {
+        "summary": "当前账号及偏好",
+        "responses": {
+          "200": {
+            "description": "成功；JSON响应为data、requestId；outputs为二进制"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限不足或Origin不匹配"
+          },
+          "409": {
+            "description": "偏好未确认或并发版本冲突"
+          },
+          "422": {
+            "description": "配置、页数或课内选择无效"
+          }
+        }
+      },
+      "delete": {
+        "summary": "校验密码与确认文字后注销账号",
+        "responses": {
+          "200": {
+            "description": "成功；JSON响应为data、requestId；outputs为二进制"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限不足或Origin不匹配"
+          },
+          "409": {
+            "description": "偏好未确认或并发版本冲突"
+          },
+          "422": {
+            "description": "配置、页数或课内选择无效"
+          }
+        }
+      }
+    },
+    "/auth/register": {
+      "post": {
+        "summary": "注册并建立会话",
+        "responses": {
+          "200": {
+            "description": "成功；JSON响应为data、requestId；outputs为二进制"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限不足或Origin不匹配"
+          },
+          "409": {
+            "description": "偏好未确认或并发版本冲突"
+          },
+          "422": {
+            "description": "配置、页数或课内选择无效"
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "summary": "登录",
+        "responses": {
+          "200": {
+            "description": "成功；JSON响应为data、requestId；outputs为二进制"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限不足或Origin不匹配"
+          },
+          "409": {
+            "description": "偏好未确认或并发版本冲突"
+          },
+          "422": {
+            "description": "配置、页数或课内选择无效"
+          }
+        }
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "summary": "撤销会话",
+        "responses": {
+          "200": {
+            "description": "成功；JSON响应为data、requestId；outputs为二进制"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限不足或Origin不匹配"
+          },
+          "409": {
+            "description": "偏好未确认或并发版本冲突"
+          },
+          "422": {
+            "description": "配置、页数或课内选择无效"
+          }
+        }
+      }
+    },
+    "/auth/providers": {
+      "get": {
+        "summary": "真实登录渠道开通状态",
+        "responses": {
+          "200": {
+            "description": "成功；JSON响应为data、requestId；outputs为二进制"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限不足或Origin不匹配"
+          },
+          "409": {
+            "description": "偏好未确认或并发版本冲突"
+          },
+          "422": {
+            "description": "配置、页数或课内选择无效"
+          }
+        }
+      }
+    },
+    "/auth/password": {
+      "put": {
+        "summary": "校验当前密码后修改密码并撤销全部会话",
+        "responses": {
+          "200": {
+            "description": "成功；JSON响应为data、requestId；outputs为二进制"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限不足或Origin不匹配"
+          },
+          "409": {
+            "description": "偏好未确认或并发版本冲突"
+          },
+          "422": {
+            "description": "配置、页数或课内选择无效"
+          }
+        }
+      }
+    },
+    "/me/preferences": {
+      "put": {
+        "summary": "按版本号保存三科教材偏好",
+        "responses": {
+          "200": {
+            "description": "成功；JSON响应为data、requestId；outputs为二进制"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限不足或Origin不匹配"
+          },
+          "409": {
+            "description": "偏好未确认或并发版本冲突"
+          },
+          "422": {
+            "description": "配置、页数或课内选择无效"
+          }
+        }
+      }
+    },
+    "/catalog/books": {
+      "get": {
+        "summary": "公开补充练习册次与审核状态",
+        "responses": {
+          "200": {
+            "description": "成功；JSON响应为data、requestId；outputs为二进制"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限不足或Origin不匹配"
+          },
+          "409": {
+            "description": "偏好未确认或并发版本冲突"
+          },
+          "422": {
+            "description": "配置、页数或课内选择无效"
+          }
+        }
+      }
+    },
+    "/books/{revisionId}/lessons": {
+      "get": {
+        "summary": "册内公开目录",
+        "responses": {
+          "200": {
+            "description": "成功；JSON响应为data、requestId；outputs为二进制"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限不足或Origin不匹配"
+          },
+          "409": {
+            "description": "偏好未确认或并发版本冲突"
+          },
+          "422": {
+            "description": "配置、页数或课内选择无效"
+          }
+        },
+        "parameters": [
+          {
+            "name": "revisionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/lessons/{lessonId}/practice": {
+      "get": {
+        "summary": "课次练习及内容版本",
+        "responses": {
+          "200": {
+            "description": "成功；JSON响应为data、requestId；outputs为二进制"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限不足或Origin不匹配"
+          },
+          "409": {
+            "description": "偏好未确认或并发版本冲突"
+          },
+          "422": {
+            "description": "配置、页数或课内选择无效"
+          }
+        },
+        "parameters": [
+          {
+            "name": "lessonId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/worksheet-snapshots": {
+      "post": {
+        "summary": "校验课内条目归属并创建私有不可变快照",
+        "responses": {
+          "200": {
+            "description": "成功；JSON响应为data、requestId；outputs为二进制"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限不足或Origin不匹配"
+          },
+          "409": {
+            "description": "偏好未确认或并发版本冲突"
+          },
+          "422": {
+            "description": "配置、页数或课内选择无效"
+          },
+          "201": {
+            "description": "创建快照"
+          }
+        }
+      },
+      "get": {
+        "summary": "列出本人最近50份快照；favorite=1仅收藏",
+        "responses": {
+          "200": {
+            "description": "成功；仅本人数据"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "422": {
+            "description": "请求选项无效"
+          }
+        }
+      }
+    },
+    "/worksheet-snapshots/{snapshotId}": {
+      "get": {
+        "summary": "仅快照创建者可以读取",
+        "responses": {
+          "200": {
+            "description": "成功；JSON响应为data、requestId；outputs为二进制"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限不足或Origin不匹配"
+          },
+          "409": {
+            "description": "偏好未确认或并发版本冲突"
+          },
+          "422": {
+            "description": "配置、页数或课内选择无效"
+          }
+        },
+        "parameters": [
+          {
+            "name": "snapshotId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/outputs": {
+      "post": {
+        "summary": "校验快照所有权后交付浏览器生成的PDF或PNG",
+        "responses": {
+          "200": {
+            "description": "成功；JSON响应为data、requestId；outputs为二进制"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限不足或Origin不匹配"
+          },
+          "409": {
+            "description": "偏好未确认或并发版本冲突"
+          },
+          "422": {
+            "description": "配置、页数或课内选择无效"
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-Worksheet-Snapshot",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/pdf": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            },
+            "image/png": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/learning": {
+      "get": {
+        "summary": "读取本人上次选课、薄弱字、北京时间today和今日dailyPlan",
+        "responses": {
+          "200": {
+            "description": "成功；仅本人数据"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "422": {
+            "description": "请求选项无效"
+          }
+        }
+      }
+    },
+    "/learning/cursor": {
+      "put": {
+        "summary": "保存上次选择，body含lessonId、kind、itemIds",
+        "responses": {
+          "200": {
+            "description": "成功；仅本人数据"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "422": {
+            "description": "请求选项无效"
+          }
+        }
+      }
+    },
+    "/learning/weak-items": {
+      "put": {
+        "summary": "添加或移除薄弱字，body含operation(add/remove)、items[{char,lessonId}]，上限200字",
+        "responses": {
+          "200": {
+            "description": "成功；仅本人数据"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "422": {
+            "description": "请求选项无效"
+          }
+        }
+      }
+    },
+    "/worksheet-snapshots/{id}/favorite": {
+      "put": {
+        "summary": "设置本人快照收藏，body含favorite布尔值",
+        "responses": {
+          "200": {
+            "description": "成功；仅本人数据"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "422": {
+            "description": "请求选项无效"
+          },
+          "404": {
+            "description": "快照不存在或不属于本人"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/learning/review": {
+      "put": {
+        "summary": "标记薄弱字复习：char、action(reviewed/again/mastered/restore)，同日重复已复习不推进",
+        "responses": {
+          "200": {
+            "description": "成功；复习返回weakItems；每日返回dailyPlan"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "422": {
+            "description": "选项、所属字或当前计划校验失败"
+          }
+        }
+      }
+    },
+    "/learning/daily": {
+      "put": {
+        "summary": "安排今日一页：lessonId、kind(characters/words)、amount(4/6/8字或2/3/4词)、itemIds；重新安排重置完成",
+        "responses": {
+          "200": {
+            "description": "成功；复习返回weakItems；每日返回dailyPlan"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "422": {
+            "description": "选项、所属字或当前计划校验失败"
+          }
+        }
+      }
+    },
+    "/learning/daily/completion": {
+      "put": {
+        "summary": "家长确认或撤销完成：id、date、completed；仅当前账号当前日期且计划ID一致",
+        "responses": {
+          "200": {
+            "description": "成功；复习返回weakItems；每日返回dailyPlan"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "422": {
+            "description": "选项、所属字或当前计划校验失败"
+          }
+        }
+      }
+    },
+    "/content-feedback": {
+      "post": {
+        "summary": "提交内容纠错（游客可用，同源，单IP五分钟最多10次）",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "lessonId",
+                  "category",
+                  "message"
+                ],
+                "properties": {
+                  "lessonId": {
+                    "type": "string"
+                  },
+                  "category": {
+                    "type": "string",
+                    "enum": [
+                      "text",
+                      "reading",
+                      "mapping",
+                      "other"
+                    ]
+                  },
+                  "message": {
+                    "type": "string",
+                    "minLength": 3,
+                    "maxLength": 1000
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "data.id为反馈编号；私有存储，无公开读取接口"
+          },
+          "400": {
+            "description": "输入无效"
+          },
+          "403": {
+            "description": "来源不匹配"
+          },
+          "429": {
+            "description": "提交过于频繁"
+          }
+        }
+      }
+    },
+    "/family/children": {
+      "post": {
+        "summary": "新增孩子，最多6个；name、theme(leaf/star/rocket)、preferences、studyContext。返回user。",
+        "responses": {
+          "200": {
+            "description": "成功"
+          },
+          "401": {
+            "description": "需要登录（公开分享读取除外）"
+          },
+          "403": {
+            "description": "孩子不属于当前账号或Origin不匹配"
+          },
+          "404": {
+            "description": "不存在或不属于当前孩子"
+          },
+          "422": {
+            "description": "请求内容无效"
+          },
+          "201": {
+            "description": "创建成功"
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-Child-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "当前账号内的孩子ID；省略使用activeChildId。"
+          }
+        ]
+      },
+      "put": {
+        "summary": "更新孩子；上述字段加id和version，版本冲突不覆盖。",
+        "responses": {
+          "200": {
+            "description": "成功"
+          },
+          "401": {
+            "description": "需要登录（公开分享读取除外）"
+          },
+          "403": {
+            "description": "孩子不属于当前账号或Origin不匹配"
+          },
+          "404": {
+            "description": "不存在或不属于当前孩子"
+          },
+          "422": {
+            "description": "请求内容无效"
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-Child-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "当前账号内的孩子ID；省略使用activeChildId。"
+          }
+        ]
+      }
+    },
+    "/family/active-child": {
+      "put": {
+        "summary": "设置当前孩子：id。返回user和当前孩子偏好。",
+        "responses": {
+          "200": {
+            "description": "成功"
+          },
+          "401": {
+            "description": "需要登录（公开分享读取除外）"
+          },
+          "403": {
+            "description": "孩子不属于当前账号或Origin不匹配"
+          },
+          "404": {
+            "description": "不存在或不属于当前孩子"
+          },
+          "422": {
+            "description": "请求内容无效"
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-Child-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "当前账号内的孩子ID；省略使用activeChildId。"
+          }
+        ]
+      }
+    },
+    "/family/plans": {
+      "get": {
+        "summary": "最近50份当前孩子的练习安排。",
+        "responses": {
+          "200": {
+            "description": "成功"
+          },
+          "401": {
+            "description": "需要登录（公开分享读取除外）"
+          },
+          "403": {
+            "description": "孩子不属于当前账号或Origin不匹配"
+          },
+          "404": {
+            "description": "不存在或不属于当前孩子"
+          },
+          "422": {
+            "description": "请求内容无效"
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-Child-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "当前账号内的孩子ID；省略使用activeChildId。"
+          }
+        ]
+      },
+      "post": {
+        "summary": "保存每日或每周安排：mode(daily/weekly)、days[{date,lessonId,kind,itemIds,reviewChars}]。1–7天，连续日期，最长90天内；daily必须今天。复习最多2个当前孩子到期汉字。",
+        "responses": {
+          "200": {
+            "description": "成功"
+          },
+          "401": {
+            "description": "需要登录（公开分享读取除外）"
+          },
+          "403": {
+            "description": "孩子不属于当前账号或Origin不匹配"
+          },
+          "404": {
+            "description": "不存在或不属于当前孩子"
+          },
+          "422": {
+            "description": "请求内容无效"
+          },
+          "201": {
+            "description": "创建成功"
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-Child-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "当前账号内的孩子ID；省略使用activeChildId。"
+          }
+        ]
+      }
+    },
+    "/family/plans/{id}": {
+      "get": {
+        "summary": "读取当前孩子的私有练习安排，含冻结文本与来源。",
+        "responses": {
+          "200": {
+            "description": "成功"
+          },
+          "401": {
+            "description": "需要登录（公开分享读取除外）"
+          },
+          "403": {
+            "description": "孩子不属于当前账号或Origin不匹配"
+          },
+          "404": {
+            "description": "不存在或不属于当前孩子"
+          },
+          "422": {
+            "description": "请求内容无效"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Child-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "当前账号内的孩子ID；省略使用activeChildId。"
+          }
+        ]
+      }
+    },
+    "/family/plans/{id}/completion": {
+      "put": {
+        "summary": "家长确认或撤销：day为0起索引、completed布尔值。未来日期禁止完成。",
+        "responses": {
+          "200": {
+            "description": "成功"
+          },
+          "401": {
+            "description": "需要登录（公开分享读取除外）"
+          },
+          "403": {
+            "description": "孩子不属于当前账号或Origin不匹配"
+          },
+          "404": {
+            "description": "不存在或不属于当前孩子"
+          },
+          "422": {
+            "description": "请求内容无效"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Child-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "当前账号内的孩子ID；省略使用activeChildId。"
+          }
+        ]
+      }
+    },
+    "/family/plans/{id}/output": {
+      "post": {
+        "summary": "登录及教材偏好确认后输出本人当前孩子的练习包PDF；application/pdf原始二进制，最大25MiB；记录事件，不自动确认练习完成。",
+        "responses": {
+          "200": {
+            "description": "成功"
+          },
+          "401": {
+            "description": "需要登录（公开分享读取除外）"
+          },
+          "403": {
+            "description": "孩子不属于当前账号或Origin不匹配"
+          },
+          "404": {
+            "description": "不存在或不属于当前孩子"
+          },
+          "422": {
+            "description": "请求内容无效"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Child-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "当前账号内的孩子ID；省略使用activeChildId。"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/pdf": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/family/growth": {
+      "get": {
+        "summary": "返回today、completedDates、reviewEvents、totalReviewCharacters和mastered。完成日期去重，来自家长确认。",
+        "responses": {
+          "200": {
+            "description": "成功"
+          },
+          "401": {
+            "description": "需要登录（公开分享读取除外）"
+          },
+          "403": {
+            "description": "孩子不属于当前账号或Origin不匹配"
+          },
+          "404": {
+            "description": "不存在或不属于当前孩子"
+          },
+          "422": {
+            "description": "请求内容无效"
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-Child-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "当前账号内的孩子ID；省略使用activeChildId。"
+          }
+        ]
+      }
+    },
+    "/family/shares": {
+      "get": {
+        "summary": "当前孩子的分享管理列表。",
+        "responses": {
+          "200": {
+            "description": "成功"
+          },
+          "401": {
+            "description": "需要登录（公开分享读取除外）"
+          },
+          "403": {
+            "description": "孩子不属于当前账号或Origin不匹配"
+          },
+          "404": {
+            "description": "不存在或不属于当前孩子"
+          },
+          "422": {
+            "description": "请求内容无效"
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-Child-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "当前账号内的孩子ID；省略使用activeChildId。"
+          }
+        ]
+      },
+      "post": {
+        "summary": "用课次快照请求创建分享：sourceMode必须lesson；30天有效，每账号最多100条有效分享。不含孩子与成长数据；移除自定义readings、strokes和本地字体。",
+        "responses": {
+          "200": {
+            "description": "成功"
+          },
+          "401": {
+            "description": "需要登录（公开分享读取除外）"
+          },
+          "403": {
+            "description": "孩子不属于当前账号或Origin不匹配"
+          },
+          "404": {
+            "description": "不存在或不属于当前孩子"
+          },
+          "422": {
+            "description": "请求内容无效"
+          },
+          "201": {
+            "description": "创建成功"
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-Child-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "当前账号内的孩子ID；省略使用activeChildId。"
+          }
+        ]
+      }
+    },
+    "/family/shares/{id}": {
+      "delete": {
+        "summary": "停用本人当前孩子的分享链接；重复操作幂等。",
+        "responses": {
+          "200": {
+            "description": "成功"
+          },
+          "401": {
+            "description": "需要登录（公开分享读取除外）"
+          },
+          "403": {
+            "description": "孩子不属于当前账号或Origin不匹配"
+          },
+          "404": {
+            "description": "不存在或不属于当前孩子"
+          },
+          "422": {
+            "description": "请求内容无效"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Child-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "当前账号内的孩子ID；省略使用activeChildId。"
+          }
+        ]
+      }
+    },
+    "/shares/{id}": {
+      "get": {
+        "summary": "匿名读取有效课次分享。过期或停用404，内容版本变化409。",
+        "responses": {
+          "200": {
+            "description": "成功"
+          },
+          "401": {
+            "description": "需要登录（公开分享读取除外）"
+          },
+          "403": {
+            "description": "孩子不属于当前账号或Origin不匹配"
+          },
+          "404": {
+            "description": "不存在或不属于当前孩子"
+          },
+          "422": {
+            "description": "请求内容无效"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/auth/recovery-code": {
+      "post": {
+        "summary": "登录并验证当前密码后生成恢复码；旧码立即失效",
+        "description": "同源Origin；登录并验证密码；每IP十分钟最多10次。恢复码不通过GET返回。",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "password"
+                ],
+                "properties": {
+                  "password": {
+                    "type": "string",
+                    "minLength": 8,
+                    "maxLength": 128
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "成功；生成接口仅本次返回recoveryCode，重设不自动登录"
+          },
+          "400": {
+            "description": "账号或恢复码无效；不存在账号使用相同提示"
+          },
+          "401": {
+            "description": "生成恢复码需要登录并验证密码"
+          },
+          "403": {
+            "description": "Origin或Host不匹配"
+          },
+          "422": {
+            "description": "新密码无效或确认不一致"
+          },
+          "429": {
+            "description": "操作过于频繁"
+          }
+        },
+        "security": [
+          {
+            "websiteSession": []
+          },
+          {
+            "mobileSession": []
+          }
+        ]
+      }
+    },
+    "/auth/reset-password": {
+      "post": {
+        "summary": "用账号和一次性恢复码重设密码，撤销全部会话",
+        "description": "同源Origin；恢复接口每IP／每账号10分钟最多10次。恢复码不通过GET返回。",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "username",
+                  "recoveryCode",
+                  "newPassword",
+                  "confirmPassword"
+                ],
+                "properties": {
+                  "username": {
+                    "type": "string"
+                  },
+                  "recoveryCode": {
+                    "type": "string",
+                    "description": "32位十六进制恢复码，允许大小写、空格和连字符"
+                  },
+                  "newPassword": {
+                    "type": "string",
+                    "minLength": 8,
+                    "maxLength": 128
+                  },
+                  "confirmPassword": {
+                    "type": "string",
+                    "minLength": 8,
+                    "maxLength": 128
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "成功；生成接口仅本次返回recoveryCode，重设不自动登录"
+          },
+          "400": {
+            "description": "账号或恢复码无效；不存在账号使用相同提示"
+          },
+          "401": {
+            "description": "生成恢复码需要登录并验证密码"
+          },
+          "403": {
+            "description": "Origin或Host不匹配"
+          },
+          "422": {
+            "description": "新密码无效或确认不一致"
+          },
+          "429": {
+            "description": "操作过于频繁"
+          }
+        }
+      }
+    },
+    "/auth/mobile/login": {
+      "post": {
+        "summary": "小程序账号密码登录（与网站同一账号；返回Bearer会话，无Cookie）",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "username",
+                  "password"
+                ],
+                "properties": {
+                  "username": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string",
+                    "format": "password"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "data包含user、accessToken、expiresIn；令牌哈希入库；有效期7天"
+          },
+          "401": {
+            "description": "账号或密码不正确"
+          },
+          "403": {
+            "description": "不允许的Host或Origin"
+          },
+          "429": {
+            "description": "登录尝试限流"
+          }
+        }
+      }
+    },
+    "/layout-preferences": {
+      "get": {
+        "summary": "读取当前孩子的常用排版（含删除标记）",
+        "security": [
+          {
+            "websiteSession": []
+          },
+          {
+            "mobileSession": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Child-Id",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "description": "当前账号拥有的孩子ID；省略使用当前孩子"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "GET data.layouts；PUT data.layout，含context/config/version/updatedAt"
+          },
+          "401": {
+            "description": "未登录或会话失效"
+          },
+          "403": {
+            "description": "无权访问该孩子"
+          },
+          "409": {
+            "description": "排版版本冲突，重新读取后由用户决定"
+          },
+          "422": {
+            "description": "配置无效，不接受文本、姓名或本地字体"
+          }
+        }
+      },
+      "put": {
+        "summary": "保存或清除一个排版分类，必须提交已有version（首次0）",
+        "security": [
+          {
+            "websiteSession": []
+          },
+          {
+            "mobileSession": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Child-Id",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "description": "当前账号拥有的孩子ID；省略使用当前孩子"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "GET data.layouts；PUT data.layout，含context/config/version/updatedAt"
+          },
+          "401": {
+            "description": "未登录或会话失效"
+          },
+          "403": {
+            "description": "无权访问该孩子"
+          },
+          "409": {
+            "description": "排版版本冲突，重新读取后由用户决定"
+          },
+          "422": {
+            "description": "配置无效，不接受文本、姓名或本地字体"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "context",
+                  "config",
+                  "version"
+                ],
+                "properties": {
+                  "context": {
+                    "type": "object",
+                    "required": [
+                      "subject",
+                      "grade",
+                      "type",
+                      "variant"
+                    ],
+                    "properties": {
+                      "subject": {
+                        "type": "string",
+                        "enum": [
+                          "cn",
+                          "en",
+                          "math",
+                          "base"
+                        ]
+                      },
+                      "grade": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 6
+                      },
+                      "type": {
+                        "type": "string"
+                      },
+                      "variant": {
+                        "type": "string",
+                        "enum": [
+                          "standard",
+                          "vertical"
+                        ]
+                      }
+                    }
+                  },
+                  "config": {
+                    "type": "object",
+                    "nullable": true,
+                    "description": "仅排版字段；null为保留版本的删除标记"
+                  },
+                  "version": {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/render-jobs": {
+      "post": {
+        "summary": "生成公开素材或自己的收藏字帖（游客可用公开素材）",
+        "description": "异步任务，最多200项、20页；公开素材不接受自定义文本。私有snapshotId验证账号及孩子。约30分钟过期，下载文件保留在本机。",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "lessonId": {
+                    "type": "string"
+                  },
+                  "kind": {
+                    "type": "string"
+                  },
+                  "itemIds": {
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 200,
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "snapshotId": {
+                    "type": "string"
+                  },
+                  "options": {
+                    "type": "object",
+                    "properties": {
+                      "size": {
+                        "type": "number",
+                        "minimum": 6,
+                        "maximum": 30
+                      },
+                      "fillPage": {
+                        "type": "boolean"
+                      },
+                      "font": {
+                        "type": "string",
+                        "enum": [
+                          "wenkai",
+                          "italic"
+                        ]
+                      },
+                      "showPinyin": {
+                        "type": "boolean"
+                      },
+                      "mathLayout": {
+                        "type": "string",
+                        "enum": [
+                          "trace",
+                          "answers",
+                          "horizontal"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "data: id/key/expiresAt/status，key只在创建时返回"
+          },
+          "401": {
+            "description": "会话失效"
+          },
+          "403": {
+            "description": "不允许的Host或Origin"
+          },
+          "422": {
+            "description": "素材、排版或生成任务数无效"
+          }
+        }
+      }
+    },
+    "/render-jobs/{id}": {
+      "get": {
+        "summary": "读取生成状态",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Render-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "创建任务时返回的临时密钥，禁止放进URL"
+          },
+          {
+            "name": "X-Child-Id",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "description": "公开任务需密钥；账号任务额外验证会话和孩子归属。状态queued/processing/ready/failed；ready返回pages及unsupported数量。",
+        "responses": {
+          "200": {
+            "description": "JSON data任务状态"
+          },
+          "401": {
+            "description": "账号任务未登录"
+          },
+          "404": {
+            "description": "密钥错误、任务过期或无权访问"
+          }
+        }
+      }
+    },
+    "/render-jobs/{id}/{file}": {
+      "get": {
+        "summary": "下载同一模型生成的A4文件",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Render-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "创建任务时返回的临时密钥，禁止放进URL"
+          },
+          {
+            "name": "X-Child-Id",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "file",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "workbook.pdf、preview-1.png或page-1.png；页码1–20"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "PDF或PNG二进制"
+          },
+          "401": {
+            "description": "账号任务未登录"
+          },
+          "404": {
+            "description": "文件不存在或无权限"
+          },
+          "409": {
+            "description": "尚未生成完成"
+          }
+        }
+      }
+    },
+    "/render-jobs/{id}/save": {
+      "post": {
+        "summary": "保存完整字帖并收藏",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Render-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "创建任务时返回的临时密钥，禁止放进URL"
+          },
+          {
+            "name": "X-Child-Id",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "description": "需账号、教材设置和孩子归属；同一任务保存复用相同快照ID。output提交format:pdf/png及page(图片页号)，同一文件输出记录去重。",
+        "responses": {
+          "201": {
+            "description": "data.snapshotId，网站可打开"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "404": {
+            "description": "任务不存在或无权访问"
+          },
+          "409": {
+            "description": "未选教材或生成未完成"
+          },
+          "422": {
+            "description": "输出参数无效"
+          }
+        }
+      }
+    },
+    "/render-jobs/{id}/output": {
+      "post": {
+        "summary": "同步输出记录，不自动收藏或完成",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Render-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "创建任务时返回的临时密钥，禁止放进URL"
+          },
+          {
+            "name": "X-Child-Id",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "description": "需账号、教材设置和孩子归属；同一任务保存复用相同快照ID。output提交format:pdf/png及page(图片页号)，同一文件输出记录去重。",
+        "responses": {
+          "201": {
+            "description": "data.snapshotId，网站可打开"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "404": {
+            "description": "任务不存在或无权访问"
+          },
+          "409": {
+            "description": "未选教材或生成未完成"
+          },
+          "422": {
+            "description": "输出参数无效"
+          }
+        }
+      }
+    },
+    "/works": {
+      "get": {
+        "summary": "当前孩子的私密作品，最近100件，可按日期查找",
+        "security": [
+          {
+            "websiteSession": []
+          },
+          {
+            "mobileSession": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Child-Id",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "description": "当前账号拥有的孩子ID"
+          },
+          {
+            "name": "date",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "trash",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "0",
+                "1"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功；JSON响应为data、requestId"
+          },
+          "401": {
+            "description": "未登录或会话失效"
+          },
+          "404": {
+            "description": "作品不存在或不属于当前孩子"
+          },
+          "422": {
+            "description": "照片、日期或笔迹格式无效"
+          }
+        }
+      },
+      "post": {
+        "summary": "私密保存照片作品",
+        "security": [
+          {
+            "websiteSession": []
+          },
+          {
+            "mobileSession": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Child-Id",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "description": "当前账号拥有的孩子ID"
+          }
+        ],
+        "description": "JPEG/PNG原始Base64，最大4MiB、2500万像素，缩至1600px并去除EXIF。日期不能晚于今天；相同孩子/日期/图片复用原作品。",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "imageBase64": {
+                    "type": "string",
+                    "format": "byte"
+                  },
+                  "date": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "title": {
+                    "type": "string",
+                    "maxLength": 60
+                  }
+                },
+                "required": [
+                  "imageBase64",
+                  "date"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "data.work"
+          },
+          "401": {
+            "description": "未登录或会话失效"
+          },
+          "404": {
+            "description": "作品不存在或不属于当前孩子"
+          },
+          "422": {
+            "description": "照片、日期或笔迹格式无效"
+          }
+        }
+      }
+    },
+    "/works/{id}/image": {
+      "get": {
+        "summary": "读取私密作品图片，必须认证并校验孩子归属",
+        "security": [
+          {
+            "websiteSession": []
+          },
+          {
+            "mobileSession": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Child-Id",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "description": "当前账号拥有的孩子ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "image/jpeg或image/png二进制；不提供公开图片链接"
+          },
+          "401": {
+            "description": "未登录或会话失效"
+          },
+          "404": {
+            "description": "作品不存在或不属于当前孩子"
+          }
+        }
+      }
+    },
+    "/works/{id}": {
+      "delete": {
+        "summary": "移入回收站，保留图片可恢复",
+        "security": [
+          {
+            "websiteSession": []
+          },
+          {
+            "mobileSession": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Child-Id",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "description": "当前账号拥有的孩子ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功；JSON响应为data、requestId"
+          },
+          "401": {
+            "description": "未登录或会话失效"
+          },
+          "404": {
+            "description": "作品不存在或不属于当前孩子"
+          },
+          "422": {
+            "description": "照片、日期或笔迹格式无效"
+          }
+        }
+      }
+    },
+    "/works/{id}/restore": {
+      "post": {
+        "summary": "从回收站恢复作品",
+        "security": [
+          {
+            "websiteSession": []
+          },
+          {
+            "mobileSession": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Child-Id",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "description": "当前账号拥有的孩子ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功；JSON响应为data、requestId"
+          },
+          "401": {
+            "description": "未登录或会话失效"
+          },
+          "404": {
+            "description": "作品不存在或不属于当前孩子"
+          },
+          "422": {
+            "description": "照片、日期或笔迹格式无效"
+          }
+        }
+      }
+    },
+    "/works/summary": {
+      "get": {
+        "summary": "本周/上周作品统计，中国标准时间、周一开周",
+        "security": [
+          {
+            "websiteSession": []
+          },
+          {
+            "mobileSession": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Child-Id",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "description": "当前账号拥有的孩子ID"
+          }
+        ],
+        "description": "基于实际保存的非回收站作品计数，不对照片作质量判断。",
+        "responses": {
+          "200": {
+            "description": "成功；JSON响应为data、requestId"
+          },
+          "401": {
+            "description": "未登录或会话失效"
+          },
+          "404": {
+            "description": "作品不存在或不属于当前孩子"
+          },
+          "422": {
+            "description": "照片、日期或笔迹格式无效"
+          }
+        }
+      }
+    },
+    "/writing/capabilities": {
+      "get": {
+        "summary": "书写指导能力状态",
+        "description": "liveGuide为参考轨迹规则分析，method=median-guide-v1；photoAI=false，拍照AI点评尚未接入。",
+        "responses": {
+          "200": {
+            "description": "成功；JSON响应为data、requestId"
+          }
+        }
+      }
+    },
+    "/writing/challenge": {
+      "get": {
+        "summary": "公开汉字闯关，每组最多5个字，来自实际字词库",
+        "parameters": [
+          {
+            "name": "lessonId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "grade",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "term",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "series",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "description": "幼儿园使用自编启蒙字；未收录的教材不冒充其他版本。",
+        "responses": {
+          "200": {
+            "description": "characters/lessonId/title/hasMore"
+          },
+          "422": {
+            "description": "照片、日期或笔迹格式无效"
+          }
+        }
+      }
+    },
+    "/writing/guide/{char}": {
+      "get": {
+        "summary": "读取已有Hanzi Writer Data参考笔画",
+        "parameters": [
+          {
+            "name": "char",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "data.guide包含char/medians/guideHash/source"
+          },
+          "422": {
+            "description": "照片、日期或笔迹格式无效"
+          }
+        }
+      }
+    },
+    "/writing/progress": {
+      "get": {
+        "summary": "当前孩子今日星星与已完成汉字",
+        "security": [
+          {
+            "websiteSession": []
+          },
+          {
+            "mobileSession": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Child-Id",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "description": "当前账号拥有的孩子ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功；JSON响应为data、requestId"
+          },
+          "401": {
+            "description": "未登录或会话失效"
+          },
+          "404": {
+            "description": "作品不存在或不属于当前孩子"
+          },
+          "422": {
+            "description": "照片、日期或笔迹格式无效"
+          }
+        }
+      }
+    },
+    "/writing/attempts": {
+      "post": {
+        "summary": "服务端核验笔迹后记录星星，可保存跟写作品",
+        "security": [
+          {
+            "websiteSession": []
+          },
+          {
+            "mobileSession": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Child-Id",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "description": "当前账号拥有的孩子ID"
+          }
+        ],
+        "description": "归一化坐标0–1；服务端独立核验，不信任客户端passed/星星数量。同字同课同日只加一星，不代替家长确认每日安排。此为参考轨迹规则分析，并非照片AI识别或书法水平评分。",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "char": {
+                    "type": "string"
+                  },
+                  "lessonId": {
+                    "type": "string"
+                  },
+                  "saveWork": {
+                    "type": "boolean"
+                  },
+                  "strokes": {
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 50,
+                    "items": {
+                      "type": "array",
+                      "minItems": 2,
+                      "maxItems": 256,
+                      "items": {
+                        "type": "array",
+                        "minItems": 2,
+                        "maxItems": 2,
+                        "items": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
+                        }
+                      }
+                    }
+                  }
+                },
+                "required": [
+                  "char",
+                  "strokes"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "成功；JSON响应为data、requestId"
+          },
+          "401": {
+            "description": "未登录或会话失效"
+          },
+          "404": {
+            "description": "作品不存在或不属于当前孩子"
+          },
+          "422": {
+            "description": "照片、日期或笔迹格式无效"
+          }
+        }
+      }
+    },
+    "/auth/mobile/register": {
+      "post": {
+        "summary": "小程序注册，与网站同一账号，返回Bearer会话和一次性恢复码",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "username",
+                  "password"
+                ],
+                "properties": {
+                  "username": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string",
+                    "format": "password"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "data包含user/accessToken/expiresIn/recoveryCode；仅恢复码哈希入库，明文不再次返回"
+          },
+          "401": {
+            "description": "账号或密码不正确"
+          },
+          "403": {
+            "description": "不允许的Host或Origin"
+          },
+          "429": {
+            "description": "登录尝试限流"
+          },
+          "409": {
+            "description": "账号已注册"
+          }
+        }
+      }
+    },
+    "/auth/mobile/reset-password": {
+      "post": {
+        "summary": "小程序使用一次性恢复码重设密码",
+        "description": "共享网站恢复码与限流；成功撤销该账号全部会话并使旧恢复码失效。登录后可验证当前密码，通过auth/recovery-code生成新恢复码。",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "username",
+                  "recoveryCode",
+                  "newPassword",
+                  "confirmPassword"
+                ],
+                "properties": {
+                  "username": {
+                    "type": "string"
+                  },
+                  "recoveryCode": {
+                    "type": "string"
+                  },
+                  "newPassword": {
+                    "type": "string"
+                  },
+                  "confirmPassword": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "data.ok=true，请重新登录"
+          },
+          "400": {
+            "description": "账号或恢复码无效"
+          },
+          "422": {
+            "description": "密码不符合要求或两次不一致"
+          },
+          "429": {
+            "description": "尝试过于频繁"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "websiteSession": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "little_pen_session"
+      },
+      "mobileSession": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "不透明会话令牌；注销/改密/恢复密码后撤销"
+      }
+    }
+  }
+}

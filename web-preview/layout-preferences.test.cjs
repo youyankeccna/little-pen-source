@@ -1,0 +1,15 @@
+const assert=require('node:assert/strict'),D=require('./data.js'),L=require('./layout-preferences.js'),E=require('./engine.js');
+const context={subject:'cn',grade:3,type:'cizu'};
+const keys=[L.key('account:child-a',context),L.key('account:child-b',context),L.key(null,context),L.key('account:child-a',{...context,grade:4}),L.key('account:child-a',{...context,type:'hanzi'}),L.key('account:child-a',{...context,subject:'en'})];
+assert.equal(new Set(keys).size,keys.length,'each child and learning context must have its own layout');
+assert.notEqual(L.key('child',{...context,variant:'vertical'}),L.key('child',context));
+const privateState={...D.defaults('cizu'),size:12,text:'旧课词语',header:{name:'孩子姓名'},readings:{行:'háng'},mathLayout:'answers',englishMode:'answers',practiceMode:'answer',showPinyin:true};
+const saved=L.pick(privateState);
+for(const field of ['text','header','readings','mathLayout','englishMode','practiceMode','showPinyin','strokes'])assert(!(field in saved),field+' must not transfer to another worksheet');
+const next={...D.defaults('cizu'),text:'新课词语',practiceMode:'quiz',showPinyin:true,showBishun:false};
+const applied=L.apply(next,saved);assert.equal(applied.text,next.text);assert.equal(applied.practiceMode,'quiz');assert(applied.showPinyin);assert.equal(applied.size,12);assert.equal(next.size,10);
+const m=E.build('cizu',applied,t=>t.length*20);assert.equal(m.state.text,'新课词语');assert.equal(m.state.practiceMode,'quiz');
+applied.padding[0]=90;assert.equal(privateState.padding[0],36,'saved margins must not share mutable arrays');
+assert.deepEqual(L.pick({font:'local',size:0,rowGap:Infinity,scale:'90',offset:NaN,padding:[36,36],lineColor:'red',fillPage:'true',text:'x'}),{});
+assert.deepEqual(L.apply(next,null),next);
+console.log('PASS: child/grade/type/subject isolation, portable layout fields, no private text or answer-mode transfer, and invalid settings ignored');

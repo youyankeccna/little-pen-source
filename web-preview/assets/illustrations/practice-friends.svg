@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="500" height="310" viewBox="0 0 500 310" fill="none">
+<ellipse cx="276" cy="283" rx="176" ry="13" fill="#C7E7DF"/>
+<path d="M47 94c-14-23 12-47 32-31 8-29 50-23 52 4 29-1 30 31 8 34H60" fill="#FFF"/>
+<circle cx="433" cy="54" r="26" fill="#F8CE60"/><path d="m433 13 1-7m29 21 6-4m-71 4-6-4m82 31 8 1m-88 0-8 1" stroke="#E2AB39" stroke-width="3" stroke-linecap="round"/>
+<g transform="rotate(-7 249 158)">
+<rect x="117" y="42" width="254" height="236" rx="16" fill="#76B7D7" stroke="#497D99" stroke-width="2"/>
+<rect x="132" y="35" width="250" height="236" rx="14" fill="#FFFDF7" stroke="#497D99" stroke-width="2"/>
+<path d="M163 36v235" stroke="#EFAC9C" stroke-width="1.5"/>
+<path d="M186 94h167M186 144h167M186 194h167M186 244h167M186 94v150m56-150v150m55-150v150m56-150v150" stroke="#B8CFD8"/>
+<path d="M186 119h167m-167 50h167m-167 50h167M214 94v150m56-150v150m55-150v150" stroke="#D7E1E4" stroke-dasharray="3 3"/>
+<text x="191" y="77" font-family="sans-serif" font-size="15" fill="#587887">我的小小练习本</text>
+<g font-family="'LXGW WenKai','Kaiti SC',serif" font-size="34"><text x="197" y="133" fill="#315B67">日</text><text x="253" y="133" fill="#B8C9CF">日</text><text x="308" y="133" fill="#B8C9CF">日</text><text x="197" y="184" fill="#315B67">月</text><text x="253" y="184" fill="#B8C9CF">月</text><text x="308" y="184" fill="#B8C9CF">月</text><text x="197" y="234" fill="#315B67">木</text><text x="253" y="234" fill="#B8C9CF">木</text><text x="308" y="234" fill="#B8C9CF">木</text></g>
+<g stroke="#658A9E" stroke-width="3" stroke-linecap="round"><path d="M123 63h17m-17 34h17m-17 34h17m-17 34h17m-17 34h17m-17 34h17"/></g></g>
+<g transform="rotate(15 388 165)"><rect x="359" y="74" width="56" height="152" rx="10" fill="#F6CC62" stroke="#9D7536" stroke-width="2"/><path d="M359 109h56m-38 0v106m20-106v106" stroke="#D9AB45" stroke-width="2"/><path d="m359 218 28 50 28-50" fill="#F5D5B4" stroke="#9D7536" stroke-width="2" stroke-linejoin="round"/><path d="m378 250 9 18 9-18" fill="#395767"/><path d="M369 74V62a18 18 0 0 1 36 0v12" fill="#F39D91" stroke="#B56E69" stroke-width="2"/><rect x="357" y="76" width="60" height="30" rx="5" fill="#7EC1B6" stroke="#4B8D84" stroke-width="2"/><circle cx="377" cy="145" r="3" fill="#604F3A"/><circle cx="398" cy="145" r="3" fill="#604F3A"/><path d="M379 158q9 10 17 0" stroke="#604F3A" stroke-width="2.5" stroke-linecap="round"/><ellipse cx="369" cy="155" rx="5" ry="3" fill="#E99E77"/><ellipse cx="405" cy="155" rx="5" ry="3" fill="#E99E77"/><path d="m359 178-18-8m74 8 15-12" stroke="#9D7536" stroke-width="3" stroke-linecap="round"/></g>
+<path d="m74 181 6 13 14 2-10 10 2 14-12-7-13 7 3-14-11-10 15-2Z" fill="#F39D91"/><path d="m438 235 3 8 9 1-6 6 1 8-7-4-7 4 2-8-7-6 9-1Z" fill="#76B7D7"/>
+<path d="M50 260q20-33 43-10t22-5" stroke="#7EC1B6" stroke-width="3" stroke-linecap="round"/>
+</svg>

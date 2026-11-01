@@ -1,0 +1,43 @@
+/* The home page resumes work; the course page changes the selection. */
+.landing-mode .family-entry{display:none}
+.landing-mode .app-shell{padding-top:40px}
+.landing-mode .course-heading{padding:48px;min-height:290px}
+.landing-mode .course-heading h1{font-size:36px;line-height:1.5}
+.landing-mode .today-panel{padding:36px;margin-bottom:24px}
+.landing-mode .learning-dashboard{display:block}
+.today-panel.today-without-review{grid-template-columns:1fr}
+.more-practice{border:1px solid var(--line);border-radius:12px;background:#fff;padding:4px 20px}
+.more-practice>summary{cursor:pointer;min-height:52px;align-content:center;color:var(--forest);font-size:14px;font-weight:600}
+.more-practice-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;padding:8px 0 16px}
+.more-practice-grid .learning-card{text-decoration:none;color:inherit}
+@media(max-width:760px){.more-practice-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.more-practice{padding:4px 12px}}
+.workflow-context{display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:24px;color:var(--muted);font-size:13px}
+.workflow-context .plain{border:0;background:none;min-height:44px;padding:8px 0;color:var(--forest);text-decoration:underline;text-underline-offset:4px}
+.workflow-presets{border-top:1px solid var(--line);padding-top:16px;margin-top:16px}
+.workflow-presets>summary,.plan-adjust>summary{cursor:pointer;color:var(--forest);min-height:44px;align-content:center;font-size:13px}
+.workflow-presets .preset-options{margin-top:12px}
+.plan-adjust .plan-fields{margin-top:12px}
+.editor-extra-actions{display:flex;align-items:flex-start;gap:8px;flex-wrap:wrap}
+.preview-toolbar{display:flex;align-items:center;flex-wrap:wrap;gap:8px;flex-shrink:0;padding:12px 0;color:var(--muted);font-size:13px}
+.preview-toolbar button{min-height:44px;padding:8px 14px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--forest);font:inherit;cursor:pointer}
+.preview-toolbar button[aria-pressed=true]{background:var(--forest);color:white;border-color:var(--forest)}
+.preview-toolbar button:focus-visible{outline:3px solid #75a98b;outline-offset:3px}
+#preview-scale{font-variant-numeric:tabular-nums;min-width:75px}
+.preview-zoom-note{margin-left:auto;font-size:12px}
+#paper-stack{max-width:none}
+.layout-dialog-actions{display:flex;flex-direction:column;gap:12px;margin-top:20px}
+.layout-dialog-actions button{min-height:44px}
+#layout-status{padding:14px;background:var(--mint);border:1px solid var(--line);border-radius:8px;line-height:1.7}
+.layout-dialog-actions button:disabled{opacity:.45;cursor:default}
+.access-table{width:100%;border-collapse:collapse;font-size:13px;line-height:1.6;margin:16px 0}
+.access-table caption{text-align:left;font-weight:600;margin-bottom:10px}
+.access-table th,.access-table td{border-bottom:1px solid var(--line);padding:12px 8px;text-align:left}
+.access-table thead{background:var(--mint)}
+.access-table tbody th{font-weight:500;width:52%}
+.access-table td{white-space:nowrap}
+#access-dialog .button{min-height:44px;width:100%}
+.studio-footer>#access-open{margin:0;min-height:44px;font-size:12px}
+@media(max-width:760px){.editor-extra-actions{display:grid;grid-template-columns:1fr 1fr;width:100%}.editor-extra-actions .button{min-height:44px;padding:8px;font-size:12px}.preview-toolbar{gap:6px}.preview-toolbar>span:first-child{flex-basis:100%}.preview-zoom-note{flex-basis:100%;margin-left:0;line-height:1.6}.preview-toolbar button{padding:8px 12px}}
+@media print{.preview-toolbar,.editor-extra-actions{display:none!important}#paper-stack{width:210mm!important}}
+#version-form>[hidden],#course-browser[hidden]{display:none!important}
+@media(max-width:760px){.landing-mode .app-shell{padding-top:22px}.landing-mode .course-heading{padding:26px 22px;min-height:0}.landing-mode .course-heading h1{font-size:28px}.landing-mode .today-panel{padding:22px}.landing-mode .learning-dashboard{grid-template-columns:repeat(2,minmax(0,1fr))}.workflow-context{gap:6px;margin-bottom:16px}.workflow-context>span{width:100%}.today-copy h1{line-height:1.5}}

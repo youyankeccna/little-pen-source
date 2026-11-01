@@ -1,0 +1,24 @@
+const assert=require('node:assert/strict');
+const D=require('./data.js'),E=require('./engine.js');
+const measure=text=>Array.from(text).length*20;
+function model(type,changes={}){return E.build(type,{...D.defaults(type),...changes},measure);}
+assert.equal(Object.keys(D.types).length,10);
+assert.equal(D.strokes.length,58);assert(D.strokes.every(s=>s.path&&s.examples));assert.equal(D.patternCodes.length,32);
+assert.deepEqual(model('hanzi',{text:'你，好\n\n世界'}).rows,['你','好',' ','世','界']);
+assert.deepEqual(model('cizu',{text:'你好，世界\n小学'}).rows,['你好','世界','小学']);
+assert.deepEqual(model('word',{text:'hello, school\n\nbook'}).rows,['hello','school','','book']);
+assert.deepEqual(model('number',{text:'12\n3a4'}).rows,['12','34']);
+assert.deepEqual(model('pinyin',{text:'ā á ǎ à\nnǐ wǒ'}).rows,['ā á ǎ à','nǐ wǒ']);
+assert.deepEqual(model('hanzi',{text:'日月',blankRow:true}).rows,['日','','月']);
+assert.deepEqual(model('cizu',{text:'你好',blankCol:true}).rows,['你好  ']);
+assert.equal(model('hanzi',{text:'日'.repeat(100)}).pages,5);
+assert.equal(model('hanzi',{text:''}).pages,1);
+assert(model('hanzi',{showPinyin:true}).g.rows<model('hanzi').g.rows);
+assert(model('hanzi',{showBishun:true}).g.rows<model('hanzi').g.rows);
+assert(model('hanzi',{size:18}).g.cols<model('hanzi').g.cols);
+assert(model('hanzi',{padding:[100,100,100,100]}).g.cols<model('hanzi').g.cols);
+const paragraph=model('paragraph',{text:'The quick brown fox jumps over the lazy dog.\nSecond paragraph.'});
+assert.equal(paragraph.rows.join(' ').replace(/\s+/g,' '),'The quick brown fox jumps over the lazy dog. Second paragraph.');
+const long=model('paragraph',{text:'x'.repeat(200)});assert.equal(long.rows.join('').length,200);
+const saved=D.defaults('hanzi'),built=E.build('hanzi',saved,measure);saved.text='不同';assert.equal(built.state.text,'你好世界');
+console.log('PASS: 10 types, 58 stroke entries, 32 patterns, input parsing, blank rows/columns, paging, margins, auxiliary-row geometry, long text, immutable export model');
