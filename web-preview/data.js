@@ -1,5 +1,5 @@
 (function(root){
-  const chineseGrids = [['zwg','作文格'],['tzg','田字格'],['mzg','米字格'],['hgg','回宫格'],['jgg','九宫格'],['htg','回田格'],['hmg','回米格']];
+  const chineseGrids = [['zwg','作文格'],['tzg','田字格'],['mzg','米字格'],['hgg','回宫格'],['fg','方格'],['jgg','九宫格'],['htg','回田格'],['hmg','回米格']];
   const englishGrids = [['sxg','四线格'],['lxg','两线格'],['dxg','单线格']];
   const types = {
     hanzi:{name:'语文 · 汉字字帖',group:'cn',description:'逐字练写，打牢书写基本功',placeholder:'请输入要练习的汉字，例如“你好世界”，支持插入空白行。',text:'你好世界',cellType:'tzg',scale:75,offset:0},

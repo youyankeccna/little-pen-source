@@ -1,0 +1,36 @@
+# 小小笔尖 v2 改动说明
+
+本版只改网站端（web-preview/），没有动 server/ 的接口和数据。原版保留在 little-pen-source，可以直接对照 diff。
+
+## 用户能看到的改动
+1. **首页改成“输入即生成”**：打开就能看到输入框和一张实时预览的 A4 字帖。输入汉字、选格子样式和大小、勾选拼音后，预览马上更新；点「生成字帖」直接进入可打印的编辑页，比原来少了选年级、选教材、勾素材这 4～5 步。原来的“跟着课本练”和“素材库”入口仍保留在首页。
+2. **拼音不再挤在一起**：拼音行改成每个字一格（每格单独画四线格）。长拼音（如 chuáng、guāng）按比例缩小后居中，不再横向压扁或挤到隔壁格。
+3. **格子样式和大小**：新增「方格」样式。编辑页预览上方加了一排快捷按钮：田字格、米字格、回宫格、方格，以及小 1cm、中 1.4cm、大 1.8cm。切换后预览、打印和 PDF 都会同步（原来藏在下拉菜单里的样式选项也还在）。
+4. **页面更温暖**：首页换成暖色背景加大号输入框。手机端改成单列排版，已确认 390px 宽度下没有横向滚动。
+5. **快速生成默认值**：1 个范字、3 个描红、后面留空格练写，A4 纸。
+
+## 技术改动
+- 新增 `web-preview/quick-start.js`：负责首页快速生成，也提供 `#/hanzi?text=&cell=&size=&pinyin=1` 链接参数，可以直接分享出去。
+- 新增 `web-preview/quick.css`。
+- 新增 `web-preview/quick-start.test.cjs`：覆盖文本清洗（只保留汉字，最多 80 字）、参数校验、拼音缩放计算。
+- `engine.js`：新增 `fitFontSize`，拼音改为逐格绘制。
+- `app.js`：新增编辑页格子快捷栏，链接参数会应用到编辑状态。
+- `engine.js` 和 `app.js` 用 Prettier 格式化，不再有上千字符的长行。
+
+## 运行方法
+```sh
+python3 -m venv .venv && source .venv/bin/activate
+python -m pip install -r server/requirements.txt
+python server/app.py --port 5178   # 打开 http://127.0.0.1:5178/
+```
+小程序部分（src/）的运行方式和原来一样，见 `交付说明.md`。
+
+## 测试
+- `python -m unittest discover -s server -p 'test_*.py'`：39 项全部通过。
+- 网站端 14 组 `node web-preview/*.test.cjs`（含新增一组）全部通过。
+- `node shared/writing-coach.test.mjs` 通过。
+- 内容校验通过。
+
+## 没做的
+- Vue/Pinia 版本冲突没处理：uni-app 锁定了 vue 3.4，强行升级有风险，仍然用 `--legacy-peer-deps` 安装。
+- 小程序端（src/）没有改。
