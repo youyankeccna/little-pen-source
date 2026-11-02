@@ -70,7 +70,5 @@ python server/app.py --port 5178   # 打开 http://127.0.0.1:5178/
 - 移除顶部 family-entry 条和首页折叠「更多练习与管理」，改为 3 张区域卡；素材库页顶部加 语文/英语/数学 标签；编辑器面包屑指向「做字帖」；账号菜单加「我的（全部）」。
 - 所有旧路由保持可用。v4 首页 hero 不变。
 
-### 主题（提交 `v5: themes`）
-- `?theme=ink|bright|notebook`（记忆在 localStorage，页脚可切换）：
-  - ink 纸与墨（默认，v4）；bright 明亮课堂（白底、彩色色块、大圆角、纯 CSS 装饰）；notebook 手帐本（方格纸背景、墨黑 + 朱红印章、直角细线、楷体标题）。
-- 仅 `@media screen` 生效，打印 / PDF 输出不受影响（仍为 A4）。
+### 主题
+- 曾试做三套主题（纸与墨 / 明亮课堂 / 手帐本，提交 `v5: themes`）；最终选定 **纸与墨**，提交 `v5: keep 纸与墨 theme only` 删除了另外两套 CSS、`?theme=` 切换、localStorage 记忆和页脚切换器。纸与墨（theme.css）为唯一样式。
