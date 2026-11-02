@@ -1,0 +1,37 @@
+/* ===== 主题 B「明亮课堂」：白底、鲜亮色块、大圆角、纯 CSS 装饰 ===== */
+html[data-theme=bright]{
+  --c-primary:#2f5bea;--c-primary-hover:#2147c4;--c-primary-soft:#e7edff;
+  --c-accent:#ff6b3d;--c-accent-hover:#e5532a;--c-accent-soft:#ffeee6;
+  --c-paper:#f5f7fb;--c-surface:#ffffff;--c-sunken:#eef2fa;--c-line:#e3e8f2;--c-line-strong:#cbd4e6;
+  --c-text:#1c2240;--c-text-2:#4a5275;--c-text-3:#5f6787;--c-focus:#ffb400;
+  --r-sm:10px;--r-md:16px;--r-lg:22px;--r-xl:32px;
+  --sh-1:0 1px 2px rgba(30,40,90,.06);--sh-2:0 8px 24px rgba(40,60,140,.10);--sh-3:0 20px 50px rgba(40,60,140,.18)
+}
+@media screen{
+html[data-theme=bright] body{background:var(--c-paper);background-image:none}
+html[data-theme=bright] .studio-header,html[data-theme=bright] .site-header{background:#fff}
+html[data-theme=bright] .rail-navigation>a{border-radius:var(--r-pill)!important;font-weight:700}
+html[data-theme=bright] .rail-navigation>a.active{background:var(--c-primary)!important;color:#fff!important}
+html[data-theme=bright] .quick-hero{background:#fff!important;border:0!important;box-shadow:var(--sh-2)!important;overflow:hidden}
+html[data-theme=bright] .quick-hero:before{inset:-90px -90px auto auto;width:320px;height:320px;background:conic-gradient(from 200deg,#ffd43b 0 25%,#4dd4ac 0 50%,#ff8fab 0 75%,#74a7ff 0);opacity:.22;filter:blur(2px)}
+html[data-theme=bright] .quick-hero:after{content:"";position:absolute;left:-40px;bottom:-40px;width:140px;height:140px;border-radius:36px;background:#ffd43b;opacity:.25;transform:rotate(18deg);pointer-events:none}
+html[data-theme=bright] .quick-hero .hero-note{background:#fff3c4;color:#8a5a00}
+html[data-theme=bright] .quick-hero h1{font-weight:900;letter-spacing:-.01em}
+html[data-theme=bright] .quick-input-row input{border-width:3px!important;background:#fff}
+html[data-theme=bright] .quick-samples button{box-shadow:none!important;border:0!important}
+html[data-theme=bright] .quick-samples button:nth-of-type(1){background:#fff3c4!important}
+html[data-theme=bright] .quick-samples button:nth-of-type(2){background:#dcf7ee!important}
+html[data-theme=bright] .quick-samples button:nth-of-type(3){background:#ffe3ea!important}
+html[data-theme=bright] .quick-samples button:nth-of-type(4){background:#e3ecff!important}
+html[data-theme=bright] .hero-benefits li:nth-child(1) img{background:#fff3c4}
+html[data-theme=bright] .hero-benefits li:nth-child(2) img{background:#dcf7ee}
+html[data-theme=bright] .hero-benefits li:nth-child(3) img{background:#ffe3ea}
+html[data-theme=bright] .hub-card,html[data-theme=bright] .learning-card{border:0!important;box-shadow:var(--sh-1)}
+html[data-theme=bright] .hub-grid .hub-card:nth-child(4n+1) .hub-mark{background:#fff3c4;color:#8a5a00}
+html[data-theme=bright] .hub-grid .hub-card:nth-child(4n+2) .hub-mark{background:#dcf7ee;color:#08694f}
+html[data-theme=bright] .hub-grid .hub-card:nth-child(4n+3) .hub-mark{background:#ffe3ea;color:#a3204a}
+html[data-theme=bright] .hub-grid .hub-card:nth-child(4n+4) .hub-mark{background:#e3ecff;color:#2147c4}
+html[data-theme=bright] .hub-mark{border-radius:18px;font-family:var(--f-ui);font-weight:900}
+html[data-theme=bright] .preview-stage{background:#e9eef8!important}
+html[data-theme=bright] .mode-card.active{background:var(--c-primary-soft)!important;border-color:var(--c-primary)!important;box-shadow:inset 0 0 0 1px var(--c-primary)!important}
+}

@@ -187,3 +187,8 @@ input[type=checkbox]{accent-color:var(--c-primary)}
   .area-cards { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 14px; }
   @media (max-width: 700px) { .area-cards { grid-template-columns: 1fr; } .hub-grid { grid-template-columns: 1fr; } .make-hub { padding: 18px 0 32px; } .me-tabs { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; } .me-tabs a { flex: 0 0 auto; } }
 }
+@media screen {
+  .theme-picker { display: inline-flex; gap: 4px; flex-wrap: wrap; }
+  .theme-picker button { font-size: 11px; padding: 4px 10px; border: 1px solid var(--c-line); border-radius: var(--r-pill); background: var(--c-surface); color: var(--c-text-2); }
+  .theme-picker button[aria-pressed="true"] { background: var(--c-primary); color: #fff; border-color: var(--c-primary); }
+}
