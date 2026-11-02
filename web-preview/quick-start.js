@@ -89,6 +89,7 @@
       b.onclick = () => {
         input.value = b.dataset.quickText;
         opts.text = b.dataset.quickText;
+        document.querySelectorAll("[data-quick-text]").forEach((x) => x.classList.toggle("active", x === b));
         draw();
       };
     });
