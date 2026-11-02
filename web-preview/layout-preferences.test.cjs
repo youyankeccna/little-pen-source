@@ -10,6 +10,8 @@ const next={...D.defaults('cizu'),text:'新课词语',practiceMode:'quiz',showPi
 const applied=L.apply(next,saved);assert.equal(applied.text,next.text);assert.equal(applied.practiceMode,'quiz');assert(applied.showPinyin);assert.equal(applied.size,12);assert.equal(next.size,10);
 const m=E.build('cizu',applied,t=>t.length*20);assert.equal(m.state.text,'新课词语');assert.equal(m.state.practiceMode,'quiz');
 applied.padding[0]=90;assert.equal(privateState.padding[0],36,'saved margins must not share mutable arrays');
+assert.equal(L.pick({cellType:'fg'}).cellType,'fg','方格 must survive layout save');
+assert.equal(L.apply({...D.defaults('hanzi'),cellType:'tzg'},{cellType:'fg'}).cellType,'fg');
 assert.deepEqual(L.pick({font:'local',size:0,rowGap:Infinity,scale:'90',offset:NaN,padding:[36,36],lineColor:'red',fillPage:'true',text:'x'}),{});
 assert.deepEqual(L.apply(next,null),next);
 console.log('PASS: child/grade/type/subject isolation, portable layout fields, no private text or answer-mode transfer, and invalid settings ignored');

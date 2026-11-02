@@ -85,6 +85,15 @@ window.Hubs = (() => {
     });
     box.append(grid);
   }
+  // Login/logout does not change #/me, so the hub must redraw itself.
+  function onAccountChange() {
+    const hash = String(typeof location === "undefined" ? "" : location.hash || "").split("?")[0];
+    if (hash !== "#/me" || !document.getElementById("personal-view")) return;
+    me();
+  }
+  if (typeof window !== "undefined" && typeof window.addEventListener === "function") {
+    window.addEventListener("accountchange", onAccountChange);
+  }
   // “我的”区域内统一的子导航（替代旧版两套不一致的标签）
   function meTabs(current) {
     const nav = el("nav", "family-tabs me-tabs");
@@ -98,5 +107,5 @@ window.Hubs = (() => {
     }
     return nav;
   }
-  return { make, me, meTabs };
+  return { make, me, meTabs, onAccountChange };
 })();

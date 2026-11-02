@@ -33,7 +33,29 @@
     if (n.pinyin) q.set("pinyin", "1");
     return "#/hanzi?" + q.toString();
   }
-  // Applies quick-generate URL params onto an editor state; returns a new object.
+  // Homepage preview and the editor opened from it share this state.
+  // 1 dark model + 3 traces (traceNum 4, leading) and blank cells after.
+  // Mode flags from a previous sheet (fade, stroke-order row, answer copy) are reset.
+  // Stored account / layout preferences are not touched; only this sheet's state is replaced.
+  function sheetState(opts) {
+    const n = normalize(opts);
+    return {
+      ...root.WorkbookData.defaults("hanzi"),
+      text: n.text,
+      cellType: n.cell,
+      size: n.size,
+      showPinyin: n.pinyin,
+      fillPage: false,
+      traceNum: 4,
+      practiceMode: "trace",
+      fadeTrace: false,
+      showBishun: false,
+      leading: true,
+      blankRow: false,
+      blankCol: false,
+    };
+  }
+  // Applies quick-generate URL params. Ignores the previous editor state when the text is usable.
   function applyParams(state, params) {
     if (!params.has("text")) return state;
     const n = normalize({
@@ -43,18 +65,9 @@
       pinyin: params.get("pinyin") === "1",
     });
     if (!n.text) return state;
-    return {
-      ...state,
-      text: n.text,
-      cellType: n.cell,
-      size: n.size,
-      showPinyin: n.pinyin,
-      fillPage: false,
-      traceNum: 4,
-      practiceMode: "trace",
-    };
+    return sheetState(n);
   }
-  const api = { GRIDS, SIZES, MAX_CHARS, cleanText, normalize, hashFor, applyParams };
+  const api = { GRIDS, SIZES, MAX_CHARS, cleanText, normalize, hashFor, sheetState, applyParams };
   root.QuickStart = api;
   if (typeof module !== "undefined") module.exports = api;
 
@@ -118,16 +131,12 @@
         ? `共 ${Array.from(n.text.replace(/\s/g, "")).length} 个字 · A4 纸 · 默认描红 + 留空练写`
         : "请输入汉字（只保留汉字，最多 80 个）";
       document.getElementById("quick-go").disabled = !n.text;
-      const s = {
-        ...D.defaults("hanzi"),
+      const s = sheetState({
         text: n.text || "春夏秋冬",
-        cellType: n.cell,
+        cell: n.cell,
         size: n.size,
-        showPinyin: n.pinyin,
-        fillPage: false,
-        traceNum: 4,
-        practiceMode: "trace",
-      };
+        pinyin: n.pinyin,
+      });
       measure.font = E.fontString(s);
       E.drawPage(
         canvas,
