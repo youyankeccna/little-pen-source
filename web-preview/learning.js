@@ -13,10 +13,9 @@ window.PersonalWorkspace=(()=>{
  function first(){return C.getLesson('cn-1u-tiandiren');}
  function visit(l){if(l)location.hash='#/course?'+new URLSearchParams({grade:l.grade,subject:l.subject,term:l.term,series:l.series||'pep',lesson:l.id});}
  function dashboard(){
-  renderToday();const box=by('learning-dashboard'),expanded=!!box.querySelector('details')?.open;box.replaceChildren();box.hidden=false;
-  const more=node('details',undefined,'more-practice'),grid=node('div',undefined,'more-practice-grid');more.open=expanded;more.append(node('summary','更多练习与管理'),grid);box.append(more);
-  const cards=[['按课次浏览','按单元、课次挑选内容','course','book'],['自由字帖','输入自己的练习内容','free','pencil-mark'],['我的字帖','重开收藏，保留原来的排版','library','folder'],['一周练习包','一次安排，分天练习','weekly','book'],['薄弱字复习','巩固家长记录的薄弱字','review','file-text'],['幼儿启蒙','控笔、笔画和名字练习','early','plant-2'],['作品墙与星星','回顾孩子的作品与闯关记录','works','plant-2'],['成长记录','查看已确认完成的练习','growth','plant-2'],['每日安排','打开或调整已保存的安排','daily','file-text']];
-  for(const [title,desc,route,icon]of cards){const item=node('a',undefined,'learning-card');item.href='#/'+route;const picture=node('span',undefined,'learning-icon'),img=node('img');img.src='assets/icons/'+icon+'.svg';img.alt='';picture.append(img);const copy=node('span',undefined,'learning-copy');copy.append(node('strong',title),node('span',desc));item.append(picture,copy);grid.append(item);}
+  renderToday();const box=by('learning-dashboard');box.replaceChildren();box.hidden=false;
+  const grid=node('div',undefined,'area-cards');box.append(grid);
+  for(const [title,desc,href,icon]of [['做字帖','语文 · 英语 · 数学 · 控笔，输入就能出纸','#/make','pencil-mark'],['跟课本','按年级教材整册选字词、单元、口算','#/materials','book'],['我的','今日练习 · 一周包 · 薄弱字 · 收藏 · 成长','#/me','folder']]){const item=node('a',undefined,'learning-card area-card');item.href=href;const picture=node('span',undefined,'learning-icon'),img=node('img');img.src='assets/icons/'+icon+'.svg';img.alt='';picture.append(img);const copy=node('span',undefined,'learning-copy');copy.append(node('strong',title),node('span',desc));item.append(picture,copy);grid.append(item);}
  }
  function renderToday(){
   const box=by('today-panel'),hero=document.querySelector('.course-heading');box.replaceChildren();
@@ -52,7 +51,7 @@ window.PersonalWorkspace=(()=>{
   }catch(error){notice(error.message);}finally{busy=false;}
  }
  function weakPicker(l){const box=node('section',undefined,'weak-picker');if(l.subject!=='cn'||!l.grade)return box;const chars=[...new Set(l.packs.filter(p=>p.kind==='characters').flatMap(p=>p.items.map(i=>i.text)).filter(t=>/^[\u4e00-\u9fff]$/.test(t)))];if(!chars.length)return box;box.append(node('h3','哪些字需要再练？'),node('p',identity()?'点击汉字加入账号薄弱字，方便下次复习。':'先在本机记录；登录后可主动导入账号。'));const grid=node('div',undefined,'weak-grid');for(const char of chars){const active=data.weakItems.some(i=>i.char===char),b=button((active?'✓ ':'＋ ')+char,()=>toggle(char,l),'weak-char'+(active?' active':''));b.setAttribute('aria-pressed',String(active));b.setAttribute('aria-label',(active?'移除薄弱字':'加入薄弱字')+char);grid.append(b);}box.append(grid);return box;}
- function heading(title,subtitle){const box=by('personal-view');box.replaceChildren();const h=node('section',undefined,'personal-heading');h.append(node('h1',title),node('p',subtitle));const nav=node('div',undefined,'personal-actions');nav.append(button('返回选课',()=>location.hash='#/course'),button('每日一页',()=>location.hash='#/daily'),button('薄弱字再练',()=>location.hash='#/review'),button('最近与收藏',()=>location.hash='#/library'),button('成长记录',()=>location.hash='#/growth'),button('一周练习包',()=>location.hash='#/weekly'));h.append(nav);box.append(h);return box;}
+ function heading(title,subtitle){const box=by('personal-view');box.replaceChildren();const h=node('section',undefined,'personal-heading');h.append(node('h1',title),node('p',subtitle));const nav=Hubs.meTabs(view);h.append(nav);box.append(h);return box;}
  function renderReview(){
   const box=heading('薄弱字再练','由家长手动选择需要巩固的字，不做自动评分。可直接预览、打印和导出。');
   const panel=node('section',undefined,'personal-panel');box.append(panel);const g=guest();

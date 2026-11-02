@@ -161,3 +161,29 @@ input[type=checkbox]{accent-color:var(--c-primary)}
 .course-section-heading h2{font-weight:800}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}.quick-preview canvas{transform:none}}
 }
+
+/* ===== v5 IA: hubs ===== */
+@media screen {
+  .make-mode .home-intro, .make-mode .home-library { display: none; }
+  .make-hub:empty { display: none; }
+  .make-hub, .personal-view .hub-grid { max-width: 1080px; margin: 0 auto; }
+  .make-hub { padding: 28px 0 48px; }
+  .hub-heading h1 { font-size: clamp(24px, 3vw, 34px); margin: 6px 0 8px; }
+  .hub-heading p, .hub-sub, .hub-foot { color: var(--c-text-2); }
+  .hub-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin: 20px 0 8px; }
+  .hub-tab { padding: 10px 18px; border-radius: 999px; border: 1px solid var(--c-line); background: var(--c-surface); color: var(--c-text); font-weight: 600; min-height: 44px; display: inline-flex; align-items: center; }
+  .hub-tab[aria-current] { background: var(--c-primary); border-color: var(--c-primary); color: #fff; }
+  .hub-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 14px; margin-top: 16px; }
+  .hub-card { position: relative; display: flex; gap: 14px; align-items: center; padding: 18px; border: 1px solid var(--c-line); border-radius: 14px; background: var(--c-surface); color: var(--c-text); transition: transform .15s, box-shadow .15s; min-width: 0; }
+  .hub-card:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(0,0,0,.07); }
+  .hub-mark { flex: 0 0 52px; height: 52px; display: grid; place-items: center; border-radius: 12px; background: var(--c-sunken); color: var(--c-primary); font: 700 20px var(--f-kai); }
+  .hub-copy { display: grid; gap: 3px; min-width: 0; }
+  .hub-copy span { font-size: 13px; color: var(--c-text-2); }
+  .hub-lock { position: absolute; top: 10px; right: 12px; font-size: 11px; color: var(--c-text-3); }
+  .hub-foot a { color: var(--c-primary); text-decoration: underline; }
+  .me-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
+  .me-tabs a { padding: 8px 14px; border-radius: 999px; border: 1px solid var(--c-line); font-size: 13px; }
+  .me-tabs a[aria-current] { background: var(--c-primary); color: #fff; border-color: var(--c-primary); }
+  .area-cards { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 14px; }
+  @media (max-width: 700px) { .area-cards { grid-template-columns: 1fr; } .hub-grid { grid-template-columns: 1fr; } .make-hub { padding: 18px 0 32px; } .me-tabs { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; } .me-tabs a { flex: 0 0 auto; } }
+}

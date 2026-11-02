@@ -688,10 +688,11 @@ async function route() {
     /* Local drafts remain available when offline. */
   }
   if (location.hash !== requestedHash) return;
-  const [key, query = ""] = location.hash.replace(/^#\/?/, "").split("?"),
+  const [rawKey, query = ""] = location.hash.replace(/^#\/?/, "").split("?"),
+    key = NavMap.resolve(rawKey),
     params = new URLSearchParams(query),
     isEditor = !!D.types[key],
-    free = key === "free",
+    free = key === "make",
     personal = [
       "library",
       "review",
@@ -704,6 +705,7 @@ async function route() {
       "shared",
       "materials",
       "works",
+      "me",
     ].includes(key);
   activeCourse = null;
   activeSaved = null;
@@ -747,20 +749,18 @@ async function route() {
   $("home").hidden = !free;
   $("editor").hidden = !isEditor;
   $("type-navigation").hidden =
-    personal || (!free && (!isEditor || !!activeCourse || !!activeSaved || !!activeReview));
+    personal || free || !isEditor || !!activeCourse || !!activeSaved || !!activeReview;
   document.querySelectorAll("details.advanced-settings,.export-menu").forEach((n) => (n.open = false));
   document
     .querySelectorAll("[data-route]")
     .forEach((n) => n.classList.toggle("active", n.dataset.route === key));
-  document
-    .querySelectorAll("[data-group]")
-    .forEach((n) =>
-      n.classList.toggle(
-        "active",
-        n.dataset.group ===
-          (activeCourse?.subject || (isEditor ? D.types[key].group : params.get("subject") || "home")),
-      ),
-    );
+  const area = activeCourse || activeSaved || activeReview ? (activeSaved || activeReview ? "me" : "textbook") : NavMap.areaOf(key);
+  document.querySelectorAll("[data-area]").forEach((n) => {
+    n.classList.toggle("active", n.dataset.area === area);
+    if (n.dataset.area === area) n.setAttribute("aria-current", "page");
+    else n.removeAttribute("aria-current");
+  });
+  document.body.dataset.area = area;
   $("save-workbook").hidden = !isEditor;
   $("share-workbook").hidden = true;
   $("print").hidden = !isEditor;
@@ -769,6 +769,7 @@ async function route() {
   document.body.classList.toggle("editor-mode", isEditor);
   document.body.classList.toggle("course-mode", key === "course");
   document.body.classList.toggle("personal-mode", personal);
+  document.body.classList.toggle("make-mode", free);
   document.body.classList.toggle("material-mode", key === "materials");
   document.body.classList.toggle("landing-mode", !key);
   $("course-browser").hidden = !key;
@@ -777,12 +778,17 @@ async function route() {
     renderVersion++;
     if (observer) observer.disconnect();
     if (personal) {
-      if (key === "works") FamilyWorks.open();
+      if (key === "me") Hubs.me();
+      else if (key === "works") FamilyWorks.open();
       else if (key === "materials") MaterialLibrary.open(params);
       else if (["weekly", "growth", "family", "early", "share", "shared", "daily"].includes(key))
         FamilyWorkspace.open(key, params);
       else PersonalWorkspace.open(key);
-    } else if (!free) {
+    } else if (free) {
+      document.title = "做字帖 · 小小笔尖";
+      Hubs.make(params.get("subject"));
+      window.scrollTo(0, 0);
+    } else {
       if (key) CurriculumUI.open(params);
       PersonalWorkspace.dashboard();
       if (!key) window.scrollTo(0, 0);
@@ -1668,7 +1674,11 @@ document.querySelectorAll("dialog").forEach((dialog) =>
   }),
 );
 document.addEventListener("click", (event) => {
-  document.querySelectorAll(".export-menu,.account-menu").forEach((details) => {
+  $("account-me").onclick = () => {
+  $("account-user").open = false;
+  location.hash = "#/me";
+};
+document.querySelectorAll(".export-menu,.account-menu").forEach((details) => {
     if (!details.contains(event.target)) details.open = false;
   });
 });
