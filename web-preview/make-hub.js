@@ -56,7 +56,7 @@ window.Hubs = (() => {
     const foot = el("p", "hub-foot");
     foot.append("想按课本年级挑字？去 ");
     const link = el("a", "", "跟课本");
-    link.href = "#/materials" + (s.id === "pen" ? "" : "?subject=" + s.id);
+    link.href = "#/course" + (s.id === "pen" ? "" : "?subject=" + s.id);
     foot.append(link, "。");
     box.append(head, tabs, el("p", "hub-sub", s.desc), grid, foot);
   }

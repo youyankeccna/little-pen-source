@@ -11,6 +11,7 @@ for (const k of ["materials", "course", "shared"]) assert.strictEqual(N.areaOf(k
 for (const k of ["me", "daily", "weekly", "review", "library", "growth", "works", "share", "family"])
   assert.strictEqual(N.areaOf(k), "me", k);
 assert.strictEqual(N.resolve("free"), "make");
+assert.strictEqual(N.AREAS.find((area) => area.id === "textbook").href, "#/course", "跟课本始终进入课次选择页");
 // 所有 10 种练习类型都在做字帖里出现且只出现一次
 const D = require("fs").readFileSync(__dirname + "/data.js", "utf8");
 const types = [...D.matchAll(/^\s+'?([a-z-]+)'?:\{name:/gm)].map((m) => m[1]);

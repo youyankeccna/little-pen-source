@@ -15,7 +15,7 @@ window.PersonalWorkspace=(()=>{
  function dashboard(){
   renderToday();const box=by('learning-dashboard');box.replaceChildren();box.hidden=false;
   const grid=node('div',undefined,'area-cards');box.append(grid);
-  for(const [title,desc,href,icon]of [['做字帖','语文 · 英语 · 数学 · 控笔，输入就能出纸','#/make','pencil-mark'],['跟课本','按年级教材整册选字词、单元、口算','#/materials','book'],['我的','今日练习 · 一周包 · 薄弱字 · 收藏 · 成长','#/me','folder']]){const item=node('a',undefined,'learning-card area-card');item.href=href;const picture=node('span',undefined,'learning-icon'),img=node('img');img.src='assets/icons/'+icon+'.svg';img.alt='';picture.append(img);const copy=node('span',undefined,'learning-copy');copy.append(node('strong',title),node('span',desc));item.append(picture,copy);grid.append(item);}
+  for(const [title,desc,href,icon]of [['做字帖','语文 · 英语 · 数学 · 控笔，输入就能出纸','#/make','pencil-mark'],['跟课本','按年级教材选择单元、课次和练习','#/course','book'],['我的','今日练习 · 一周包 · 薄弱字 · 收藏 · 成长','#/me','folder']]){const item=node('a',undefined,'learning-card area-card');item.href=href;const picture=node('span',undefined,'learning-icon'),img=node('img');img.src='assets/icons/'+icon+'.svg';img.alt='';picture.append(img);const copy=node('span',undefined,'learning-copy');copy.append(node('strong',title),node('span',desc));item.append(picture,copy);grid.append(item);}
  }
  function renderToday(){
   const box=by('today-panel'),hero=document.querySelector('.course-heading');box.replaceChildren();

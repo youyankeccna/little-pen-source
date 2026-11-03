@@ -8,7 +8,7 @@
   const AREAS = [
     { id: "home", label: "首页", href: "#/", icon: "home" },
     { id: "make", label: "做字帖", href: "#/make", icon: "pencil-mark" },
-    { id: "textbook", label: "跟课本", href: "#/materials", icon: "book" },
+    { id: "textbook", label: "跟课本", href: "#/course", icon: "book" },
     { id: "me", label: "我的", href: "#/me", icon: "folder" },
   ];
   // 做字帖：按科目分组的生成器（同一个编辑器，不同内容类型）

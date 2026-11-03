@@ -1,0 +1,15 @@
+const assert = require("node:assert/strict");
+global.document = { createElement: () => ({ children: [], dataset: {}, attrs: {}, append(...nodes) { this.children.push(...nodes); }, setAttribute(key, value) { this.attrs[key] = value; } }) };
+const picker = require("./textbook-picker.js");
+const changes = [];
+const row = picker.row("年级", [["1", "一年级"], ["2", "二年级"], ["3", "三年级", true, "整理中"]], 1, (value) => changes.push(value));
+const group = row.children[1];
+assert.equal(group.attrs.role, "radiogroup");
+assert.equal(group.attrs["aria-label"], "年级");
+assert.deepEqual(group.children.map((button) => button.attrs["aria-checked"]), ["true", "false", "false"]);
+group.children.forEach((button) => button.onclick());
+assert.deepEqual(changes, ["2"], "当前选项和未开放选项不导航");
+assert.equal(group.children[2].disabled, true);
+assert.equal(group.children[2].children[1].textContent, "整理中");
+assert.equal(picker.gradeNames[3], "三年级");
+console.log("PASS: shared textbook picker keeps selection, disabled choices and navigation consistent");

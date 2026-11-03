@@ -106,16 +106,20 @@ window.MaterialLibrary=(()=>{
   rows=C.lessons.filter(l=>l.materialLibrary&&l.grade===context.grade&&l.subject===subject&&l.term===context.term&&(subject==='math'||l.series===context.edition));
   // A supplied link may choose a lesson only from the current account's edition.
   const view=by('personal-view');view.replaceChildren();const wrap=node('div',undefined,'material-library');view.append(wrap);
-  const head=node('header',undefined,'bank-heading');const subjectTabs=node('nav',undefined,'hub-tabs textbook-tabs');subjectTabs.setAttribute('aria-label','科目');for(const [id,label] of [['cn','语文'],['en','英语'],['math','数学']]){const t=node('a',label,'hub-tab');t.href='#/materials?subject='+id;if(id===subject)t.setAttribute('aria-current','page');subjectTabs.append(t);}head.append(node('span','跟课本 · 整册与单元素材','bank-eyebrow'),subjectTabs,node('h1',subject==='cn'?'语文，一册慢慢练':subject==='en'?'英语，单元里学与写':'数学，边写边算'));
+  const head=node('header',undefined,'bank-heading');head.append(node('span','整册素材库 · 整册与单元练习','bank-eyebrow'),node('h1',subject==='cn'?'语文，一册慢慢练':subject==='en'?'英语，单元里学与写':'数学，边写边算'));
   head.append(node('p',subject==='cn'?'整册字词、句段和课文片段集中选择，不必逐课查找。':subject==='en'?'选择单元，查看单词、短语与句段的中文释义。':'按年级与册次选择专项，每批题目都有对应答案。'));
   const old=node('a','按课次浏览','bank-course-link');old.href='#/course?'+new URLSearchParams({subject,grade:context.grade,term:context.term});head.append(old);wrap.append(head);
   const contextBox=node('section',undefined,'bank-context');const contextText=node('strong',`${context.grade} 年级 · ${context.term==='upper'?'上册':'下册'} · ${subject==='math'?'原创计算专项':(WorkbookAccount.editionOptions[subject]?.find(e=>e[0]===context.edition)?.[1]||context.edition)}`);contextBox.append(contextText);
   const change=button('修改学习信息',()=>WorkbookAccount.openVersions(context));contextBox.append(change);wrap.append(contextBox);
+  const picker=node('section',undefined,'course-picker');picker.setAttribute('aria-label','选择科目、年级与册次');
+  const changeSelection=(field,value)=>{location.hash='#/materials?'+new URLSearchParams({subject,grade:context.grade,term:context.term,[field]:value});};
+  picker.append(TextbookPicker.row('科目',Object.entries(C.subjects),subject,value=>changeSelection('subject',value)));
   if(!WorkbookAccount.configured()){
-   const choices=node('div',undefined,'bank-filters');for(const [field,title,values] of [['grade','年级',WorkflowRules.gradeOptions(subject,false)],['term','册次',[['upper','上册'],['lower','下册']]]]){
-    const label=node('label',title),sel=node('select');sel.setAttribute('aria-label','素材库'+title);options(sel,values,String(context[field]));sel.onchange=()=>{location.hash='#/materials?'+new URLSearchParams({...context,[field]:sel.value});};label.append(sel);choices.append(label);
-   }contextText.textContent=context.subject==='math'?'原创计算专项':(WorkbookAccount.editionOptions[subject]?.find(e=>e[0]===context.edition)?.[1]||context.edition);contextBox.prepend(choices);
+   picker.append(TextbookPicker.row('年级',WorkflowRules.gradeOptions(subject,false).map(([value])=>[value,TextbookPicker.gradeNames[Number(value)]]),context.grade,value=>changeSelection('grade',value)));
+   const terms=TextbookPicker.row('册次',[['upper','上册'],['lower','下册']],context.term,value=>changeSelection('term',value));terms.classList.add('picker-term');picker.append(terms);
+   contextText.textContent=subject==='math'?'原创计算专项':(WorkbookAccount.editionOptions[subject]?.find(e=>e[0]===context.edition)?.[1]||context.edition);
   }
+  wrap.insertBefore(picker,contextBox);
   
   const coverage=B.coverage.find(b=>b.subject===subject&&b.grade===context.grade&&b.term===context.term&&b.series===context.edition);
   const notice=node('p',subject==='cn'?'':subject==='en'?'词汇按本单元课文整理，中文释义由本站编写；原创短文另行标注。':'按常见教学进度编制的原创练习，具体学习顺序请结合学校教材。','bank-notice');notice.hidden=!notice.textContent;wrap.append(notice);

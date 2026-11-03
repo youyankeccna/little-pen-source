@@ -9,8 +9,8 @@ window.CurriculumUI=(()=>{
  function book(){const b=C.getCourseBook(grade,subject,term,WorkbookAccount.edition(subject));return {...b,lessons:showExtra?[...b.lessons,...Object.values(b.variants).flat(),...b.extras]:b.lessons};}
  function options(id,values,value,empty='暂无内容'){const select=by(id);select.replaceChildren();if(!values.length)values=[['',empty]];for(const [key,label] of values){const option=make('option',label);option.value=key;select.append(option);}select.value=value||values[0][0];select.disabled=!values[0][0];return select;}
  function unitLabel(unit){if(book().pilot&&!showExtra)return unit;const sample=book().lessons.find(l=>l.unit===unit);return sample?.contentStatus==='public-domain-reviewed'?'公版补充 · '+unit:['official-topic','cross-checked-topic','self-authored'].includes(sample?.catalogStatus)?'补充主题 · '+unit:unit==='课次目录'?'目录主题':unit;}
- const GRADE_NAMES=['幼儿园','一年级','二年级','三年级','四年级','五年级','六年级'];
- function chips(name,values,value,fn){const row=make('div',undefined,'picker-row');row.append(make('span',name,'picker-name'));const group=make('div',undefined,'picker-chips');group.setAttribute('role','radiogroup');group.setAttribute('aria-label',name);for(const [key,label,disabled,tag] of values){const b=make('button',undefined,'chip');b.type='button';b.setAttribute('role','radio');b.dataset.value=key;b.append(make('span',label));if(tag)b.append(make('small',tag,'chip-tag'));const on=String(key)===String(value);b.setAttribute('aria-checked',String(on));if(on)b.classList.add('active');b.disabled=!!disabled;if(disabled)b.setAttribute('aria-disabled','true');b.onclick=()=>{if(!on&&!disabled)fn(key);};group.append(b);}row.append(group);return row;}
+ const GRADE_NAMES=TextbookPicker.gradeNames;
+ const chips=TextbookPicker.row;
  function hasPractice(t){return C.getCourseBook(grade,subject,t,WorkbookAccount.edition(subject)).lessons.some(l=>!l.pending&&l.packs.length);}
  function picker(){const box=by('course-picker');if(!box)return;box.replaceChildren();
   box.append(chips('科目',Object.entries(C.subjects),subject,v=>{subject=v;grade=WorkflowRules.normalizeGrade(grade,subject);navigate();}));
