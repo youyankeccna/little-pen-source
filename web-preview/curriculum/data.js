@@ -63,7 +63,7 @@ if(topicCatalog&&topicPractice){
   const existing=new Set(lessons.map(key));
   for(const source of topicCatalog.lessons){if(existing.has(key(source)))continue;const row=topicPractice.enrich({...source});if(row.packs.length){lessons.push(row);existing.add(key(row));}}
 }
-function originLabel(origin){return origin==='user-provided-ocr'?'教材提取稿（待校订）':origin==='authorized-textbook'?'教材内容（审核记录见来源）':origin==='public-domain'?'古诗公版原作':origin==='selected-from-public-domain'?'诗中选字词（本站整理）':origin==='selected-from-title'?'课题选字词（非教材字词表）':'自编巩固内容';}
+function originLabel(origin){return origin==='user-provided-ocr'?'教材提取稿（待校订）':origin==='authorized-textbook'?'教材内容（审核记录见来源）':origin==='cross-checked-list'?'教材写字表（已与公开来源核对）':origin==='public-domain'?'古诗公版原作':origin==='selected-from-public-domain'?'诗中选字词（本站整理）':origin==='selected-from-title'?'课题选字词（非教材字词表）':'自编巩固内容';}
 function getBook(grade,subject,term,editionId='pep'){
   if(Number(grade)!==0&&editionId!=='pep'&&!imported.editions[subject]?.some(e=>e[0]===editionId))return {grade:Number(grade),subject,term,name:Number(grade)+'年级',lessons:[],edition:({bnu:'北师大版',sujiao:'苏教版',fltrp:'外研版（三年级起点）',yilin:'译林版（三年级起点）'})[editionId]||'所选版本',notice:'所选教材版本的内容尚未收录，可切换人教版浏览现有内容。'};
   const found=lessons.filter(x=>!x.materialLibrary&&x.grade===Number(grade)&&x.subject===subject&&(Number(grade)===0||(x.series||'pep')===editionId)&&(Number(grade)===0||x.term===term)).sort((a,b)=>(a.teachingOrder??999)-(b.teachingOrder??999));
@@ -85,6 +85,7 @@ for(const change of reviewed){
  if(change.status==='approved')lessons[index]={...lessons[index],title:change.title,packs:structuredClone(change.packs),source:change.source,note:'内容已按本课审核记录整理；具体版次见来源。',reviewStatus:'approved',review:{reviewer:change.reviewer,reviewedAt:change.reviewedAt,rightsBasis:change.rightsBasis},contentStatus:'reviewed-content'};
 }
 const bank=root.MaterialBankData||(typeof require==='function'?require('./material-bank.js'):null);if(bank)lessons.push(...structuredClone(bank.lessons));
+{const gate=root.ReviewGate||(typeof require==='function'?require('./review-gate.js'):null);if(gate){const gated=gate.apply(lessons);lessons.splice(0,lessons.length,...gated);}}
 for(const lesson of lessons){
  lesson.revisionId=lesson.revisionId||[lesson.subject,lesson.grade,lesson.grade?lesson.term:'activity',lesson.catalogStatus==='official-current-companion'?'companion-reference':lesson.catalogStatus==='legacy-topic-reference'?'historical-reference':'supplement-reference'].join('-');
  lesson.reviewStatus=lesson.reviewStatus||'reference-only';

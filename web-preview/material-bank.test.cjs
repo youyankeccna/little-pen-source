@@ -3,7 +3,7 @@ assert.equal(B.lessons.filter(l=>l.subject==='cn').length,12);
 assert.equal(B.lessons.filter(l=>l.subject==='en'&&l.series==='pep').length,46);
 assert.equal(new Set(B.lessons.map(l=>l.id)).size,B.lessons.length);
 let checked=0;
-for(const l of B.lessons){
+for(const l of C.lessons.filter(l=>l.materialLibrary&&!l.pending)){
  assert(l.packs.length);assert(!C.getBook(l.grade,l.subject,l.term,l.series).lessons.some(x=>x.materialLibrary),'Bank polluted lesson picker');
  for(const p of l.packs){
   assert(C.kindInfo[p.kind],p.kind);assert(p.items.length);assert.equal(new Set(p.items.map(i=>i.id)).size,p.items.length);
@@ -17,7 +17,7 @@ for(const l of B.lessons){
   const model=E.build(selection.type,state,t=>Array.from(t).length*20);assert(model.pages>=1&&model.pages<=20);assert(model.rows.length);checked++;
  }
 }
-for(const l of B.lessons.filter(l=>l.subject==='math')){
+for(const l of C.lessons.filter(l=>l.materialLibrary&&l.subject==='math')){
  const q=l.packs.find(p=>p.kind==='calculations'),a=l.packs.find(p=>p.kind==='calculationAnswers');assert.equal(q.items.length,a.items.length);
  for(const i of q.items){const answer=a.items.find(x=>x.id===i.id);assert(answer);assert(!answer.text.includes('____'));assert(answer.text.includes(i.answer));}
 }

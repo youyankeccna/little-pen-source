@@ -7,12 +7,10 @@ const all=[...book.lessons,...book.extras,...Object.values(book.variants).flat()
 assert.deepEqual(all.map(l=>l.id).sort(),raw.lessons.map(l=>l.id).sort(),'no source or legacy lesson disappears');
 assert.equal(book.lessons[0].id,'cn-1u-tiandiren');
 assert.ok(book.lessons.every(l=>l.reviewStatus!=='approved'&&l.curation.textbookWritingListVerified===false));
-assert.equal(C.getLesson('import-5cc784e0ce98dc8c-21').title,'8 升国旗');
-const first=C.getLesson('import-5cc784e0ce98dc8c-3');
-assert.equal(first.packs.map(p=>p.kind).join(','),'characters');
-assert.equal(first.packs[0].items.map(i=>i.text).join(''),'一二三四五上下');
-assert.equal(first.packs[0].items[0].id,'characters-6','preserve surviving item identity');
-assert.ok(C.getCourseBook(3,'en','upper').lessons.some(l=>l.contentStatus==='ocr-draft'));
+// OCR 提取稿未经校对，不再出现在目录中（P0-3）。
+assert.equal(C.getLesson('import-5cc784e0ce98dc8c-21'),undefined);
+assert.ok(!C.getCourseBook(3,'en','upper').lessons.some(l=>l.contentStatus==='ocr-draft'));
+assert.equal(C.getCourseBook(3,'en','upper').lessons.length,7,'3上英语只保留一套 7 个单元');
 assert.equal(C.getCourseBook(1,'en','upper').lessons.length,0);
 for(const type of ['hanzi','cizu'])for(const mode of ['trace','copy','quiz']){
  const dirty={...D.defaults(type),text:type==='hanzi'?'天地':'天地\n大地',fillPage:true,showBishun:true,traceNum:99,readings:{天:'tiān',地:'dì','天地':'tiān dì','大地':'dà dì'}};

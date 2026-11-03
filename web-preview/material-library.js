@@ -118,7 +118,7 @@ window.MaterialLibrary=(()=>{
   }
   const coverage=B.coverage.find(b=>b.subject===subject&&b.grade===context.grade&&b.term===context.term&&b.series===context.edition);
   const notice=node('p',subject==='cn'?(coverage?.notice||'所选版本暂未收录整册素材。'):subject==='en'?'词汇按本单元正文匹配，包含复现词；OCR释义与本站译文待复核。原创短文另行标注。':'按常见教学进度编制的原创练习，具体学习顺序请结合学校教材。','bank-notice');wrap.append(notice);
-  if(!rows.length){wrap.append(node('p','本册暂没有可用的整册双语素材，可先按课次浏览已有内容。','bank-empty'));return;}
+  const pendingRows=rows.filter(l=>l.pending);rows=rows.filter(l=>!l.pending);if(!rows.length){wrap.append(node('p',pendingRows.length?'本册待收录：教材写字表还在校对中，校对完成后再开放。可先按课次浏览自编练习。':'本册暂没有可用的整册双语素材，可先按课次浏览已有内容。','bank-empty'));return;}
   const unitLabel=node('label',subject==='math'?'计算专项':'单元','bank-unit-label'),unit=node('select');unit.id='bank-lesson';unit.setAttribute('aria-label',subject==='math'?'计算专项':'英语单元');options(unit,rows.map(l=>[l.id,l.title]),rows[0].id);unit.onchange=()=>chooseLesson(unit.value);unitLabel.append(unit);unitLabel.hidden=subject==='cn';wrap.append(unitLabel);
   const mathPanel=node('div',undefined,'bank-math-options');mathPanel.id='bank-math-options';wrap.append(mathPanel);
   const tabs=node('div',undefined,'bank-kinds');tabs.id='bank-kinds';tabs.setAttribute('aria-label','素材类型');wrap.append(tabs);
