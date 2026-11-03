@@ -60,6 +60,14 @@ window.Hubs = (() => {
     foot.append(link, "。");
     box.append(head, tabs, el("p", "hub-sub", s.desc), grid, foot);
   }
+  // 我的：先放最常用的两项，其余收进“更多”
+  const ME_PRIMARY = ["daily", "library"];
+  function meSections(tabs) {
+    return {
+      primary: ME_PRIMARY.map((id) => tabs.find((t) => t.id === id)).filter(Boolean),
+      more: tabs.filter((t) => !ME_PRIMARY.includes(t.id)),
+    };
+  }
   function me() {
     const box = document.getElementById("personal-view");
     box.replaceChildren();
@@ -73,17 +81,23 @@ window.Hubs = (() => {
         "",
         user
           ? "安排、记录、收藏与孩子档案都在这里。"
-          : "前三项无需登录，记录保存在本浏览器；其余项目登录后按孩子分别保存。",
+          : "今日练习、一周练习包、薄弱字再练无需登录，记录保存在本浏览器；其余项目登录后按孩子分别保存。",
       ),
     );
     box.append(head);
-    const grid = el("div", "hub-grid me-grid");
-    N.ME_TABS.forEach((t, i) => {
-      const c = card("#/" + t.id, String(i + 1), t.label, t.desc);
-      if (t.login && !user) c.append(el("small", "hub-lock", "需登录"));
-      grid.append(c);
-    });
-    box.append(grid);
+    const split = meSections(N.ME_TABS);
+    const make = (list, offset) => {
+      const grid = el("div", "hub-grid me-grid");
+      list.forEach((t, i) => {
+        const c = card("#/" + t.id, String(i + offset + 1), t.label, t.desc);
+        if (t.login && !user) c.append(el("small", "hub-lock", "需登录"));
+        grid.append(c);
+      });
+      return grid;
+    };
+    const more = el("details", "me-more");
+    more.append(el("summary", "", "更多（一周练习包、薄弱字、成长记录等）"), make(split.more, split.primary.length));
+    box.append(make(split.primary, 0), more);
   }
   // Login/logout does not change #/me, so the hub must redraw itself.
   function onAccountChange() {
@@ -107,5 +121,5 @@ window.Hubs = (() => {
     }
     return nav;
   }
-  return { make, me, meTabs, onAccountChange };
+  return { make, me, meTabs, meSections, onAccountChange };
 })();

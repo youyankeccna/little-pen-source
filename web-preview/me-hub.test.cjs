@@ -1,0 +1,21 @@
+"use strict";
+// P1-10：我的 先显示 今日练习、我的字帖，其余收进“更多”；编辑器能加入薄弱字。
+const assert = require("assert"), fs = require("fs"), vm = require("vm");
+const ctx = { window: {}, document: {}, console };
+vm.createContext(ctx);
+vm.runInContext(fs.readFileSync(__dirname + "/nav-map.js", "utf8"), ctx);
+vm.runInContext(fs.readFileSync(__dirname + "/make-hub.js", "utf8"), ctx);
+const N = ctx.window.NavMap || ctx.NavMap;
+const H = ctx.window.Hubs;
+const split = H.meSections(N.ME_TABS);
+assert.strictEqual(split.primary.map((t) => t.id).join(), "daily,library");
+assert.strictEqual(split.more.length, N.ME_TABS.length - 2);
+assert.ok(split.more.some((t) => t.id === "review"));
+assert.ok(/details", "me-more"/.test(fs.readFileSync(__dirname + "/make-hub.js", "utf8")));
+const html = fs.readFileSync(__dirname + "/index.html", "utf8");
+assert.ok(html.includes('id="weak-open"') && html.includes('id="weak-dialog"'));
+const app = fs.readFileSync(__dirname + "/app.js", "utf8");
+assert.ok(app.includes("PersonalWorkspace.editorWeakPicker(state.text"));
+const learning = fs.readFileSync(__dirname + "/learning.js", "utf8");
+assert.ok(/editorWeakPicker,editorWeakChars,lessonFor/.test(learning));
+console.log("me-hub ok");

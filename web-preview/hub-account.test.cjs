@@ -52,7 +52,7 @@ function paint() {
 
 user = null;
 let text = paint();
-assert.match(text, /前三项无需登录/);
+assert.match(text, /薄弱字再练无需登录/);
 assert.equal(badgeCount(personal), 5);
 
 user = { username: "parent", childName: "小明" };
@@ -63,7 +63,7 @@ assert.equal(badgeCount(personal), 0);
 
 user = null;
 text = paint();
-assert.match(text, /前三项无需登录/);
+assert.match(text, /薄弱字再练无需登录/);
 assert.equal(badgeCount(personal), 5);
 
 personal.children = [];

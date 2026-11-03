@@ -887,6 +887,7 @@ async function route() {
   $("content-edit").hidden = control && !activeCourse;
   $("pattern-input").hidden = !control || !!activeCourse;
   $("pattern-open").hidden = !control || !!activeCourse;
+  $("weak-open").hidden = !["hanzi", "cizu"].includes(type) || !!activeReview;
   $("content-edit").textContent = activeReview ? "重新选薄弱字" : activeCourse ? "重新选内容" : "编辑内容";
   $("content-open").setAttribute("aria-label", activeCourse ? "查看所选内容" : "输入练习内容");
   $("input-hint").textContent = state.batchNames
@@ -1585,6 +1586,13 @@ async function printWorkbook() {
 }
 $("content-open").onclick = openContent;
 $("content-edit").onclick = openContent;
+$("weak-open").onclick = () => {
+  const body = $("weak-dialog-body");
+  body.replaceChildren(PersonalWorkspace.editorWeakPicker(state.text, activeCourse?.lessonId));
+  if (!body.firstChild.children.length) body.textContent = "当前内容里没有可加入的汉字。";
+  $("weak-dialog").showModal();
+};
+$("weak-dialog-go").onclick = () => $("weak-dialog").close();
 $("pattern-open").onclick = () => $("pattern-dialog").showModal();
 $("font-manage").onclick = openFonts;
 $("content-draft").oninput = () =>
