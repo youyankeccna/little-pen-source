@@ -618,6 +618,11 @@ async function render() {
     canvas.width = 0;
     canvas.height = 0;
     page.append(canvas);
+    if (["hanzi", "cizu"].includes(type) && s.showPinyin) {
+      page.classList.add("tap-reading");
+      page.title = "点字帖可以改多音字读音";
+      page.onclick = openReadings;
+    }
     $("paper-stack").append(page);
     observer.observe(page);
   }
@@ -632,7 +637,7 @@ async function render() {
     : missing.length
       ? "部分笔顺未收录：" + missing.slice(0, 8).join("、")
       : s.showPinyin
-        ? "拼音已自动生成，可点击下方校正多音字。"
+        ? "拼音按整句自动注音；多音字读错了，点一下字帖就能改。"
         : "设置自动保存在本浏览器，各类字帖分别保存。";
 }
 function courseDefaults(course = activeCourse) {
@@ -1228,10 +1233,29 @@ async function openReadings() {
       const field = el("label", "reading-field"),
         input = el("input");
       field.append(el("span", "", row.trim()));
-      input.value = state.readings[row] || pinyinPro.pinyin(row.trim());
+      input.value = E.readingsFor(row, { text: state.text, readings: state.readings }).join(" ");
       input.dataset.row = row;
       input.setAttribute("aria-label", row.trim() + "的拼音");
-      field.append(input);
+      const box = el("div", "reading-input");
+      box.append(input);
+      const options = Array.from(row.trim()).length === 1 ? E.readingOptions(row.trim()) : [];
+      if (options.length > 1) {
+        // 多音字：点一下候选读音即可改，不用手打声调。
+        const chips = el("div", "reading-chips");
+        options.forEach((py) => {
+          const b = el("button", "reading-chip", py);
+          b.type = "button";
+          b.setAttribute("aria-pressed", String(input.value === py));
+          b.onclick = () => {
+            input.value = py;
+            chips.querySelectorAll("button").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+          };
+          chips.append(b);
+        });
+        box.append(chips);
+        field.classList.add("polyphone");
+      }
+      field.append(box);
       return field;
     }),
   );
@@ -1593,6 +1617,14 @@ $("font-upload").onchange = async (event) => {
   }
 };
 $("readings-open").onclick = openReadings;
+// 浏览器 Ctrl+P：先把所有页画好（预览默认只画可见页），打印样式只保留字帖纸面。
+window.addEventListener("beforeprint", () => {
+  if (!model) return;
+  [...$("paper-stack").children].forEach((page, i) => {
+    const c = page.firstElementChild;
+    if (c && !c.width) E.drawPage(c, model, i, 2, strokeData);
+  });
+});
 $("readings-confirm").onclick = () => {
   for (const input of $("reading-fields").querySelectorAll("input"))
     state.readings[input.dataset.row] = input.value.trim();

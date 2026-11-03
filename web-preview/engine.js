@@ -462,10 +462,38 @@
     }
     ctx.restore();
   }
+  // 多音字：先用整段原文（带上下文）注音，再按字分配，避免“长大”逐字注成 cháng。
+  let contextCache = { text: null, map: null };
+  function contextReadings(text) {
+    text = String(text || "");
+    if (contextCache.text === text) return contextCache.map;
+    const map = {};
+    if (root.pinyinPro && text) {
+      const chars = Array.from(text),
+        han = chars.filter((c) => /[\u4e00-\u9fff]/.test(c));
+      const py = han.length ? root.pinyinPro.pinyin(han.join(""), { type: "array" }) : [];
+      han.forEach((c, i) => {
+        if (!(c in map) && py[i]) map[c] = py[i];
+      });
+    }
+    contextCache = { text, map };
+    return map;
+  }
+  function readingOptions(char) {
+    if (!root.pinyinPro || !char) return [];
+    return [...new Set(root.pinyinPro.pinyin(char, { multiple: true, type: "array" }))];
+  }
   function readingsFor(row, s) {
     if (!row) return [];
-    if (s.readings[row]) return s.readings[row].split(/\s+/);
-    return root.pinyinPro ? root.pinyinPro.pinyin(row.trim(), { type: "array" }) : [];
+    if (s.readings && s.readings[row]) return s.readings[row].split(/\s+/);
+    if (!root.pinyinPro) return [];
+    const trimmed = row.trim(),
+      chars = Array.from(trimmed);
+    if (chars.length === 1) {
+      const map = contextReadings(s.text);
+      if (map[trimmed]) return [map[trimmed]];
+    }
+    return root.pinyinPro.pinyin(trimmed, { type: "array" });
   }
   function drawPage(canvas, model, pageIndex, scale = 2, strokeData = {}) {
     if (model.sheets) {
@@ -712,6 +740,9 @@
     englishLines,
     fitFontSize,
     grid,
+    readingsFor,
+    readingOptions,
+    contextReadings,
   };
   root.WorkbookEngine = api;
   if (typeof module !== "undefined") module.exports = api;
