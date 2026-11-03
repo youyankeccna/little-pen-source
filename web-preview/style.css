@@ -29,3 +29,7 @@ dialog{width:calc(100vw - 32px);max-width:570px;max-height:calc(100dvh - 48px);b
 @media(min-width:701px){#writing-controls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}#writing-controls .setting{width:100%}#writing-controls .setting>label{white-space:normal}#writing-controls select{font-size:12px}}
 .personal-actions .button[aria-pressed=true],.personal-actions .button[aria-pressed=true]:hover{background:#285a4c;color:#fff;border-color:#285a4c}.review-character>.plain{border:0;border-radius:5px;background:#f0f5ef;color:#285a4c;padding:7px 8px;font:inherit;font-size:13px;cursor:pointer}.review-character>.plain:hover{background:#e2ecdf}
 .course-context{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:0 0 16px;padding:16px 20px;border:1px solid #dce5db;border-radius:12px;background:#f4f7ef;color:#285a4c}.course-context strong{font-size:15px;line-height:1.7}.course-filters.compact{grid-template-columns:repeat(2,minmax(0,1fr))}@media(max-width:700px){.course-context{align-items:flex-start;flex-direction:column;padding:16px}}
+
+/* P1-8 选课页直接显示选课区 */
+body.course-only #curriculum .course-heading,body.course-only #today-panel,body.course-only #learning-dashboard{display:none!important}
+#version-skip{margin-top:4px;width:100%;background:none;border:0;color:var(--muted,#6b6257);text-decoration:underline;cursor:pointer}

@@ -749,6 +749,17 @@ async function route() {
       return;
     }
   }
+  // P1-8：#/course 直接进入选课，不再先显示首页大图。
+  document.body.classList.toggle("course-only", key === "course");
+  // P1-7：游客第一次进入选课时询问一次学习信息，可跳过；之后只在选课区显示一行小提示。
+  if (key === "course" && !WorkbookAccount.configured() && !WorkbookAccount.user()) {
+    let asked = true;
+    try {
+      asked = !!localStorage.getItem("little-pen-learning-info-asked-v1");
+      localStorage.setItem("little-pen-learning-info-asked-v1", "1");
+    } catch {}
+    if (!asked) setTimeout(() => WorkbookAccount.openVersions(), 0);
+  }
   $("personal-view").hidden = !personal;
   $("curriculum").hidden = isEditor || free || personal;
   $("home").hidden = !free;
@@ -1778,7 +1789,7 @@ window.addEventListener("hashchange", () => $("layout-dialog").close());
 window.addEventListener("accountchange", () => $("layout-dialog").close());
 initPreviewZoom();
 
-$("course-start").onclick = () => WorkbookAccount.openVersions();
+$("course-start").onclick = () => (location.hash = "#/course");
 
 $("share-workbook").onclick = async () => {
   if (!activeCourse) return;
