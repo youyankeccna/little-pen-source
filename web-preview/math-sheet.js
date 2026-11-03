@@ -96,7 +96,7 @@
     const lesson = s.topic && C().getLesson(s.topic);
     const items = (lesson?.packs || []).find((p) => p.kind === "calculations")?.items || [];
     const problems = items.slice(0, s.n * s.pages).map(parse);
-    const wide = problems.some((p) => p.parts.join("").length > 16 || p.blanks.length > 1);
+    const wide = problems.some((p) => p.parts.join("").length > 16 || p.blanks.length > 1 || p.blanks.some((b) => b.cells >= 5));
     const cols = wide || s.n === 10 ? 1 : 2;
     const perPage = s.n;
     const sheets = [];

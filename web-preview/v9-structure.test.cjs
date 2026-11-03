@@ -127,6 +127,9 @@ const loc = { origin: "https://pen.example", pathname: "/" };
   assert.strictEqual(model.problems.length, 40);
   assert.strictEqual(model.pageList.length, 4, "2 题目页 + 2 答案页");
   assert.strictEqual(model.cols, 2);
+  const fractions = M.build({ grade: 6, topic: "bank-math-6-upper-fraction-mul", n: 20 });
+  assert.ok(fractions.problems.some((p) => p.blanks.some((b) => b.cells >= 5)));
+  assert.strictEqual(fractions.cols, 1, "长答案使用整行，不能挤到下一列的题号");
   // 画布：题目页每题至少 2 个方格；答案页把答案写进格子
   const calls = { rect: 0, text: [] };
   const ctx = new Proxy(
