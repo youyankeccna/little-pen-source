@@ -66,7 +66,42 @@
     practiceSelect: "已由模式卡片代替；答案版移到更多设置",
     compactToggle: "“调整纸张与字体/收起详细设置”按钮由折叠的“更多设置”代替",
   };
-  const api = { MODES, modeOf, applyMode, PLACEMENT, REMOVED };
+  // v9：每个科目是独立模块。这些设置只属于一个科目；出现在别的科目时恢复为该类型默认值。
+  // 数学不再使用字帖编辑器（计算练习页自有设置），所以 mathLayout 不属于任何编辑器科目。
+  const SUBJECT_ONLY = {
+    showPinyin: ["cn"],
+    showBishun: ["cn"],
+    pair: ["en"],
+    alphabetGuides: ["en"],
+    guideStyle: ["en"],
+    controlGuides: ["pen"],
+    mathLayout: [],
+  };
+  const TYPE_SUBJECT = {
+    hanzi: "cn",
+    cizu: "cn",
+    duanluo: "cn",
+    bihua: "cn",
+    pinyin: "cn",
+    alphabet: "en",
+    word: "en",
+    paragraph: "en",
+    "pen-control": "pen",
+  };
+  function subjectOf(type) {
+    return TYPE_SUBJECT[type] || null;
+  }
+  function isolate(type, state, defaults = {}) {
+    const subject = subjectOf(type),
+      out = { ...state };
+    for (const [key, owners] of Object.entries(SUBJECT_ONLY)) {
+      if (!(key in out) || owners.includes(subject)) continue;
+      if (key in defaults) out[key] = defaults[key];
+      else delete out[key];
+    }
+    return out;
+  }
+  const api = { MODES, modeOf, applyMode, PLACEMENT, REMOVED, SUBJECT_ONLY, subjectOf, isolate };
   root.EditorPanel = api;
   if (typeof module !== "undefined") module.exports = api;
 })(typeof globalThis !== "undefined" ? globalThis : this);

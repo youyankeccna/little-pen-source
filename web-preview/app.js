@@ -219,6 +219,8 @@ function loadState(key) {
       s = restoreLayout(s, raw, D.types[key].group === "cn" || ["number", "pinyin"].includes(key));
   } catch {}
   if (!D.fonts[s.font]) s.font = D.defaults(key).font;
+  // v9：科目之间不串设置（例如旧版数学竖式布局留在英语段落里）
+  s = EditorPanel.isolate(key, s, D.defaults(key));
   return (savedStates[scoped] = s);
 }
 function save() {
@@ -593,6 +595,8 @@ async function render() {
   if (version !== renderVersion || renderType !== type) return;
   measureContext.font = E.fontString(s);
   model = E.build(type, s, (text) => measureContext.measureText(text).width);
+  // v9：页脚二维码编码“本张纸”的再出一张链接（太长时退回首页）
+  model.footerUrl = SheetLink.qrUrl(currentSheetHash(), location, window.LittlePenConfig?.shareUrl);
   model.sourceContext = sourceContext;
   if (observer) observer.disconnect();
   $("paper-stack").replaceChildren();
@@ -695,9 +699,16 @@ async function route() {
   if (location.hash !== requestedHash) return;
   const [rawKey, query = ""] = location.hash.replace(/^#\/?/, "").split("?"),
     key = NavMap.resolve(rawKey),
-    params = new URLSearchParams(query),
-    isEditor = !!D.types[key],
-    free = key === "make",
+    params = new URLSearchParams(query);
+  // v9：数字书写已从数学移除；旧链接统一进入计算练习
+  if (NavMap.redirectOf(key)) {
+    history.replaceState(null, "", "#/" + NavMap.redirectOf(key));
+    return route();
+  }
+  const isEditor = !!D.types[key],
+    calc = key === "calc",
+    free = key === "make" || key === "gushi",
+    materials = key === "materials",
     personal = [
       "library",
       "review",
@@ -708,7 +719,6 @@ async function route() {
       "early",
       "share",
       "shared",
-      "materials",
       "works",
       "me",
     ].includes(key);
@@ -748,6 +758,11 @@ async function route() {
       toast("所选内容无效，请重新选择课次。");
       return;
     }
+    // v9：数学计算统一在计算练习页完成（数字格作答）
+    if (MathRoute.isCalc(activeCourse)) {
+      location.hash = MathRoute.hashFor(activeCourse);
+      return;
+    }
   }
   // P1-8：#/course 直接进入选课，不再先显示首页大图。
   document.body.classList.toggle("course-only", key === "course");
@@ -761,16 +776,25 @@ async function route() {
     if (!asked) setTimeout(() => WorkbookAccount.openVersions(), 0);
   }
   $("personal-view").hidden = !personal;
-  $("curriculum").hidden = isEditor || free || personal;
+  $("materials-view").hidden = !materials;
+  $("calc-view").hidden = !calc;
+  $("curriculum").hidden = isEditor || free || personal || materials || calc;
   $("home").hidden = !free;
   $("editor").hidden = !isEditor;
   $("type-navigation").hidden =
-    personal || free || !isEditor || !!activeCourse || !!activeSaved || !!activeReview;
+    personal || free || materials || calc || !isEditor || !!activeCourse || !!activeSaved || !!activeReview;
   document.querySelectorAll("details.advanced-settings,.export-menu").forEach((n) => (n.open = false));
   document
     .querySelectorAll("[data-route]")
     .forEach((n) => n.classList.toggle("active", n.dataset.route === key));
-  const area = activeCourse || activeSaved || activeReview ? (activeSaved || activeReview ? "me" : "textbook") : NavMap.areaOf(key);
+  const area =
+    activeSaved || activeReview
+      ? "me"
+      : activeCourse
+        ? params.get("from") === "gushi"
+          ? "make"
+          : "textbook"
+        : NavMap.areaOf(key);
   document.querySelectorAll("[data-area]").forEach((n) => {
     n.classList.toggle("active", n.dataset.area === area);
     if (n.dataset.area === area) n.setAttribute("aria-current", "page");
@@ -786,7 +810,8 @@ async function route() {
   document.body.classList.toggle("course-mode", key === "course");
   document.body.classList.toggle("personal-mode", personal);
   document.body.classList.toggle("make-mode", free);
-  document.body.classList.toggle("material-mode", key === "materials");
+  document.body.classList.toggle("material-mode", materials);
+  document.body.classList.toggle("calc-mode", calc);
   document.body.classList.toggle("landing-mode", !key);
   $("course-browser").hidden = !key;
   if (!isEditor) {
@@ -796,13 +821,20 @@ async function route() {
     if (personal) {
       if (key === "me") Hubs.me();
       else if (key === "works") FamilyWorks.open();
-      else if (key === "materials") MaterialLibrary.open(params);
       else if (["weekly", "growth", "family", "early", "share", "shared", "daily"].includes(key))
         FamilyWorkspace.open(key, params);
       else PersonalWorkspace.open(key);
+    } else if (materials) {
+      document.title = "跟课本 · 素材库 · 小小笔尖";
+      MaterialLibrary.open(params);
+    } else if (calc) {
+      document.title = "计算练习 · 小小笔尖";
+      MathSheet.open(params);
+      window.scrollTo(0, 0);
     } else if (free) {
       document.title = "做字帖 · 小小笔尖";
-      Hubs.make(params.get("subject"));
+      if (key === "gushi") Hubs.gushi();
+      else Hubs.make(params.get("subject"));
       window.scrollTo(0, 0);
     } else {
       if (key) CurriculumUI.open(params);
@@ -862,12 +894,17 @@ async function route() {
     }
   }
   if (!activeCourse && !activeSaved && !activeReview && !shared && params.has("text")) {
-    state = QuickStart.applyParams(state, params);
+    // v9：任何类型都能从链接（二维码 / 分享）还原
+    state =
+      key === "hanzi"
+        ? { ...QuickStart.applyParams(state, params), ...pickLinkExtras(params) }
+        : SheetLink.applyParams(state, params, key) || state;
     history.replaceState(null, "", "#/" + key);
   }
   if (activeCourse && params.has("preset"))
     state = LearningRules.presetConfig(courseDefaults(), type, params.get("preset"), activeCourse.grade);
-  $("share-workbook").hidden = !activeCourse;
+  // v9：任何字帖都能分享（自己做的用链接，课本内容登录后可用可停用的分享）
+  $("share-workbook").hidden = false;
   renderQuickPractice(!!activeCourse || params.has("starter"));
   if (activeCourse) {
     PersonalWorkspace.remember(activeCourse);
@@ -1800,7 +1837,11 @@ initPreviewZoom();
 $("course-start").onclick = () => (location.hash = "#/course");
 
 $("share-workbook").onclick = async () => {
-  if (!activeCourse) return;
+  if (!activeCourse || !WorkbookAccount.user()) {
+    const url = SheetLink.shareUrl(currentSheetHash(), location, window.LittlePenConfig?.shareUrl);
+    if (!url) return toast("内容太长，无法放进链接。请先保存，再从“我的字帖”分享。");
+    return SheetShare.copy(url, "分享链接已复制：打开就是这张字帖，可以直接打印。");
+  }
   if (!(await WorkbookAccount.ensure(() => $("share-workbook").click()))) return;
   const scope = WorkbookAccount.scope(),
     button = $("share-workbook");
@@ -1838,6 +1879,33 @@ document.addEventListener("use-verified-font", () => {
   renderControls();
   schedule();
 });
+
+// v9：本张纸的链接（二维码与分享共用）
+function currentSheetHash() {
+  return SheetLink.hashFor(type, state, activeCourse && !activeCourse.daily ? activeCourse : null);
+}
+function pickLinkExtras(params) {
+  const out = {},
+    t = Number(params.get("trace"));
+  if (params.has("trace") && t >= 0 && t <= 40) out.traceNum = t;
+  if (["trace", "copy", "quiz", "fade"].includes(params.get("mode"))) out.practiceMode = params.get("mode");
+  return out;
+}
+window.SheetShare = {
+  toast,
+  async copy(url, message) {
+    try {
+      await navigator.clipboard.writeText(url);
+      toast(message);
+    } catch {
+      window.prompt("复制这个链接分享：", url);
+    }
+  },
+};
+const MathRoute = {
+  isCalc: (c) => c?.subject === "math" && ["calculations", "calculationAnswers"].includes(c.kind),
+  hashFor: (c) => "#/calc?" + new URLSearchParams({ lesson: c.lessonId, key: "1" }),
+};
 
 function openAccessInfo() {
   for (const id of ["help-dialog", "account-dialog"]) $(id).close();

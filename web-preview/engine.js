@@ -512,10 +512,13 @@
     }
     return qrCache[url];
   }
-  function drawFooter(ctx) {
-    const url = footerUrl();
+  // v9：二维码编码“本张纸”的链接（model.footerUrl，由页面按当前设置生成），没有时用首页。
+  // 尺寸 38 单位 ≈ 10mm（v8 为 8mm）。
+  const QR_SIZE = 38;
+  function drawFooter(ctx, link) {
+    const url = link || footerUrl();
     const text = (root.LittlePenConfig && root.LittlePenConfig.footerText) || "小小笔尖 · 扫码再出一张";
-    const size = 30, right = WIDTH - 14, bottom = HEIGHT - 4;
+    const size = QR_SIZE, right = WIDTH - 14, bottom = HEIGHT - 4;
     const m = qrMatrix(url);
     ctx.save();
     if (m) {
@@ -576,7 +579,7 @@
     }
     if (model.mathPages) {
       MathV.draw(ctx, model, pageIndex, WIDTH, HEIGHT, D.fonts[s.font]?.family || D.fonts.wenkai.family);
-      drawFooter(ctx);
+      drawFooter(ctx, model.footerUrl);
       return canvas;
     }
     if (g.modeHeader) {
@@ -762,7 +765,7 @@
       ctx.textAlign = "center";
       ctx.fillText(String(pageIndex + 1), WIDTH / 2, HEIGHT - 20);
     }
-    drawFooter(ctx);
+    drawFooter(ctx, model.footerUrl);
     return canvas;
   }
   const api = {

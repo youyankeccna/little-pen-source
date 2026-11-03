@@ -210,3 +210,27 @@ input[type=checkbox]{accent-color:var(--c-primary)}
  .picker-chips{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:0 calc(-1*var(--s-4));padding:2px var(--s-4)}.picker-chips::-webkit-scrollbar{display:none}
  .course-picker .chip{min-height:38px;padding:6px 14px;font-size:var(--fs-13)}
  .picker-term .picker-chips{margin:0;padding:3px;align-self:flex-start}.picker-term .chip{min-width:96px}}
+/* ---- v9 计算练习页（数学独立模块） ---- */
+#calc-view{max-width:1200px;margin:0 auto;padding:var(--s-5) var(--s-4) var(--s-7)}
+.calc-layout{display:grid;grid-template-columns:320px minmax(0,1fr);gap:var(--s-5);align-items:start}
+.calc-panel{position:sticky;top:84px;background:var(--c-surface);border:1px solid var(--c-line);border-radius:var(--r-lg);padding:var(--s-5);box-shadow:var(--sh-1);display:flex;flex-direction:column;gap:var(--s-4)}
+.calc-head h1{font-family:var(--f-kai);font-size:var(--fs-28);color:var(--c-text);margin:var(--s-2) 0 var(--s-1)}
+.calc-head p,.calc-note{color:var(--c-text-3);font-size:var(--fs-13);margin:0;line-height:1.6}
+.calc-field{display:flex;flex-direction:column;gap:var(--s-2)}
+.calc-label{font-size:var(--fs-13);color:var(--c-text-2);font-weight:600}
+.calc-chips{display:flex;flex-wrap:wrap;gap:6px}
+.calc-chip{border:1px solid var(--c-line-strong);background:var(--c-paper);color:var(--c-text-2);border-radius:var(--r-pill);padding:7px 13px;font-size:var(--fs-13);cursor:pointer}
+.calc-chip[aria-pressed=true]{background:var(--c-primary);border-color:var(--c-primary);color:#fff}
+.calc-select{padding:10px;border:1px solid var(--c-line-strong);border-radius:var(--r-md);background:var(--c-paper);font-size:var(--fs-14)}
+.calc-actions{display:flex;flex-wrap:wrap;gap:var(--s-2)}
+.calc-actions .button{flex:1 1 auto;justify-content:center;min-height:42px}
+.calc-stack{display:flex;flex-direction:column;gap:var(--s-4);align-items:center}
+.calc-page{width:100%;max-width:720px;aspect-ratio:210/297;background:#fff;box-shadow:var(--sh-2);border-radius:4px}
+.hub-back{display:inline-block;color:var(--c-primary);font-size:var(--fs-13);text-decoration:none;margin-bottom:var(--s-2)}
+.textbook-switch{margin:0 0 var(--s-3)}
+.course-section-heading .textbook-switch{margin:0}
+@media (max-width:820px){.calc-layout{grid-template-columns:1fr}.calc-panel{position:static;padding:var(--s-4)}#calc-view{padding:var(--s-3) var(--s-3) var(--s-7)}}
+@media print{body.calc-mode .site-header,body.calc-mode .calc-panel,body.calc-mode #toast{display:none!important}body.calc-mode #calc-view{padding:0;max-width:none}body.calc-mode .calc-layout{display:block}body.calc-mode .calc-stack{gap:0}body.calc-mode .calc-page{width:210mm;height:297mm;max-width:none;box-shadow:none;border-radius:0;break-after:page}}
+.textbook-switch{display:inline-flex!important;flex-wrap:nowrap;background:var(--c-sunken);border-radius:var(--r-pill);padding:4px;gap:2px;border:1px solid var(--c-line)}
+.textbook-switch .hub-tab{border:0!important;background:transparent!important;color:var(--c-text-2)!important;padding:6px 18px!important;box-shadow:none!important;min-height:0}
+.textbook-switch .hub-tab[aria-current=page]{background:var(--c-surface)!important;color:var(--c-primary)!important;box-shadow:var(--sh-1)!important}
