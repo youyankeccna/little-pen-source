@@ -495,6 +495,43 @@
     }
     return root.pinyinPro.pinyin(trimmed, { type: "array" });
   }
+  // 页脚：“小小笔尖 · 扫码再出一张” + 二维码（PDF、PNG、打印都来自同一张画布）
+  const qrCache = {};
+  function footerUrl() {
+    const cfg = root.LittlePenConfig || {};
+    return cfg.shareUrl || (root.location && root.location.origin) || "";
+  }
+  function qrMatrix(url) {
+    if (!url || typeof root.qrcode !== "function") return null;
+    if (!qrCache[url]) {
+      const qr = root.qrcode(0, "M");
+      qr.addData(url);
+      qr.make();
+      const n = qr.getModuleCount();
+      qrCache[url] = Array.from({ length: n }, (_, r) => Array.from({ length: n }, (_, c) => qr.isDark(r, c)));
+    }
+    return qrCache[url];
+  }
+  function drawFooter(ctx) {
+    const url = footerUrl();
+    const text = (root.LittlePenConfig && root.LittlePenConfig.footerText) || "小小笔尖 · 扫码再出一张";
+    const size = 30, right = WIDTH - 14, bottom = HEIGHT - 4;
+    const m = qrMatrix(url);
+    ctx.save();
+    if (m) {
+      const cell = size / m.length;
+      ctx.fillStyle = "#fff";
+      ctx.fillRect(right - size - 2, bottom - size - 2, size + 4, size + 4);
+      ctx.fillStyle = "#263c32";
+      m.forEach((row, r) => row.forEach((dark, c) => dark && ctx.fillRect(right - size + c * cell, bottom - size + r * cell, cell + 0.05, cell + 0.05)));
+    }
+    ctx.fillStyle = "#8a8a8a";
+    ctx.font = '9px "LXGW WenKai", Arial';
+    ctx.textAlign = "right";
+    ctx.textBaseline = "middle";
+    ctx.fillText(text, m ? right - size - 6 : right, bottom - size / 2);
+    ctx.restore();
+  }
   function drawPage(canvas, model, pageIndex, scale = 2, strokeData = {}) {
     if (model.sheets) {
       const ref = model.pageMap[pageIndex];
@@ -539,6 +576,7 @@
     }
     if (model.mathPages) {
       MathV.draw(ctx, model, pageIndex, WIDTH, HEIGHT, D.fonts[s.font]?.family || D.fonts.wenkai.family);
+      drawFooter(ctx);
       return canvas;
     }
     if (g.modeHeader) {
@@ -724,6 +762,7 @@
       ctx.textAlign = "center";
       ctx.fillText(String(pageIndex + 1), WIDTH / 2, HEIGHT - 20);
     }
+    drawFooter(ctx);
     return canvas;
   }
   const api = {
@@ -735,6 +774,8 @@
     splitRows,
     build,
     drawPage,
+    drawFooter,
+    footerUrl,
     pattern,
     stroke,
     englishLines,

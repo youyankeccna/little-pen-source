@@ -36,3 +36,7 @@ body.course-only #curriculum .course-heading,body.course-only #today-panel,body.
 
 /* P1-9 手机底部操作栏不遮挡内容 */
 @media(max-width:700px){#editor,#personal-view,#curriculum,#home{padding-bottom:calc(88px + env(safe-area-inset-bottom,0px))}.editor-mode .header-actions{padding-bottom:env(safe-area-inset-bottom,0px)}}
+.home-math-link{margin-left:14px;color:#2f5d4a;text-decoration:underline;text-underline-offset:3px;font-size:.95rem}
+.me-more{margin-top:18px}.me-more>summary{cursor:pointer;padding:10px 2px;color:#2f5d4a;font-weight:600}
+.me-more[open]>summary{margin-bottom:8px}
+#weak-dialog .weak-grid{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}

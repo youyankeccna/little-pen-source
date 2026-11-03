@@ -1,0 +1,21 @@
+"use strict";
+// P2-11 首页口算入口；P2-12 每页页脚“小小笔尖 · 扫码再出一张”+二维码，地址来自配置。
+const assert = require("assert"), fs = require("fs");
+const html = fs.readFileSync(__dirname + "/index.html", "utf8");
+assert.ok(html.includes('href="#/materials?subject=math&kind=calculations"') && html.includes("今日口算一页（附答案）"));
+assert.ok(html.indexOf("site-config.js") < html.indexOf("engine.js") && html.indexOf("vendor/qrcode.js") < html.indexOf("engine.js"));
+globalThis.qrcode = require("./vendor/qrcode.js");
+const cfg = require("./site-config.js");
+const E = require("./engine.js");
+assert.strictEqual(cfg.footerText, "小小笔尖 · 扫码再出一张");
+globalThis.location = { origin: "https://pen.example" };
+assert.strictEqual(E.footerUrl(), "https://pen.example");
+cfg.shareUrl = "https://fixed.example/";
+assert.strictEqual(E.footerUrl(), "https://fixed.example/");
+const calls = { rect: 0, text: [] };
+const ctx = { save() {}, restore() {}, fillRect() { calls.rect++; }, fillText(t) { calls.text.push(t); } };
+E.drawFooter(ctx);
+assert.ok(calls.text.includes("小小笔尖 · 扫码再出一张"));
+assert.ok(calls.rect > 50, "QR modules drawn");
+assert.strictEqual((fs.readFileSync(__dirname + "/engine.js", "utf8").match(/drawFooter\(ctx\);/g) || []).length, 2);
+console.log("footer-qr ok");
