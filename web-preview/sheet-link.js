@@ -6,8 +6,9 @@
   if (typeof module === "object" && module.exports) module.exports = api;
   else root.SheetLink = api;
 })(typeof self !== "undefined" ? self : this, function () {
-  // 二维码在纸上约 10mm；超过这个字节数模块太密，手机扫不出，改用首页地址。
-  const QR_MAX_BYTES = 150;
+  // v9b：二维码约 12mm、纠错 L；内容按 UTF-8 原文编码（汉字 3 字节而非 %XX 的 9 字节）。
+  // 实测（jsQR，600dpi/300dpi 光栅化）超过约 360 字节模块过密，解码不稳，改用首页地址。
+  const QR_MAX_BYTES = 360;
   const SHARE_MAX_BYTES = 1800;
   const CELL = { hanzi: 1, cizu: 1, duanluo: 1, pinyin: 1, word: 1, paragraph: 1, alphabet: 1 };
   // 只编码能完整还原这张纸的少量字段
@@ -42,8 +43,18 @@
     return base(loc, configured) + hash;
   }
   // 二维码内容：本张纸的链接；太长则退回首页
+  // 把 %E5%BA%8A 这类非 ASCII 转义还原成原字（IRI），扫码后浏览器会自动重新转义
+  function compact(url) {
+    return url.replace(/(?:%[89a-f][0-9a-f])+/gi, (m) => {
+      try {
+        return decodeURIComponent(m);
+      } catch {
+        return m;
+      }
+    });
+  }
   function qrUrl(hash, loc, configured) {
-    const full = absolute(hash, loc, configured);
+    const full = compact(absolute(hash, loc, configured));
     return bytes(full) <= QR_MAX_BYTES ? full : base(loc, configured);
   }
   function shareUrl(hash, loc, configured) {
@@ -65,5 +76,5 @@
     if (["hanzi", "cizu"].includes(type)) s.showPinyin = params.get("pinyin") === "1";
     return s;
   }
-  return { QR_MAX_BYTES, hashFor, absolute, qrUrl, shareUrl, applyParams, bytes };
+  return { QR_MAX_BYTES, hashFor, compact, absolute, qrUrl, shareUrl, applyParams, bytes };
 });

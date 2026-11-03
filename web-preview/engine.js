@@ -504,8 +504,10 @@
   function qrMatrix(url) {
     if (!url || typeof root.qrcode !== "function") return null;
     if (!qrCache[url]) {
-      const qr = root.qrcode(0, "M");
-      qr.addData(url);
+      // v9b：UTF-8 字节模式（链接里直接放汉字），纠错 L 以容纳更长内容
+      if (root.qrcode.stringToBytesFuncs && root.qrcode.stringToBytesFuncs["UTF-8"]) root.qrcode.stringToBytes = root.qrcode.stringToBytesFuncs["UTF-8"];
+      const qr = root.qrcode(0, "L");
+      qr.addData(url, "Byte");
       qr.make();
       const n = qr.getModuleCount();
       qrCache[url] = Array.from({ length: n }, (_, r) => Array.from({ length: n }, (_, c) => qr.isDark(r, c)));
@@ -513,8 +515,8 @@
     return qrCache[url];
   }
   // v9：二维码编码“本张纸”的链接（model.footerUrl，由页面按当前设置生成），没有时用首页。
-  // 尺寸 38 单位 ≈ 10mm（v8 为 8mm）。
-  const QR_SIZE = 38;
+  // v9b：尺寸 45 单位 ≈ 12mm（v9 为 10mm），配合 360 字节上限。
+  const QR_SIZE = 45;
   function drawFooter(ctx, link) {
     const url = link || footerUrl();
     const text = (root.LittlePenConfig && root.LittlePenConfig.footerText) || "小小笔尖 · 扫码再出一张";

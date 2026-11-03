@@ -99,6 +99,7 @@ window.MaterialLibrary=(()=>{
  function open(params=new URLSearchParams()){
   planning++;let previous={};try{previous=JSON.parse(localStorage.getItem('little-pen-material-context:'+(WorkbookAccount.scope()||'guest'))||'{}');}catch{}
   const saved=WorkbookAccount.studyContext()||previous,subject=['cn','en','math'].includes(params.get('subject'))?params.get('subject'):saved.subject||'cn';
+  if(subject==='math'){history.replaceState(null,'','#/calc?grade='+Math.min(6,Math.max(1,Number(params.get('grade')||saved.grade)||1)));window.dispatchEvent(new HashChangeEvent('hashchange'));return;}
   const requested=C.getLesson(params.get('lesson'));
   if(saved.grade===0&&subject!=='en'&&!params.has('grade')){location.hash='#/early';return;}
   const grade=Number(params.get('grade')||saved.grade||1);context={subject,grade:WorkflowRules.normalizeGrade(grade,subject,false),term:['upper','lower'].includes(params.get('term'))?params.get('term'):saved.term||'upper',edition:WorkbookAccount.edition(subject)};
@@ -106,7 +107,7 @@ window.MaterialLibrary=(()=>{
   rows=C.lessons.filter(l=>l.materialLibrary&&l.grade===context.grade&&l.subject===subject&&l.term===context.term&&(subject==='math'||l.series===context.edition));
   // A supplied link may choose a lesson only from the current account's edition.
   const view=by('materials-view')||by('personal-view');view.replaceChildren();const wrap=node('div',undefined,'material-library');view.append(wrap);
-  const head=node('header',undefined,'bank-heading');head.append(node('span','跟课本 · 整册与单元素材','bank-eyebrow'),node('h1',subject==='cn'?'语文，一册慢慢练':subject==='en'?'英语，单元里学与写':'数学，边写边算'));
+  const head=node('header',undefined,'bank-heading');const subjectTabs=node('nav',undefined,'hub-tabs textbook-tabs');subjectTabs.setAttribute('aria-label','科目');for(const [id,label] of [['cn','语文'],['en','英语'],['math','数学']]){const t=node('a',label,'hub-tab');t.href=id==='math'?'#/calc?grade='+Math.max(1,Number(context.grade)||1):'#/materials?subject='+id;if(id===subject)t.setAttribute('aria-current','page');subjectTabs.append(t);}head.append(node('span','跟课本 · 整册与单元素材','bank-eyebrow'),subjectTabs,node('h1',subject==='cn'?'语文，一册慢慢练':subject==='en'?'英语，单元里学与写':'数学，边写边算'));
   head.append(node('p',subject==='cn'?'整册字词、句段和课文片段集中选择，不必逐课查找。':subject==='en'?'选择单元，查看单词、短语与句段的中文释义。':'按年级与册次选择专项，每批题目都有对应答案。'));
   const sw=node('nav',undefined,'hub-tabs textbook-switch');sw.setAttribute('aria-label','跟课本');for(const [label,href,cur] of [['按课次','#/course?'+new URLSearchParams({subject,grade:context.grade,term:context.term}),false],['素材库','#/materials?subject='+subject,true]]){const t=node('a',label,'hub-tab');t.href=href;if(cur)t.setAttribute('aria-current','page');sw.append(t);}wrap.append(sw);wrap.append(head);
   const contextBox=node('section',undefined,'bank-context');const contextText=node('strong',`${context.grade} 年级 · ${context.term==='upper'?'上册':'下册'} · ${subject==='math'?'原创计算专项':(WorkbookAccount.editionOptions[subject]?.find(e=>e[0]===context.edition)?.[1]||context.edition)}`);contextBox.append(contextText);

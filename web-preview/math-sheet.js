@@ -64,10 +64,29 @@
     for (const k of ["grade", "topic", "n", "pages", "box", "key"]) if (params.has(k)) o[k] = params.get(k);
     const lesson = params.get("lesson") && C()?.getLesson(params.get("lesson"));
     if (lesson && lesson.subject === "math") {
-      o.grade = o.grade || lesson.grade;
-      if (lesson.materialLibrary) o.topic = lesson.id;
+      o.grade = o.grade || Math.max(1, lesson.grade);
+      if (!o.topic) o.topic = topicForLesson(lesson);
     }
     return normalize(o);
+  }
+  // v9b：任何数学课次都对应一个计算专项（同年级同册、课题最相近；找不到用本年级第一个）
+  function topicForLesson(lesson) {
+    if (!lesson || lesson.subject !== "math") return "";
+    const grade = Math.min(6, Math.max(1, Number(lesson.grade) || 1));
+    const list = topics(grade);
+    if (list.some((t) => t.id === lesson.id)) return lesson.id;
+    const words = new Set(Array.from(String(lesson.title || "") + String(lesson.unit || "")).filter((ch) => /[\u4e00-\u9fff0-9]/.test(ch)));
+    const score = (t) => Array.from(t.title).filter((ch) => words.has(ch)).length + (t.term === lesson.term ? 0.5 : 0);
+    let best = null;
+    for (const t of list) if (!best || score(t) > score(best)) best = t;
+    return best ? best.id : "";
+  }
+  function hashForLesson(lesson, extra = {}) {
+    const q = new URLSearchParams({ grade: String(Math.min(6, Math.max(1, Number(lesson?.grade) || 1))) });
+    const topic = topicForLesson(lesson);
+    if (topic) q.set("topic", topic);
+    for (const [k, v] of Object.entries(extra)) q.set(k, String(v));
+    return "#/calc?" + q;
   }
   function toParams(s) {
     return { grade: s.grade, topic: s.topic, n: s.n, pages: s.pages, box: s.box, key: s.key ? "1" : "0" };
@@ -290,5 +309,5 @@
     });
     pdf.save(`计算练习-${s.grade}年级-${model.title}.pdf`);
   }
-  return { BOXES, defaultBox, topics, parse, normalize, fromParams, toParams, build, draw, open };
+  return { BOXES, defaultBox, topics, topicForLesson, hashForLesson, parse, normalize, fromParams, toParams, build, draw, open };
 });

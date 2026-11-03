@@ -705,6 +705,11 @@ async function route() {
     history.replaceState(null, "", "#/" + NavMap.redirectOf(key));
     return route();
   }
+  // v9b：素材库的数学也只练计算
+  if (key === "materials" && params.get("subject") === "math") {
+    history.replaceState(null, "", "#/calc?grade=" + Math.min(6, Math.max(1, Number(params.get("grade")) || 1)));
+    return route();
+  }
   const isEditor = !!D.types[key],
     calc = key === "calc",
     free = key === "make" || key === "gushi",
@@ -1903,8 +1908,9 @@ window.SheetShare = {
   },
 };
 const MathRoute = {
-  isCalc: (c) => c?.subject === "math" && ["calculations", "calculationAnswers"].includes(c.kind),
-  hashFor: (c) => "#/calc?" + new URLSearchParams({ lesson: c.lessonId, key: "1" }),
+  // v9b：数学只练计算——任何数学课次（数字、算式、用语、计算）都进入计算练习页
+  isCalc: (c) => c?.subject === "math",
+  hashFor: (c) => MathSheet.hashForLesson(CurriculumData.getLesson(c.lessonId), { key: "1" }),
 };
 
 function openAccessInfo() {

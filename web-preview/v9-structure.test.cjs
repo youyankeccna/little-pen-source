@@ -22,12 +22,12 @@ const loc = { origin: "https://pen.example", pathname: "/" };
   const hash = L.hashFor("hanzi", { text: "山水", cellType: "mzg", size: 14, showPinyin: true, traceNum: 4 });
   assert.strictEqual(hash, "#/hanzi?text=%E5%B1%B1%E6%B0%B4&cell=mzg&size=14&pinyin=1&trace=4");
   const qr = L.qrUrl(hash, loc);
-  assert.strictEqual(qr, "https://pen.example/" + hash);
+  assert.strictEqual(qr, "https://pen.example/#/hanzi?text=山水&cell=mzg&size=14&pinyin=1&trace=4"); // v9b：汉字原文入码
   assert.ok(L.bytes(qr) <= L.QR_MAX_BYTES);
   // 别的类型也编码（英文单词）
   assert.strictEqual(L.hashFor("word", { text: "cat dog", cellType: "fourLine", size: 9 }), "#/word?text=cat+dog&cell=fourLine&size=9");
-  // 太长：退回首页，保证约 10mm 的码仍然能扫
-  const long = L.hashFor("duanluo", { text: "床前明月光疑是地上霜".repeat(4), size: 10 });
+  // 太长：退回首页，保证约 12mm 的码仍然能扫
+  const long = L.hashFor("duanluo", { text: "床前明月光疑是地上霜".repeat(12), size: 10 });
   assert.strictEqual(L.qrUrl(long, loc), "https://pen.example/");
   // 配置的公开地址优先
   assert.strictEqual(L.qrUrl("#/calc?grade=2", loc, "https://xx.example"), "https://xx.example/#/calc?grade=2");
@@ -42,7 +42,7 @@ const loc = { origin: "https://pen.example", pathname: "/" };
   assert.ok(L.bytes(L.qrUrl(calcHash, loc)) <= L.QR_MAX_BYTES, "calc link fits QR");
   // 引擎按 model.footerUrl 画码，二维码放大到约 10mm
   const engine = read("engine.js");
-  assert.ok(/const QR_SIZE = 38;/.test(engine) && /link \|\| footerUrl\(\)/.test(engine));
+  assert.ok(/const QR_SIZE = 45;/.test(engine) && /link \|\| footerUrl\(\)/.test(engine));
   assert.ok(/model\.footerUrl = SheetLink\.qrUrl\(currentSheetHash\(\)/.test(app));
   // 从链接还原：任何类型
   const restored = L.applyParams(D.defaults("word"), new URLSearchParams("text=cat&size=9&trace=2&mode=copy"), "word");
