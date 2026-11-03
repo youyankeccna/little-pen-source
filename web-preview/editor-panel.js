@@ -2,7 +2,7 @@
   "use strict";
   // One-tap practice modes shown as cards above the preview (hanzi / cizu only).
   const MODES = [
-    { id: "trace", title: "初学描红", desc: "1 个范字 + 几个描红，其余留空" },
+    { id: "trace", title: "初学描红", desc: "1 个范字 + 3 个描红，其余留空" },
     { id: "copy", title: "独立临写", desc: "看范字，自己写" },
     { id: "quiz", title: "看拼音写字", desc: "复习自测，可出答案版" },
     { id: "fade", title: "渐隐描红", desc: "描红一格比一格淡" },
@@ -17,7 +17,7 @@
     const s = { ...state, fadeTrace: false };
     if (id === "trace") {
       s.practiceMode = "trace";
-      if (!(s.traceNum > 0 && s.traceNum < 10)) s.traceNum = 3;
+      if (!(s.traceNum > 0 && s.traceNum < 10)) s.traceNum = 4;
     } else if (id === "copy") s.practiceMode = "copy";
     else if (id === "quiz") {
       s.practiceMode = "quiz";

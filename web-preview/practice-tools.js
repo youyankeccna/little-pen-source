@@ -4,7 +4,7 @@ const englishModes=[['copy','中英对照描写'],['to-en','看中文写英文']
 function ageConfig(base,type,grade,subject){
  const s={...base},cn=['hanzi','cizu'].includes(type),young=grade<=2;
  s.size=grade===0?18:young?14:10;s.rowGap=young?3:2;s.scale=cn?68:75;
- s.traceNum=young?4:2;s.leading=true;s.blankRow=false;s.blankCol=false;s.fillPage=false;
+ s.traceNum=young?4:3;s.leading=true;s.blankRow=false;s.blankCol=false;s.fillPage=false;
  s.practiceMode='trace';s.showPinyin=cn&&grade>0&&young;s.showBishun=false;
  if(['alphabet','word','paragraph'].includes(type)){s.font=/[\u3400-\u9fff]/.test(s.text)?'wenkai':'sans';s.offset=0;s.size=young?14:10;}
  if(['hanzi','cizu','duanluo','bihua'].includes(type)){s.size=grade===0?14:type==='duanluo'?(young?10:8):(young?11:9);s.rowGap=1.5;s.scale=68;}

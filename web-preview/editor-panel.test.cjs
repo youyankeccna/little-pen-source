@@ -4,7 +4,7 @@ assert.strictEqual(P.modeOf({}), "trace");
 assert.strictEqual(P.modeOf({ practiceMode: "trace", fadeTrace: true }), "fade");
 assert.strictEqual(P.modeOf({ practiceMode: "answer" }), "quiz");
 let s = P.applyMode({ practiceMode: "copy", traceNum: 20, fadeTrace: true }, "trace");
-assert.deepStrictEqual([s.practiceMode, s.traceNum, s.fadeTrace], ["trace", 3, false]);
+assert.deepStrictEqual([s.practiceMode, s.traceNum, s.fadeTrace], ["trace", 4, false]);
 s = P.applyMode({ traceNum: 2 }, "fade");
 assert.deepStrictEqual(
   [s.practiceMode, s.fadeTrace, s.traceNum, s.fadeStyle],

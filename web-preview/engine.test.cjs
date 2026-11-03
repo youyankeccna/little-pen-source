@@ -20,5 +20,5 @@ assert(model('hanzi',{padding:[100,100,100,100]}).g.cols<model('hanzi').g.cols);
 const paragraph=model('paragraph',{text:'The quick brown fox jumps over the lazy dog.\nSecond paragraph.'});
 assert.equal(paragraph.rows.join(' ').replace(/\s+/g,' '),'The quick brown fox jumps over the lazy dog. Second paragraph.');
 const long=model('paragraph',{text:'x'.repeat(200)});assert.equal(long.rows.join('').length,200);
-const saved=D.defaults('hanzi'),built=E.build('hanzi',saved,measure);saved.text='不同';assert.equal(built.state.text,'你好世界');
+const saved=D.defaults('hanzi'),built=E.build('hanzi',saved,measure);saved.text='不同';assert.equal(built.state.text,'大小天人');
 console.log('PASS: 10 types, 58 stroke entries, 32 patterns, input parsing, blank rows/columns, paging, margins, auxiliary-row geometry, long text, immutable export model');

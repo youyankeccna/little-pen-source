@@ -92,7 +92,7 @@ window.FamilyWorkspace=(()=>{
   const error=n('p');error.setAttribute('role','alert');const submit=n('button','预览整份姓名练习','button primary');submit.type='submit';batch.append(error,submit);batch.onsubmit=e=>{e.preventDefault();const list=names.value.trim().split(/\r?\n/).map(x=>x.trim());if(!list.length||list.length>20||list.some(x=>! /^[\u4e00-\u9fff]{1,6}$/.test(x))){error.textContent='请每行填写 1–6 个汉字，最多 20 个名字。';return;}try{sessionStorage.setItem('little-pen-batch-names:'+(A.scope()||'guest'),JSON.stringify(list));location.hash='#/hanzi?starter=batch-names';}catch{error.textContent='当前浏览器无法保存名单，请允许网站存储后重试。';}};bulk.append(batch);box.append(bulk);
  }
  function starter(id,name,type){
-  const state={...D.defaults(type),font:'wenkai',size:18,traceNum:3,fillPage:false,showBishun:false};
+  const state={...D.defaults(type),font:'wenkai',size:18,traceNum:4,fillPage:false,showBishun:false};
   if(id==='name'&&type==='hanzi'&&/^[\u4e00-\u9fff]{1,6}$/.test(name||''))return {...state,text:name};
   if(id==='batch-names'&&type==='hanzi'){let names=[];try{names=JSON.parse(sessionStorage.getItem('little-pen-batch-names:'+(A.scope()||'guest'))||'[]');}catch{}if(Array.isArray(names)&&names.length&&names.length<=20&&names.every(x=>/^[\u4e00-\u9fff]{1,6}$/.test(x)))return {...state,text:names.join('\n'),batchNames:names,fillPage:true,showHeader:true,header:{title:'我的名字练习',name:'',className:'',date:''}};return null;}
   const stage=PrintableGuides.stages.find(s=>'control-'+s.id===id);if(stage&&type==='pen-control')return {...state,text:stage.codes,size:24,controlGuides:true,fillPage:true,showHeader:true,header:{title:stage.title,name:'',className:'',date:''}};

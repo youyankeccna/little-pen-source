@@ -46,7 +46,7 @@
       size: n.size,
       showPinyin: n.pinyin,
       fillPage: false,
-      traceNum: 4,
+      traceNum: root.WorkbookData.traceCount(1),
       practiceMode: "trace",
       fadeTrace: false,
       showBishun: false,

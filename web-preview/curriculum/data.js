@@ -63,14 +63,14 @@ if(topicCatalog&&topicPractice){
   const existing=new Set(lessons.map(key));
   for(const source of topicCatalog.lessons){if(existing.has(key(source)))continue;const row=topicPractice.enrich({...source});if(row.packs.length){lessons.push(row);existing.add(key(row));}}
 }
-function originLabel(origin){return origin==='user-provided-ocr'?'教材提取稿（待校订）':origin==='authorized-textbook'?'教材内容（审核记录见来源）':origin==='cross-checked-list'?'教材写字表（已与公开来源核对）':origin==='public-domain'?'古诗公版原作':origin==='selected-from-public-domain'?'诗中选字词（本站整理）':origin==='selected-from-title'?'课题选字词（非教材字词表）':'自编巩固内容';}
+function originLabel(origin){return origin==='user-provided-ocr'?'内容待核对':origin==='authorized-textbook'?'教材内容（审核记录见来源）':origin==='cross-checked-list'?'教材写字表（已与公开来源核对）':origin==='public-domain'?'古诗公版原作':origin==='selected-from-public-domain'?'诗中选字词（本站整理）':origin==='selected-from-title'?'课题选字词（非教材字词表）':'自编巩固内容';}
 function getBook(grade,subject,term,editionId='pep'){
   if(Number(grade)!==0&&editionId!=='pep'&&!imported.editions[subject]?.some(e=>e[0]===editionId))return {grade:Number(grade),subject,term,name:Number(grade)+'年级',lessons:[],edition:({bnu:'北师大版',sujiao:'苏教版',fltrp:'外研版（三年级起点）',yilin:'译林版（三年级起点）'})[editionId]||'所选版本',notice:'所选教材版本的内容尚未收录，可切换人教版浏览现有内容。'};
   const found=lessons.filter(x=>!x.materialLibrary&&x.grade===Number(grade)&&x.subject===subject&&(Number(grade)===0||(x.series||'pep')===editionId)&&(Number(grade)===0||x.term===term)).sort((a,b)=>(a.teachingOrder??999)-(b.teachingOrder??999));
   const hasImported=found.some(l=>l.contentStatus==='ocr-draft');
   const name=Number(grade)===0?'幼儿园':Number(grade)+'年级';
   const englishNotIncluded=subject==='en'&&[1,2].includes(Number(grade))&&!found.length;
-  return {grade:Number(grade),subject,term,name,lessons:found,edition:found[0]?.edition|| (englishNotIncluded?'当前范围：人教 PEP 三年级起点':'人教版 · 本册目录待核对'),notice:hasImported?'含用户提供的教材OCR素材，单元课次和文字待校订；未覆盖的册次继续显示原有补充内容。':englishNotIncluded?'当前英语先按 PEP 三年级起点整理，一、二年级的其他英语教材系列暂未接入。':found.length?'当前不限定新版，版次待核验。课题选字、主题自编练习与公版古诗分别标注，不等同于教材指定字词表或完整课文。':'本册尚未录入目录及练习内容。'};
+  return {grade:Number(grade),subject,term,name,lessons:found,edition:found[0]?.edition|| (englishNotIncluded?'当前范围：人教 PEP 三年级起点':'人教版 · 本册目录待核对'),notice:hasImported?'部分课次内容待核对。':englishNotIncluded?'当前英语先按 PEP 三年级起点整理，一、二年级的其他英语教材系列暂未接入。':found.length?'当前不限定新版，版次待核验。课题选字、主题自编练习与公版古诗分别标注，不等同于教材指定字词表或完整课文。':'本册尚未录入目录及练习内容。'};
 }
 function getLesson(id){return lessons.find(x=>x.id===id);}
 const sample=root.FirstGradeSample||(typeof require==='function'?require('./first-grade-sample.js'):null);if(sample)sample.apply(lessons);

@@ -10,7 +10,7 @@ function review(item,action,now=Date.now()){
  if(['reviewed','again'].includes(action))value.lastReviewAt=seconds;
  return value;
 }
-function dailyConfig(base){return {...base,size:base.size,rowGap:base.rowGap,padding:[36,36,36,36],scale:base.scale,practiceMode:'trace',traceNum:3,showPinyin:true,showBishun:false,blankRow:false,blankCol:false};}
+function dailyConfig(base){return {...base,size:base.size,rowGap:base.rowGap,padding:[36,36,36,36],scale:base.scale,practiceMode:'trace',traceNum:4,showPinyin:true,showBishun:false,blankRow:false,blankCol:false};}
 function presets(type){return ['hanzi','cizu'].includes(type)?[
  {id:'trace',title:'初学描红',description:'少量描红，留空自己写'},
  {id:'copy',title:'独立临写',description:'看一个范字，再独立书写'},
@@ -19,7 +19,7 @@ function presets(type){return ['hanzi','cizu'].includes(type)?[
 function presetConfig(base,type,mode,grade=1){
  if(!presets(type).some(p=>p.id===mode))return base;
  const chinese=['hanzi','cizu'].includes(type);
- return {...base,practiceMode:chinese?mode:'trace',size:base.size,rowGap:base.rowGap===1.5?1.5:2,padding:[36,36,36,36],traceNum:grade<=2?3:2,leading:true,fillPage:false,blankRow:false,blankCol:false,showPinyin:chinese&&(mode==='quiz'||(mode==='trace'&&grade<=2)),showBishun:false};
+ return {...base,practiceMode:chinese?mode:'trace',size:base.size,rowGap:base.rowGap===1.5?1.5:2,padding:[36,36,36,36],traceNum:grade<=2?4:3,leading:true,fillPage:false,blankRow:false,blankCol:false,showPinyin:chinese&&(mode==='quiz'||(mode==='trace'&&grade<=2)),showBishun:false};
 }
 root.LearningRules={day,due,review,dailyConfig,presets,presetConfig};if(typeof module!=='undefined')module.exports=root.LearningRules;
 })(typeof globalThis!=='undefined'?globalThis:this);

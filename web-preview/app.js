@@ -826,7 +826,7 @@ async function route() {
     state = D.defaults("hanzi");
     state.text = activeReview.text;
     state.size = 11;
-    state.traceNum = 3;
+    state.traceNum = D.traceCount(WorkbookAccount.studyContext()?.grade ?? 1);
     state.practiceMode = "trace";
   } else if (activeCourse) {
     state = courseState(activeCourse);
@@ -1210,7 +1210,7 @@ function openFonts() {
     ...keys.map((key) => {
       const b = el("button", "font-option");
       b.type = "button";
-      const sample = el("span", "font-sample", group === "cn" ? "你好世界" : "Aa Bb 123");
+      const sample = el("span", "font-sample", group === "cn" ? "大小天人" : "Aa Bb 123");
       sample.style.fontFamily = D.fonts[key].family;
       b.append(el("span", "", D.fonts[key].name + (key === state.font ? " ✓" : "")), sample);
       b.onclick = () => {
@@ -1642,7 +1642,7 @@ $("reset").onclick = () => {
   state = activeSaved
     ? structuredClone(activeSaved.config)
     : activeReview
-      ? { ...D.defaults("hanzi"), text: activeReview.text, traceNum: 3, size: 11 }
+      ? { ...D.defaults("hanzi"), text: activeReview.text, traceNum: D.traceCount(WorkbookAccount.studyContext()?.grade ?? 1), size: 11 }
       : activeCourse
         ? courseDefaults()
         : D.defaults(type);

@@ -40,7 +40,7 @@ function apply(lessons){
   l.editorialCorrection={date:'2026-10-23',scope:'按本地素材中本课独立选字行清理；移除图片说明、教学指令和跨课混入内容。',basis:'语文/统编版/一年级/语文-一年级上册·练字素材.md',textbookWritingListVerified:false};
   l.note='本课选字已按用户提供素材中的独立选字行整理；原识字表与写字表仍需对照教材页面确认，不将这些字标为必写字。';
  }
- const flag=lessons.find(l=>l.id==='import-5cc784e0ce98dc8c-21');if(flag){flag.title='8 升国旗';flag.editorialCorrection={date:'2026-10-23',originalTitle:'8 笄国旗',scope:'仅校正课名，正文仍待校订。',basis:'与现有目录条目 topic-cn-1-upper-42 交叉核对'};}
+ const flag=lessons.find(l=>l.id==='import-5cc784e0ce98dc8c-21');if(flag){flag.title='8 升国旗';flag.editorialCorrection={date:'2026-10-23',originalTitle:'8 笄国旗',scope:'仅校正课名，正文仍待核对。',basis:'与现有目录条目 topic-cn-1-upper-42 交叉核对'};}
 }
 function organize(book){
  if(book.grade!==1||book.subject!=='cn'||book.term!=='upper'||!book.lessons.some(l=>l.id==='cn-1u-tiandiren'))return {...book,extras:[],variants:{},pilot:false};
@@ -50,7 +50,7 @@ function organize(book){
   const chosen=matches.find(l=>l.curation)||matches.find(l=>l.contentStatus!=='ocr-draft');if(!chosen)continue;
   primary.push({...chosen,unit});variants[chosen.id]=matches.filter(l=>l.id!==chosen.id);matches.forEach(l=>used.add(l.id));
  }
- return {...book,lessons:primary,extras:book.lessons.filter(l=>!used.has(l.id)),variants,pilot:true,notice:'默认展示逐课整理的选编练习；教材指定识字表、写字表及具体版次尚待核验。原始提取稿与其他补充内容仍可查看。'};
+ return {...book,lessons:primary,extras:book.lessons.filter(l=>!used.has(l.id)),variants,pilot:true,notice:'默认展示逐课整理的选编练习；写字表已核对的册次可在“素材库”中直接选字。'};
 }
 root.CoursePilot={apply,organize};if(typeof module!=='undefined')module.exports=root.CoursePilot;
 })(typeof globalThis!=='undefined'?globalThis:this);
