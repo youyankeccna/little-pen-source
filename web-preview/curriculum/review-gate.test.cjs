@@ -13,7 +13,7 @@ for(const bad of ['另','办','爪'])assert.ok(!lib(1,'cn','upper')[0].packs[0].
 for(const bad of ['舌','嘴','饼','址','開','釋','獎'])assert.ok(!lib(1,'cn','lower')[0].packs[0].items.some(i=>i.text===bad),'1下 OCR 误字已去掉：'+bad);
 // 2上：部分已校对；2下及以上：待收录且不可选
 assert.equal(lib(2,'cn','upper')[0].reviewStatus,'partial');assert.equal(lib(2,'cn','upper')[0].packs[0].items.length,X['cn-2-upper'].total);
-for(const [g,t] of [[2,'lower'],[3,'upper'],[6,'lower']]){const [l]=lib(g,'cn',t);assert.ok(l.pending);assert.equal(l.packs.length,0);assert.match(l.title,/待收录/);}
+for(const [g,t] of [[2,'lower'],[3,'upper'],[6,'lower']]){const [l]=lib(g,'cn',t);assert.ok(l.pending);assert.equal(l.packs.length,0);assert.match(l.title,/整理中/);}
 // 没有任何 OCR 提取稿进入目录；英语单元去重、残缺单元隐藏
 assert.ok(!C.lessons.some(l=>l.contentStatus==='ocr-draft'));
 assert.ok(!C.lessons.some(l=>/^bank-en-ocr-/.test(l.id)));
@@ -28,4 +28,11 @@ assert.ok(lib(6,'en','lower').some(l=>/Then and now/.test(l.title)));
 for(const k of Object.keys(X)){const s=X[k].groups.map(g=>g.chars).join('');assert.equal(s.length,X[k].total,k);assert.equal(new Set(s).size,s.length,k);}
 assert.equal(X['cn-2-lower'].status,'pending');assert.equal(X['cn-2-lower'].total,0);
 assert.equal(G.volumeStatus('cn',1,'upper'),'reviewed');assert.equal(G.volumeStatus('cn',2,'lower'),'pending');
-console.log('PASS: reviewed 写字表 1上/1下, partial 2上, 待收录 others, no OCR drafts, English deduped');
+console.log('PASS: reviewed 写字表 1上/1下, partial 2上, 整理中 others, no OCR drafts, English deduped');
+// 页面可见文字不出现内部审核/OCR 说明
+{const BAD=/OCR|提取|审核|校对|待收录|非完整|待核|待补齐|待确认|待校订/;const keys=['title','unit','note','edition','section','label','notice'];
+ const walk=(o,path)=>{if(!o||typeof o!=='object')return;for(const [k,v] of Object.entries(o)){if(k==='sources')continue;if(typeof v==='string'&&keys.includes(k))assert.ok(!BAD.test(v),path+'.'+k+': '+v);else walk(v,path+'.'+k);}};
+ for(const l of C.lessons)walk(l,l.id);
+ for(const g of [1,2,3])for(const t of ['upper','lower']){const b=C.getCourseBook(g,'cn',t,'pep');assert.ok(!BAD.test(b.notice||''),b.notice);assert.ok(!BAD.test(b.edition||''),b.edition);}
+ assert.equal(G.cleanText('统编版 · 用户提供OCR素材'),'统编版');
+ console.log('PASS: no OCR/审核 wording in visible lesson fields');}

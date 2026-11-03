@@ -40,7 +40,7 @@ function apply(lessons){
   l.editorialCorrection={date:'2026-10-23',scope:'按本地素材中本课独立选字行清理；移除图片说明、教学指令和跨课混入内容。',basis:'语文/统编版/一年级/语文-一年级上册·练字素材.md',textbookWritingListVerified:false};
   l.note='本课选字已按用户提供素材中的独立选字行整理；原识字表与写字表仍需对照教材页面确认，不将这些字标为必写字。';
  }
- const flag=lessons.find(l=>l.id==='import-5cc784e0ce98dc8c-21');if(flag){flag.title='8 升国旗';flag.editorialCorrection={date:'2026-10-23',originalTitle:'8 笄国旗',scope:'仅校正课名，正文仍待核对。',basis:'与现有目录条目 topic-cn-1-upper-42 交叉核对'};}
+ const flag=lessons.find(l=>l.id==='import-5cc784e0ce98dc8c-21');if(flag){flag.title='8 升国旗';flag.editorialCorrection={date:'2026-10-23',originalTitle:'8 笄国旗',scope:'仅校正课名。',basis:'与现有目录条目 topic-cn-1-upper-42 交叉核对'};}
 }
 function organize(book){
  if(book.grade!==1||book.subject!=='cn'||book.term!=='upper'||!book.lessons.some(l=>l.id==='cn-1u-tiandiren'))return {...book,extras:[],variants:{},pilot:false};

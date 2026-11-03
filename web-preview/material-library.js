@@ -116,10 +116,10 @@ window.MaterialLibrary=(()=>{
     const label=node('label',title),sel=node('select');sel.setAttribute('aria-label','素材库'+title);options(sel,values,String(context[field]));sel.onchange=()=>{location.hash='#/materials?'+new URLSearchParams({...context,[field]:sel.value});};label.append(sel);choices.append(label);
    }contextText.textContent=context.subject==='math'?'原创计算专项':(WorkbookAccount.editionOptions[subject]?.find(e=>e[0]===context.edition)?.[1]||context.edition);contextBox.prepend(choices);
   }
-  const cnNotice=list=>{const l=list.find(r=>r.reviewStatus);return !l?'本册写字表正在校对，完成后开放。':l.reviewStatus==='reviewed'?'写字表已逐字核对，可直接选字练习。':'本册只收录已核对的部分写字表，其余字还在校对。';};
+  
   const coverage=B.coverage.find(b=>b.subject===subject&&b.grade===context.grade&&b.term===context.term&&b.series===context.edition);
-  const notice=node('p',subject==='cn'?cnNotice(rows):subject==='en'?'词汇按本单元课文整理，中文释义由本站编写；原创短文另行标注。':'按常见教学进度编制的原创练习，具体学习顺序请结合学校教材。','bank-notice');wrap.append(notice);
-  const pendingRows=rows.filter(l=>l.pending);rows=rows.filter(l=>!l.pending);if(!rows.length){wrap.append(node('p',pendingRows.length?'本册待收录：教材写字表还在校对中，校对完成后再开放。可先按课次浏览自编练习。':'本册暂没有可用的整册双语素材，可先按课次浏览已有内容。','bank-empty'));return;}
+  const notice=node('p',subject==='cn'?'':subject==='en'?'词汇按本单元课文整理，中文释义由本站编写；原创短文另行标注。':'按常见教学进度编制的原创练习，具体学习顺序请结合学校教材。','bank-notice');notice.hidden=!notice.textContent;wrap.append(notice);
+  const pendingRows=rows.filter(l=>l.pending);rows=rows.filter(l=>!l.pending);if(!rows.length){wrap.append(node('p',pendingRows.length?'本册整理中，可先按课次浏览练习。':'本册暂没有可用的整册双语素材，可先按课次浏览已有内容。','bank-empty'));return;}
   const unitLabel=node('label',subject==='math'?'计算专项':'单元','bank-unit-label'),unit=node('select');unit.id='bank-lesson';unit.setAttribute('aria-label',subject==='math'?'计算专项':'英语单元');options(unit,rows.map(l=>[l.id,l.title]),rows[0].id);unit.onchange=()=>chooseLesson(unit.value);unitLabel.append(unit);unitLabel.hidden=subject==='cn';wrap.append(unitLabel);
   const mathPanel=node('div',undefined,'bank-math-options');mathPanel.id='bank-math-options';wrap.append(mathPanel);
   const tabs=node('div',undefined,'bank-kinds');tabs.id='bank-kinds';tabs.setAttribute('aria-label','素材类型');wrap.append(tabs);
@@ -134,7 +134,7 @@ window.MaterialLibrary=(()=>{
   const biLabel=node('label',undefined,'bank-bilingual');biLabel.id='bank-bilingual-label';const bi=node('input');bi.type='checkbox';bi.id='bank-bilingual';bi.onchange=()=>{bilingual=bi.checked;save();if(quantity.startsWith('page-'))applyQuantity();else estimate();};biLabel.append(bi,node('span','打印中文释义'));bar.append(biLabel);
   const enLabel=node('label','英语练法 ','bank-english-mode');enLabel.id='bank-english-mode-label';const enSelect=node('select');enSelect.id='bank-english-mode';enSelect.setAttribute('aria-label','英语练法');options(enSelect,PracticeTools.englishModes,'copy');enSelect.onchange=()=>{englishMode=enSelect.value;save();renderItems();if(quantity.startsWith('page-'))applyQuantity();else estimate();};enLabel.append(enSelect);bar.append(enLabel);
   const answer=button('同批答案',()=>preview(true));answer.id='bank-answer';const start=button('预览练习纸',()=>preview(),'button primary');start.id='bank-preview';bar.append(answer,start);wrap.append(bar);
-  const detail=node('details',undefined,'bank-sources');detail.append(node('summary','收录范围与来源说明'),node('p','语文现有 9 册教材文件，四、五、六年级下册为补充练习。课文暂以可识别片段呈现，尚非完整课文库。英语优先整理人教 PEP 三至六年级；其他版本按可配对的双语词汇收录。预览时可设置铺满 A4 纸；无需登录即可导出和打印，登录后可云端保存。'));const report=node('a','查看本册数量与缺漏清单');report.href='curriculum/material-bank-coverage.json';report.target='_blank';report.rel='noopener';detail.append(report);wrap.append(detail);
+  const detail=node('details',undefined,'bank-sources');detail.append(node('summary','收录范围与来源说明'),node('p','语文现有 9 册教材文件，四、五、六年级下册为补充练习。英语优先整理人教 PEP 三至六年级；其他版本按可配对的双语词汇收录。预览时可设置铺满 A4 纸；无需登录即可导出和打印，登录后可云端保存。'));wrap.append(detail);
   let prior={};try{prior=JSON.parse(localStorage.getItem(key())||'{}');}catch{}
   if(params.has('kind'))prior.kind=params.get('kind').replace(/Bilingual$/,'');if(params.has('items')){prior.items=params.get('items').split(',');delete prior.page;}bilingual=params.has('bilingual')?params.get('bilingual')==='1':prior.bilingual??subject==='en';
   englishMode=PracticeTools.englishModes.some(m=>m[0]===prior.englishMode)?prior.englishMode:'copy';
