@@ -20,5 +20,12 @@ assert.ok(!C.lessons.some(l=>/^bank-en-ocr-/.test(l.id)));
 for(const g of [3,4,5,6])for(const t of ['upper','lower']){const rows=lib(g,'en',t);assert.ok(rows.length<=6,g+t+' '+rows.length);assert.equal(new Set(rows.map(l=>l.title)).size,rows.length);assert.ok(!rows.some(l=>/Unit (7|8|9|1\d)/.test(l.title)));}
 assert.ok(!lib(6,'en','lower').some(l=>/How tall/.test(l.title)),'6下 Unit 1 只有 1 个词，隐藏');
 assert.ok(lib(6,'en','lower').some(l=>/Then and now/.test(l.title)));
+// 2上：106 字，无重复，全部有 ≥2 个来源；首课 8 字（A+C 一致）已收录，冲突字（升/起/数/灾/知）未收录
+{const it=lib(2,'cn','upper')[0].packs[0].items;assert.equal(it.length,106);assert.equal(new Set(it.map(i=>i.text)).size,106);
+ assert.equal(it.filter(i=>i.group==='小蝌蚪找妈妈').map(i=>i.text).join(''),'两条哪宽那短孩成');
+ for(const bad of ['升','起','数','灾','知'])assert.ok(!it.some(i=>i.text===bad),'2上 来源冲突字未收录：'+bad);}
+// 每册总数与无重复
+for(const k of Object.keys(X)){const s=X[k].groups.map(g=>g.chars).join('');assert.equal(s.length,X[k].total,k);assert.equal(new Set(s).size,s.length,k);}
+assert.equal(X['cn-2-lower'].status,'pending');assert.equal(X['cn-2-lower'].total,0);
 assert.equal(G.volumeStatus('cn',1,'upper'),'reviewed');assert.equal(G.volumeStatus('cn',2,'lower'),'pending');
 console.log('PASS: reviewed 写字表 1上/1下, partial 2上, 待收录 others, no OCR drafts, English deduped');
