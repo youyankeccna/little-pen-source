@@ -234,3 +234,12 @@ input[type=checkbox]{accent-color:var(--c-primary)}
 .textbook-switch{display:inline-flex!important;flex-wrap:nowrap;background:var(--c-sunken);border-radius:var(--r-pill);padding:4px;gap:2px;border:1px solid var(--c-line)}
 .textbook-switch .hub-tab{border:0!important;background:transparent!important;color:var(--c-text-2)!important;padding:6px 18px!important;box-shadow:none!important;min-height:0}
 .textbook-switch .hub-tab[aria-current=page]{background:var(--c-surface)!important;color:var(--c-primary)!important;box-shadow:var(--sh-1)!important}
+/* 计算页使用独立画布，覆盖通用字帖打印区的隐藏规则。 */
+@media print{
+ body.calc-mode #editor,body.calc-mode #paper-stack{display:none!important}
+ body.calc-mode #calc-view,body.calc-mode #calc-view *{visibility:visible!important}
+ body.calc-mode #calc-view{position:absolute!important;left:0!important;top:0!important;width:210mm!important;margin:0!important}
+ body.calc-mode .calc-stack{display:block!important}
+ body.calc-mode .calc-page{display:block!important;page-break-after:always}
+ body.calc-mode .calc-page:last-child{break-after:auto;page-break-after:auto}
+}
