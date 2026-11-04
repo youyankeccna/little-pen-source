@@ -140,7 +140,7 @@ input[type=checkbox]{accent-color:var(--c-primary)}
   body.editor-mode .header-actions .export-menu summary{width:100%}
   body.editor-mode .header-actions .export-dropdown{bottom:calc(100% + 8px);top:auto}
   body.editor-mode .header-actions .account-menu{overflow:visible;max-width:none}
-  body.editor-mode .header-actions .account-menu>div{top:auto;bottom:calc(100% + 8px);left:0;right:auto;width:min(200px,calc(100vw - 24px));max-height:min(70dvh,calc(100dvh - 96px));overflow:auto;z-index:60}
+  .account-actions .account-menu>div{top:calc(100% + 8px);bottom:auto;left:auto;right:0;width:min(200px,calc(100vw - 24px));max-height:min(70dvh,calc(100dvh - 96px));overflow:auto;z-index:60}
   body.editor-mode #page-info{display:none}
   body.editor-mode .app-shell{padding-bottom:80px}
   body.editor-mode .studio-header{min-height:0!important;height:auto!important;padding:10px 0!important;backdrop-filter:none;background:var(--c-surface)}
@@ -266,4 +266,21 @@ a,button,summary,label,select,.chip,[role=button]{-webkit-tap-highlight-color:rg
   .picker-chips{flex-wrap:wrap!important;overflow-x:visible!important}
   .hub-foot a{display:inline-flex;align-items:center;min-height:44px;padding:0 6px}
   dialog{max-height:calc(100dvh - 24px);overscroll-behavior:contain}
+}
+
+/* 账号留在页首，移动端底栏只放四个主要操作。 */
+.account-actions{display:flex;align-items:center;gap:8px;min-width:0;margin-left:auto}
+.account-actions>[hidden]{display:none!important}
+.mobile-action-label{display:none}
+@media(max-width:700px){
+ .account-actions{flex-wrap:wrap;justify-content:flex-end;max-width:100%}
+ .account-actions .account-menu{max-width:120px}
+ .account-actions #active-child{max-width:140px;min-height:44px}
+ .account-actions #family-open{display:none}
+ .account-actions .help-button{width:44px;height:44px;flex-shrink:0}
+ body.editor-mode .header-actions{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+ body.editor-mode .header-actions .button,body.editor-mode .header-actions summary{font-size:14px;gap:4px}
+ body.editor-mode .header-actions .desktop-action-label{display:none}
+ body.editor-mode .header-actions .mobile-action-label{display:inline}
+ body.editor-mode .header-actions .export-menu summary>img:first-child{display:none}
 }
