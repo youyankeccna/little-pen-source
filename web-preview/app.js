@@ -906,6 +906,14 @@ async function route() {
         : SheetLink.applyParams(state, params, key) || state;
     history.replaceState(null, "", "#/" + key);
   }
+  if (!activeCourse && !activeSaved && !activeReview && !shared && params.has("template")) {
+    const templateState = TemplateGallery.stateFor(params.get("template"), type);
+    if (templateState) {
+      state = templateState;
+      history.replaceState(null, "", "#/" + key);
+      save();
+    }
+  }
   if (activeCourse && params.has("preset"))
     state = LearningRules.presetConfig(courseDefaults(), type, params.get("preset"), activeCourse.grade);
   // v9：任何字帖都能分享（自己做的用链接，课本内容登录后可用可停用的分享）

@@ -65,7 +65,29 @@ window.Hubs = (() => {
     const link = el("a", "", "跟课本");
     link.href = "#/course" + (s.id === "pen" ? "" : "?subject=" + s.id);
     foot.append(link, "。");
-    box.append(head, tabs, el("p", "hub-sub", s.desc), grid, foot);
+    box.append(head, tabs);
+    const templates = window.TemplateGallery.templates.filter(t => t.subject === s.id);
+    if (templates.length) {
+      const section = el("section", "template-gallery");
+      section.setAttribute("aria-label", "常用模板");
+      section.append(el("h2", "", "选一张，直接开始"), el("p", "hub-sub", "模板内是示例内容，打开后可替换；排版还能继续调整。"));
+      const previews = el("div", "template-grid");
+      for (const t of templates) {
+        const link = el("a", "template-card"), canvas = el("canvas", "template-paper");
+        link.href = window.TemplateGallery.href(t);
+        canvas.setAttribute("aria-hidden", "true");
+        link.append(canvas, el("strong", "", t.title), el("span", "", t.description), el("span", "template-use", "使用模板 →"));
+        previews.append(link);
+        // Font loading is shared by the browser; detached galleries are not repainted.
+        window.TemplateGallery.paint(canvas, t);
+        document.fonts.load(WorkbookEngine.fontString(window.TemplateGallery.stateFor(t.id, t.type)), t.config.text).then(() => {
+          if (canvas.isConnected) window.TemplateGallery.paint(canvas, t);
+        }).catch(() => {});
+      }
+      section.append(previews);
+      box.append(section, el("h2", "hub-free-title", "自由制作"));
+    }
+    box.append(el("p", "hub-sub", s.desc), grid, foot);
   }
   // 古诗：语文下的一等类型。列出公版诗文，点一首直接进入段落字帖（整首描红）。
   function gushiList() {
