@@ -412,6 +412,8 @@ function renderModeCards() {
   }
 }
 function renderControls() {
+  const nextSheet = $("next-sheet");
+  if (nextSheet) nextSheet.hidden = !state.templateId;
   renderGridBar();
   renderModeCards();
   for (const id of [
@@ -1711,6 +1713,45 @@ $("pattern-input").oninput = () => {
     .join("");
   $("pattern-input").value = state.text;
   schedule();
+};
+if ($("next-sheet")) $("next-sheet").onclick = () => {
+  if (!state.templateId) return;
+  if (activeCourse) {
+    const lesson = CurriculumData.getLesson(activeCourse.lessonId);
+    const pack = lesson?.packs.find((item) => item.kind === activeCourse.kind);
+    const ids = pack ? pack.items.map((item) => item.id) : [];
+    const count = activeCourse.itemIds.length || 1;
+    const start = Math.max(0, ids.indexOf(activeCourse.itemIds[0]));
+    const nextIds = ids.slice(start + count, start + count * 2);
+    const selection = nextIds.length ? CurriculumData.getSelection(activeCourse.lessonId, activeCourse.kind, nextIds) : null;
+    if (!selection) {
+      toast("这一课的内容已经换完，没有再重复。");
+      return;
+    }
+    const fresh = TemplateGallery.courseConfig(courseDefaults(selection), state.templateId, type);
+    fresh.text = selection.text;
+    state = TemplateGallery.keepLayout(state, fresh);
+    activeCourse = selection;
+    const query = new URLSearchParams(location.hash.split("?")[1] || "");
+    query.set("items", nextIds.join(","));
+    query.delete("template");
+    history.replaceState(null, "", "#/" + type + "?" + query);
+    save();
+    renderControls();
+    updateInputPreview();
+    render();
+    return;
+  }
+  const result = TemplateGallery.nextContent(state, state.templateId, type, (state.templateOffset || 0) + 1);
+  if (!result || result.exhausted) {
+    toast("这一模板的内容已经换完，没有再重复。可以换一个模板。");
+    return;
+  }
+  state = result.state;
+  save();
+  renderControls();
+  updateInputPreview();
+  render();
 };
 $("reset").onclick = () => {
   state = activeSaved

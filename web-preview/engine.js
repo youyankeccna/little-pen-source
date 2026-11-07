@@ -203,7 +203,15 @@
         }
       }
     } else rows = splitRows(type, state, g, measure);
-    if (state.fillPage && rows.length && !["to-en", "to-cn"].includes(state.englishMode)) {
+    if (state.fillMode === "verse" && state.fillPage && rows.length) {
+      const base = rows.filter((row) => String(row).trim());
+      if (base.length > g.rows) rows = base;
+      else if (base.length) {
+        const filled = [];
+        while (filled.length < g.rows) filled.push(base[filled.length % base.length]);
+        rows = filled;
+      }
+    } else if (state.fillPage && rows.length && !["to-en", "to-cn"].includes(state.englishMode)) {
       const original = rows.slice(),
         target = Math.ceil(rows.length / g.rows) * g.rows;
       while (rows.length < target) rows.push(structuredClone(original[rows.length % original.length]));

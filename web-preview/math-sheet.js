@@ -47,6 +47,16 @@
       }),
     };
   }
+  function contentBand() {
+    const pad = 15 * MM;
+    return { pad, top: pad + 70, bottom: H - pad - 30 };
+  }
+  function capacity(s, wide) {
+    const band = contentBand();
+    const target = (s.grade <= 2 ? 10 : 8) * MM;
+    const rows = Math.max(1, Math.floor((band.bottom - band.top) / (target / 0.62)));
+    return rows * (wide ? 1 : 2);
+  }
   function normalize(opts = {}) {
     const grade = Math.min(6, Math.max(1, Number(opts.grade) || 1));
     const t = resolveTopic(grade, opts.topic);
@@ -57,11 +67,24 @@
       pages: Math.min(3, Math.max(1, Number(opts.pages) || 1)),
       box: BOXES.some((b) => b[0] === opts.box) ? opts.box : defaultBox(grade),
       key: opts.key === undefined ? true : !(opts.key === false || opts.key === "0"),
+      fill: opts.fill === true || opts.fill === "1" || opts.fill === 1,
+      start: Math.max(0, Math.floor(Number(opts.start) || 0)),
     };
   }
   function fromParams(params) {
     const o = {};
-    for (const k of ["grade", "topic", "n", "pages", "box", "key"]) if (params.has(k)) o[k] = params.get(k);
+    for (const k of ["grade", "topic", "n", "pages", "box", "key", "start", "fill"]) if (params.has(k)) o[k] = params.get(k);
+    const templateId = params.get("template");
+    if (templateId) {
+      const gallery = root.TemplateGallery || (typeof require === "function" ? require("./template-gallery.js") : null);
+      const card = gallery && gallery.templates.find((item) => item.id === templateId && item.type === "calc");
+      if (card) {
+        if (!params.has("grade")) o.grade = card.grade;
+        if (!params.has("topic")) o.topic = card.topic;
+        if (!params.has("fill") && !params.has("n")) o.fill = true;
+        if (!params.has("pages")) o.pages = 1;
+      }
+    }
     const lesson = params.get("lesson") && C()?.getLesson(params.get("lesson"));
     if (lesson && lesson.subject === "math") {
       o.grade = o.grade || Math.max(1, lesson.grade);
@@ -89,21 +112,60 @@
     return "#/calc?" + q;
   }
   function toParams(s) {
-    return { grade: s.grade, topic: s.topic, n: s.n, pages: s.pages, box: s.box, key: s.key ? "1" : "0" };
+    const params = { grade: s.grade, topic: s.topic, pages: s.pages, box: s.box, key: s.key ? "1" : "0" };
+    if (s.fill) params.fill = "1";
+    else params.n = s.n;
+    if (s.start) params.start = s.start;
+    return params;
+  }
+  function bank(topic) {
+    const lesson = topic && C()?.getLesson(topic);
+    const items = (lesson?.packs || []).find((p) => p.kind === "calculations")?.items || [];
+    const seen = new Set();
+    const unique = [];
+    for (const item of items) {
+      if (seen.has(item.text)) continue;
+      seen.add(item.text);
+      unique.push(item);
+    }
+    return unique;
   }
   function build(opts) {
     const s = normalize(opts);
-    const lesson = s.topic && C().getLesson(s.topic);
-    const items = (lesson?.packs || []).find((p) => p.kind === "calculations")?.items || [];
-    const problems = items.slice(0, s.n * s.pages).map(parse);
-    const wide = problems.some((p) => p.parts.join("").length > 16 || p.blanks.length > 1 || p.blanks.some((b) => b.cells >= 5));
-    const cols = wide || s.n === 10 ? 1 : 2;
-    const perPage = s.n;
+    const lesson = s.topic && C()?.getLesson(s.topic);
+    const items = bank(s.topic);
+    const probe = items[Math.min(s.start, Math.max(items.length - 1, 0))];
+    const wide = !!probe && (String(probe.text).length > 18 || String(probe.text).includes("余"));
+    const perPage = s.fill ? capacity(s, wide) : s.n;
+    const count = perPage * s.pages;
+    const taken = s.start >= items.length ? [] : items.slice(s.start, s.start + count);
+    const problems = taken.map(parse);
+    const widePage = problems.some((p) => p.parts.join("").length > 16 || p.blanks.length > 1 || p.blanks.some((b) => b.cells >= 5));
+    const cols = widePage || (!s.fill && s.n === 10) ? 1 : 2;
     const sheets = [];
     for (let i = 0; i < problems.length; i += perPage) sheets.push(problems.slice(i, i + perPage));
     const pageList = sheets.map((list, i) => ({ list, answers: false, index: i }));
-    if (s.key) sheets.forEach((list, i) => pageList.push({ list, answers: true, index: i }));
-    return { settings: s, title: lesson?.title || "计算练习", cols, pageList, problems };
+    if (s.key && sheets.length) sheets.forEach((list, i) => pageList.push({ list, answers: true, index: i }));
+    const next = s.start >= items.length ? s.start : s.start + problems.length;
+    return {
+      settings: { ...s, n: perPage },
+      title: lesson?.title || "计算练习",
+      cols,
+      pageList,
+      problems,
+      next,
+      exhausted: next >= items.length,
+      bank: items.length,
+    };
+  }
+  function pageMetrics(model) {
+    const band = contentBand();
+    const page = model.pageList.find((p) => !p.answers);
+    const target = (model.settings.grade <= 2 ? 10 : 8) * MM;
+    if (!page || !page.list.length) return { ...band, rows: 0, rowH: 0, box: 0, target };
+    const rows = Math.ceil(page.list.length / model.cols);
+    const rowH = Math.min(80, (band.bottom - band.top) / Math.max(rows, 1));
+    return { ...band, rows, rowH, box: Math.min(target, rowH * 0.62), target };
   }
   // ---------- 绘制 ----------
   function drawBox(ctx, x, y, size, style) {
@@ -249,7 +311,7 @@
     panel.append(head);
     const go = (patch) => (location.hash = hash({ ...s, ...patch }));
     panel.append(
-      chips("年级", [1, 2, 3, 4, 5, 6].map((g) => [g, g + " 年级"]), s.grade, (g) => go({ grade: g, topic: "", box: defaultBox(g) })),
+      chips("年级", [1, 2, 3, 4, 5, 6].map((g) => [g, g + " 年级"]), s.grade, (g) => go({ grade: g, topic: "", box: defaultBox(g), start: 0 })),
     );
     const topicField = el("label", "calc-field");
     topicField.append(el("span", "calc-label", "专项"));
@@ -262,14 +324,27 @@
       sel.append(o);
     }
     sel.value = s.topic;
-    sel.onchange = () => go({ topic: sel.value });
+    sel.onchange = () => go({ topic: sel.value, start: 0 });
     topicField.append(sel);
     panel.append(topicField);
-    panel.append(chips("每页题数", PER_PAGE.map((n) => [n, n + " 题"]), s.n, (n) => go({ n })));
-    panel.append(chips("页数", [1, 2, 3].map((n) => [n, n + " 页"]), s.pages, (pages) => go({ pages })));
+    panel.append(chips("每页题数", [...PER_PAGE.map((n) => [n, n + " 题"]), ["fill", "铺满一页"]], s.fill ? "fill" : s.n, (n) => {
+      if (n === "fill") go({ fill: true, start: 0 });
+      else go({ n, fill: false, start: 0 });
+    }));
+    panel.append(chips("页数", [1, 2, 3].map((n) => [n, n + " 页"]), s.pages, (pages) => go({ pages, start: 0 })));
     panel.append(chips("答案格", BOXES, s.box, (box) => go({ box })));
     panel.append(chips("答案页", [["1", "附答案页"], ["0", "不附"]], s.key ? "1" : "0", (k) => go({ key: k === "1" })));
     const actions = el("div", "calc-actions");
+    const next = el("button", "button outline", "换一张");
+    next.type = "button";
+    next.id = "calc-next";
+    next.onclick = () => {
+      if (model.exhausted) {
+        root.SheetShare?.toast("这一专项的题目已经用完，没有再重复出题。");
+        return;
+      }
+      go({ start: model.next });
+    };
     const print = el("button", "button primary", "打印");
     print.type = "button";
     print.id = "calc-print";
@@ -282,9 +357,13 @@
     share.type = "button";
     share.id = "calc-share";
     share.onclick = () => root.SheetShare?.copy(link(s), "计算练习链接已复制，任何人打开都能得到同一张纸。");
-    actions.append(print, pdf, share);
+    actions.append(next, print, pdf, share);
     panel.append(actions);
-    panel.append(el("p", "calc-note", `共 ${model.problems.length} 题 · ${model.pageList.length} 页${s.key ? "（含答案页）" : ""}。题目为本站原创，答案已逐题核对。`));
+    const answerPages = model.pageList.filter((p) => p.answers).length;
+    const bodyPages = model.pageList.length - answerPages;
+    panel.append(el("p", "calc-note", model.problems.length
+      ? `共 ${model.problems.length} 题 · 正文 ${bodyPages} 页${answerPages ? "，另附答案 " + answerPages + " 页" : ""}。换一张保留年级、专项、格子和答案开关。`
+      : "这一专项的题目已经用完，没有再重复出题。"));
     const stack = el("section", "calc-stack");
     stack.id = "calc-stack";
     stack.setAttribute("aria-label", "计算练习预览");
@@ -309,5 +388,5 @@
     });
     pdf.save(`计算练习-${s.grade}年级-${model.title}.pdf`);
   }
-  return { BOXES, defaultBox, topics, topicForLesson, hashForLesson, parse, normalize, fromParams, toParams, build, draw, open };
+  return { BOXES, defaultBox, topics, topicForLesson, hashForLesson, parse, normalize, fromParams, toParams, build, pageMetrics, draw, open };
 });

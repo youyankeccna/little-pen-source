@@ -50,7 +50,7 @@ window.Hubs = (() => {
     tabs.setAttribute("aria-label", "科目");
     for (const x of N.MAKE_SUBJECTS) {
       const a = el("a", "hub-tab", x.label);
-      a.href = x.module === "calc" ? "#/calc?grade=" + Math.max(1, window.WorkbookAccount?.studyContext?.()?.grade || 1) : "#/make?subject=" + x.id;
+      a.href = "#/make?subject=" + x.id;
       if (x.id === s.id) a.setAttribute("aria-current", "page");
       tabs.append(a);
     }
@@ -92,9 +92,9 @@ window.Hubs = (() => {
     }
     if (!['book', 'builtin', ...lessons.map(l => l.id)].includes(choice.source)) choice.source = 'book';
     sourceSelect.value = choice.source; sourceSelect.onchange = () => { choice.source = sourceSelect.value; remember(); }; sourceLabel.append(sourceSelect);
-    if (s.id !== 'pen') box.append(sourceLabel);
-    if (s.id !== 'pen' && !lessons.length) box.append(el('p', 'hub-sub', '本册暂无可直接带入的素材，下面提供内置专项练习；它们不标作本册课文。'));
-    const categories = { hanzi: '生字', cizu: '词语', duanluo: '句段', pinyin: '拼音', alphabet: '字母', word: '单词', paragraph: '词义与句子', 'pen-control': '控笔' };
+    if (s.id !== 'pen' && s.id !== 'math') box.append(sourceLabel);
+    if (s.id !== 'pen' && s.id !== 'math' && !lessons.length) box.append(el('p', 'hub-sub', '本册暂无可直接带入的素材，下面提供内置专项练习；它们不标作本册课文。'));
+    const categories = { hanzi: '生字', cizu: '词语', duanluo: '句段', pinyin: '拼音', alphabet: '字母', word: '单词', paragraph: '词义与句子', 'pen-control': '控笔', calc: '计算' };
     const filters = el('div', 'chip-group template-filters'); filters.setAttribute('aria-label', '模板类别');
     for (const [value, title] of [['all', '全部模板'], ...[...new Set(templates.map(t => t.type))].map(type => [type, categories[type]])]) {
       const b = el('button', 'chip', title); b.type = 'button'; b.setAttribute('aria-pressed', String(choice.category === value)); b.onclick = () => { choice.category = value; remember(); }; filters.append(b);
@@ -104,17 +104,20 @@ window.Hubs = (() => {
     if (templates.length) {
       const section = el("section", "template-gallery");
       section.setAttribute("aria-label", "常用模板");
-      const introduction = choice.source === 'builtin' || !lessons.length || s.id === 'pen'
+      const introduction = s.id === 'math'
+        ? '计算题已经备好。选一张就进入计算练习，换一张会换题目，并保留格子和答案开关。'
+        : choice.source === 'builtin' || !lessons.length || s.id === 'pen'
         ? '内置内容已经备好，选一种练法即可预览，不需要自己输入。'
         : '按所选内容匹配练法，每张卡片标明实际来源。';
       section.append(el("h2", "", "选一张，直接开始"), el("p", "hub-sub", introduction));
       const previews = el("div", "template-grid");
       for (const t of templates) {
         const link = el("a", "template-card"), canvas = el("canvas", "template-paper");
-        const source = choice.source === 'builtin' ? null : T.sources(t, { ...context, edition }, lessons).find(x => choice.source === 'book' || x.lesson.id === choice.source);
+        const calcCard = t.type === "calc";
+        const source = calcCard || choice.source === 'builtin' ? null : T.sources(t, { ...context, edition }, lessons).find(x => choice.source === 'book' || x.lesson.id === choice.source);
         const packSupported = ['hanzi','cizu','duanluo','word','paragraph'].includes(t.type);
         const unavailable = choice.source !== 'book' && choice.source !== 'builtin' && !source && packSupported;
-        link.href = source ? T.contentLink(t, source) : T.href(t);
+        link.href = calcCard ? T.href(t) : source ? T.contentLink(t, source) : T.href(t);
         const sourceText = source ? source.lesson.title + ' · ' + (source.pack.label || CurriculumData.kindInfo[source.pack.kind].label) + (source.pack.items.some(i => /待校订|待复核/.test(i.translationSource || '')) ? ' · 含待校订译文' : '') : unavailable ? '所选内容不支持此练法，请换内容或选择内置专项' : '内置专项 · 可直接练习';
         if (unavailable) { link.removeAttribute('href'); link.setAttribute('aria-disabled', 'true'); }
 
@@ -122,6 +125,8 @@ window.Hubs = (() => {
         link.append(canvas, el("strong", "", t.title), el("span", "", t.description), el("small", "template-origin", sourceText), el("span", "template-use", unavailable ? "暂无匹配内容" : "直接练习 →"));
         previews.append(link);
         // Font loading is shared by the browser; detached galleries are not repainted.
+        if (calcCard) T.paint(canvas, t);
+        else {
         let previewState = T.stateFor(t.id, t.type);
         if (source) {
           const q = new URLSearchParams(link.href.split('?')[1]);
@@ -132,6 +137,7 @@ window.Hubs = (() => {
         document.fonts.load(WorkbookEngine.fontString(previewState), previewState.text).then(() => {
           if (canvas.isConnected) T.paint(canvas, t, previewState);
         }).catch(() => {});
+        }
       }
       section.append(previews);
       box.append(section);

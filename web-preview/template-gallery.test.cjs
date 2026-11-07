@@ -6,11 +6,17 @@ assert.equal(new Set(T.templates.map(t => t.id)).size, T.templates.length);
 assert.equal(T.stateFor('missing', 'hanzi'), null);
 assert.equal(T.stateFor('pinyin-trace', 'word'), null);
 for (const t of T.templates) {
+  if (t.type === 'calc') {
+    assert.equal(T.stateFor(t.id, t.type), null);
+    const url = new URL(T.href(t), 'https://example.test/');
+    assert.equal(new URLSearchParams(url.hash.split('?')[1]).get('template'), t.id);
+    continue;
+  }
   const state = T.stateFor(t.id, t.type);
   assert.equal(state.text, t.config.text);
   assert(!('mathLayout' in state));
   assert(!('batchNames' in state));
-  if (t.id !== 'english-recall') assert(!('englishMode' in state));
+  if (!t.config.englishMode) assert(!('englishMode' in state));
   const model = E.build(t.type, state, text => text.length * 20);
   assert.equal(model.pages, 1, t.id + ' opens one page');
   assert(model.rows.length > 0);
@@ -29,7 +35,7 @@ assert.equal(T.stateFor('letter-trace', 'alphabet').pair, true);
 console.log('PASS: template identity, type boundaries, fresh settings, practice modes and A4 pagination');
 
 const C = require('./curriculum/data.js');
-assert.equal(T.templates.length, 26);
+assert.ok(T.templates.length >= 40);
 const cn = T.find('pinyin-trace', 'hanzi');
 const sources = T.sources(cn, {grade:1,term:'upper',edition:'pep'}, C.lessons);
 assert(sources.length);
@@ -49,4 +55,4 @@ for(const id of ['english-bilingual','english-recall','english-sentences']){
  assert(found.length,id);assert(found.every(x=>C.kindInfo[x.pack.kind].type===t.type));
 }
 assert.equal(T.sources(T.find('english-sentences','paragraph'),{grade:3,term:'upper',edition:'pep'},C.lessons)[0].pack.kind,'englishSentencesBilingual','prefer sentences with translations');
-console.log('PASS: 26 ready-to-use templates, reviewed-source gates, edition isolation and source text preservation');
+console.log('PASS: ready-to-use templates, reviewed-source gates, edition isolation and source text preservation');

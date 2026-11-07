@@ -19,7 +19,7 @@
     }
     if (type === "calc") {
       const q = new URLSearchParams();
-      for (const k of ["grade", "topic", "n", "pages", "box", "key"]) if (state[k] !== undefined && state[k] !== "") q.set(k, String(state[k]));
+      for (const k of ["grade", "topic", "n", "pages", "box", "key", "start", "fill"]) if (state[k] !== undefined && state[k] !== "") q.set(k, String(state[k]));
       return "#/calc" + (String(q) ? "?" + q : "");
     }
     const q = new URLSearchParams();
