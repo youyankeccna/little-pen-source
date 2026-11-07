@@ -19,7 +19,7 @@ assert.ok(T.templates.length >= 40, "at least 40 templates, got " + T.templates.
 for (const subject of Object.keys(SUBJECT_TYPES)) {
   assert.ok(T.templates.some((t) => t.subject === subject), subject);
 }
-const signature = (t) => JSON.stringify({ type: t.type, config: t.config || null, topic: t.topic || "", fillMode: t.fillMode || "" });
+const signature = (t) => JSON.stringify({ type: t.type, config: t.config || null, topic: t.topic || "", fillMode: t.fillMode || "", layout: t.layout || "" });
 assert.equal(new Set(T.templates.map(signature)).size, T.templates.length, "templates differ by content or practice, not only title");
 assert.ok(!T.templates.some((t) => t.type === "number"));
 

@@ -105,7 +105,7 @@ window.Hubs = (() => {
       const section = el("section", "template-gallery");
       section.setAttribute("aria-label", "常用模板");
       const introduction = s.id === 'math'
-        ? '计算题已经备好。选一张就进入计算练习，换一张会换题目，并保留格子和答案开关。'
+        ? '口算和竖式都已经备好。竖式只排能对齐的加减乘除，选一张就能预览。'
         : choice.source === 'builtin' || !lessons.length || s.id === 'pen'
         ? '内置内容已经备好，选一种练法即可预览，不需要自己输入。'
         : '按所选内容匹配练法，每张卡片标明实际来源。';

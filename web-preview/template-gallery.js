@@ -51,7 +51,11 @@
     { id: "calc-g3-add", subject: "math", type: "calc", grade: 3, topic: "bank-math-3-upper-add", title: "三位数加法", description: "三年级 · 三位数加法", sample: "246 + 138" },
     { id: "calc-g4-mul", subject: "math", type: "calc", grade: 4, topic: "bank-math-4-upper-mul-two", title: "三位数乘两位数", description: "四年级 · 乘法计算", sample: "128 × 16" },
     { id: "calc-g5-decimal", subject: "math", type: "calc", grade: 5, topic: "bank-math-5-upper-decimal-mul-int", title: "小数乘整数", description: "五年级 · 小数乘法", sample: "1.2 × 4" },
-    { id: "calc-g6-fraction", subject: "math", type: "calc", grade: 6, topic: "bank-math-6-upper-fraction-mul", title: "分数乘法", description: "六年级 · 分数乘法", sample: "1/2 × 1/3" }
+    { id: "calc-g6-fraction", subject: "math", type: "calc", grade: 6, topic: "bank-math-6-upper-fraction-mul", title: "分数乘法", description: "六年级 · 分数乘法", sample: "1/2 × 1/3" },
+    { id: "calc-g2-carry-vertical", subject: "math", type: "calc", grade: 2, topic: "bank-math-2-upper-carry", layout: "vertical", title: "进位加法竖式", description: "二年级 · 数位对齐，学生页不写得数", sample: "45 + 27" },
+    { id: "calc-g2-borrow-vertical", subject: "math", type: "calc", grade: 2, topic: "bank-math-2-upper-borrow", layout: "vertical", title: "退位减法竖式", description: "二年级 · 留出退位的位置", sample: "92 - 64" },
+    { id: "calc-g3-mul-vertical", subject: "math", type: "calc", grade: 3, topic: "bank-math-3-lower-mul-two", layout: "vertical", title: "两位数乘法竖式", description: "三年级 · 分步积留空，答案另页", sample: "48 × 14" },
+    { id: "calc-g3-div-vertical", subject: "math", type: "calc", grade: 3, topic: "bank-math-3-lower-div-one", layout: "vertical", title: "除法竖式", description: "三年级 · 除法括号，商写在线上", sample: "385 ÷ 7" }
   );
   const kinds = { hanzi: ['characters','extraCharacters'], cizu: ['words','extraWords'], duanluo: ['sentences','extraSentences'], word: ['vocabulary','phrases','extraPhrases'], paragraph: ['vocabularyBilingual','englishSentencesBilingual','englishExcerptsBilingual','englishSentences','englishExcerpts'] };
   function sources(t, context, lessons) {
@@ -108,6 +112,7 @@
   function href(t) {
     if (t.type === "calc") {
       const q = new URLSearchParams({ template: t.id, grade: String(t.grade), topic: t.topic, fill: "1", pages: "1" });
+      if (t.layout === "vertical") q.set("layout", "vertical");
       return "#/calc?" + q;
     }
     return "#/" + t.type + "?template=" + encodeURIComponent(t.id);
@@ -127,7 +132,7 @@
       ctx.fillText(t.title, 28, 58);
       ctx.font = "16px sans-serif";
       ctx.fillStyle = "#5d554a";
-      ctx.fillText((t.sample || "计算") + "    铺满一页", 28, 96);
+      ctx.fillText((t.layout === "vertical" ? "竖式  " : "") + (t.sample || "计算") + "    铺满一页", 28, 96);
       return;
     }
     const E = root.WorkbookEngine, s = previewState || stateFor(t.id, t.type);

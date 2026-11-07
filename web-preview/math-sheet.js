@@ -51,6 +51,47 @@
     const pad = 15 * MM;
     return { pad, top: pad + 70, bottom: H - pad - 30 };
   }
+  const VERTICAL_CELL = 30;
+  function V() {
+    return root.MathVertical || (typeof require === "function" ? require("./math-vertical.js") : null);
+  }
+  function stemGlyphs(layout, reveal) {
+    if (!layout) return [];
+    if (reveal) return layout.glyphs;
+    return layout.glyphs.filter((glyph) => (layout.op === "÷" ? glyph.y === 1 : glyph.y < 2));
+  }
+  function measureVertical(layout) {
+    const carry = layout.op === "+" || layout.op === "-" ? 1 : 0;
+    const line = VERTICAL_CELL * 1.15;
+    return { carry, cell: VERTICAL_CELL, line, h: 24 + (layout.height + carry) * line + 14 };
+  }
+  function packVertical(problems) {
+    const band = contentBand();
+    const inner = W - band.pad * 2;
+    const widest = problems.reduce((max, problem) => Math.max(max, (problem.vertical.width + 1) * VERTICAL_CELL + 28), 0);
+    const cols = problems.length && widest * 2 + 16 <= inner ? 2 : 1;
+    const colW = cols === 1 ? inner : (inner - 16) / 2;
+    const cards = [];
+    let y = band.top;
+    let index = 0;
+    while (index < problems.length) {
+      const take = [];
+      let rowH = 0;
+      while (take.length < cols && index + take.length < problems.length) {
+        const size = measureVertical(problems[index + take.length].vertical);
+        if (y + Math.max(rowH, size.h) > band.bottom) break;
+        take.push(problems[index + take.length]);
+        rowH = Math.max(rowH, size.h);
+      }
+      if (!take.length) break;
+      take.forEach((problem, col) => {
+        cards.push({ ...measureVertical(problem.vertical), problem, n: index + col, x: band.pad + col * (colW + 16), y, w: colW, h: rowH });
+      });
+      y += rowH + 10;
+      index += take.length;
+    }
+    return { cols, cards };
+  }
   function capacity(s, wide) {
     const band = contentBand();
     const target = (s.grade <= 2 ? 10 : 8) * MM;
@@ -60,7 +101,7 @@
   function normalize(opts = {}) {
     const grade = Math.min(6, Math.max(1, Number(opts.grade) || 1));
     const t = resolveTopic(grade, opts.topic);
-    return {
+    const out = {
       grade,
       topic: t ? t.id : "",
       n: PER_PAGE.includes(Number(opts.n)) ? Number(opts.n) : 20,
@@ -70,10 +111,12 @@
       fill: opts.fill === true || opts.fill === "1" || opts.fill === 1,
       start: Math.max(0, Math.floor(Number(opts.start) || 0)),
     };
+    if (opts.layout === "vertical" || opts.layout === "1") out.layout = "vertical";
+    return out;
   }
   function fromParams(params) {
     const o = {};
-    for (const k of ["grade", "topic", "n", "pages", "box", "key", "start", "fill"]) if (params.has(k)) o[k] = params.get(k);
+    for (const k of ["grade", "topic", "n", "pages", "box", "key", "start", "fill", "layout"]) if (params.has(k)) o[k] = params.get(k);
     const templateId = params.get("template");
     if (templateId) {
       const gallery = root.TemplateGallery || (typeof require === "function" ? require("./template-gallery.js") : null);
@@ -83,6 +126,7 @@
         if (!params.has("topic")) o.topic = card.topic;
         if (!params.has("fill") && !params.has("n")) o.fill = true;
         if (!params.has("pages")) o.pages = 1;
+        if (!params.has("layout") && card.layout === "vertical") o.layout = "vertical";
       }
     }
     const lesson = params.get("lesson") && C()?.getLesson(params.get("lesson"));
@@ -116,6 +160,7 @@
     if (s.fill) params.fill = "1";
     else params.n = s.n;
     if (s.start) params.start = s.start;
+    if (s.layout === "vertical") params.layout = "vertical";
     return params;
   }
   function bank(topic) {
@@ -130,8 +175,62 @@
     }
     return unique;
   }
+  function buildVertical(s) {
+    const lesson = s.topic && C()?.getLesson(s.topic);
+    const ready = [];
+    for (const item of bank(s.topic)) {
+      const vertical = V().parse(item.text);
+      if (!vertical) continue;
+      ready.push({ ...parse(item), text: item.text, answer: String(item.answer), vertical });
+    }
+    const title = (lesson?.title || "计算练习") + " · 竖式";
+    if (!ready.length) {
+      return { settings: { ...s, n: 0 }, title, cols: 1, pageList: [], problems: [], next: s.start, exhausted: true, unsupported: true, bank: 0 };
+    }
+    if (s.start >= ready.length) {
+      return { settings: { ...s, n: 0 }, title, cols: 1, pageList: [], problems: [], next: s.start, exhausted: true, bank: ready.length };
+    }
+    const sheets = [];
+    let cursor = s.start;
+    while (sheets.length < s.pages && cursor < ready.length) {
+      const limit = s.fill ? ready.length - cursor : Math.min(s.n, ready.length - cursor);
+      const packed = packVertical(ready.slice(cursor, cursor + limit));
+      if (!packed.cards.length) break;
+      sheets.push(packed);
+      cursor += packed.cards.length;
+    }
+    const problems = sheets.flatMap((sheet) => sheet.cards.map((card) => card.problem));
+    let number = 0;
+    const pageList = [];
+    sheets.forEach((sheet, index) => {
+      pageList.push({ list: sheet.cards.map((card) => card.problem), answers: false, index, numberStart: number, cards: sheet.cards });
+      number += sheet.cards.length;
+    });
+    if (s.key && sheets.length) {
+      sheets.forEach((sheet, index) => {
+        pageList.push({
+          list: sheet.cards.map((card) => card.problem),
+          answers: true,
+          index,
+          numberStart: pageList[index].numberStart,
+          cards: sheet.cards,
+        });
+      });
+    }
+    return {
+      settings: { ...s, n: sheets[0] ? sheets[0].cards.length : 0 },
+      title,
+      cols: sheets[0] ? sheets[0].cols : 1,
+      pageList,
+      problems,
+      next: cursor,
+      exhausted: cursor >= ready.length,
+      bank: ready.length,
+    };
+  }
   function build(opts) {
     const s = normalize(opts);
+    if (s.layout === "vertical") return buildVertical(s);
     const lesson = s.topic && C()?.getLesson(s.topic);
     const items = bank(s.topic);
     const probe = items[Math.min(s.start, Math.max(items.length - 1, 0))];
@@ -160,6 +259,12 @@
   }
   function pageMetrics(model) {
     const band = contentBand();
+    if (model.settings.layout === "vertical") {
+      const page = model.pageList.find((p) => !p.answers);
+      if (!page || !page.cards.length) return { ...band, cell: VERTICAL_CELL, rows: 0, lastBottom: band.top };
+      const last = page.cards.reduce((best, card) => (card.y + card.h > best.y + best.h ? card : best));
+      return { ...band, cell: VERTICAL_CELL, rows: page.cards.length, lastBottom: last.y + last.h, cols: model.cols };
+    }
     const page = model.pageList.find((p) => !p.answers);
     const target = (model.settings.grade <= 2 ? 10 : 8) * MM;
     if (!page || !page.list.length) return { ...band, rows: 0, rowH: 0, box: 0, target };
@@ -168,6 +273,34 @@
     return { ...band, rows, rowH, box: Math.min(target, rowH * 0.62), target };
   }
   // ---------- 绘制 ----------
+  function drawVertical(ctx, page, font) {
+    for (const card of page.cards) {
+      const layout = card.problem.vertical;
+      ctx.fillStyle = "#786e60";
+      ctx.font = "14px " + font;
+      ctx.textAlign = "left";
+      ctx.textBaseline = "alphabetic";
+      ctx.fillText("(" + (page.numberStart + card.n + 1) + ")", card.x, card.y + 16);
+      const originX = card.x + (card.w - layout.width * card.cell) / 2;
+      const originY = card.y + 28 + card.carry * card.line;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.font = card.cell * 0.72 + "px " + font;
+      for (const glyph of stemGlyphs(layout, page.answers)) {
+        const given = layout.op === "÷" ? glyph.y === 1 : glyph.y < 2;
+        ctx.fillStyle = page.answers && !given ? "#b4442b" : "#2b2722";
+        ctx.fillText(glyph.c, originX + glyph.x * card.cell + card.cell / 2, originY + glyph.y * card.line);
+      }
+      ctx.strokeStyle = "#24614f";
+      ctx.lineWidth = 1.4;
+      ctx.beginPath();
+      for (const line of layout.lines) {
+        ctx.moveTo(originX + line.x1 * card.cell + card.cell / 2, originY + line.y1 * card.line);
+        ctx.lineTo(originX + line.x2 * card.cell + card.cell / 2, originY + line.y2 * card.line);
+      }
+      ctx.stroke();
+    }
+  }
   function drawBox(ctx, x, y, size, style) {
     ctx.save();
     ctx.strokeStyle = "#24614f";
@@ -215,6 +348,12 @@
     ctx.moveTo(pad, pad + 48);
     ctx.lineTo(W - pad, pad + 48);
     ctx.stroke();
+    if (s.layout === "vertical") {
+      drawVertical(ctx, page, font);
+      const E = root.WorkbookEngine;
+      if (E && E.drawFooter) E.drawFooter(ctx, footerUrl);
+      return canvas;
+    }
     const top = pad + 70,
       bottom = H - pad - 30,
       rows = Math.ceil(page.list.length / model.cols),
@@ -307,7 +446,11 @@
     const head = el("header", "calc-head");
     const back = el("a", "hub-back", "← 做字帖 · 数学");
     back.href = "#/make?subject=math";
-    head.append(back, el("h1", "", "计算练习"), el("p", "", "只练计算：答案写进数字格，写数字就在计算里练。"));
+    head.append(
+      back,
+      el("h1", "", "计算练习"),
+      el("p", "", s.layout === "vertical" ? "竖式只排整数和小数的加减乘除。学生页只有对齐的题干和横线，答案在后面单独一页。" : "只练计算：答案写进数字格，写数字就在计算里练。"),
+    );
     panel.append(head);
     const go = (patch) => (location.hash = hash({ ...s, ...patch }));
     panel.append(
@@ -327,18 +470,25 @@
     sel.onchange = () => go({ topic: sel.value, start: 0 });
     topicField.append(sel);
     panel.append(topicField);
+    panel.append(chips("排版", [["oral", "口算"], ["vertical", "竖式"]], s.layout === "vertical" ? "vertical" : "oral", (layout) => go({ layout, start: 0 })));
     panel.append(chips("每页题数", [...PER_PAGE.map((n) => [n, n + " 题"]), ["fill", "铺满一页"]], s.fill ? "fill" : s.n, (n) => {
       if (n === "fill") go({ fill: true, start: 0 });
       else go({ n, fill: false, start: 0 });
     }));
     panel.append(chips("页数", [1, 2, 3].map((n) => [n, n + " 页"]), s.pages, (pages) => go({ pages, start: 0 })));
-    panel.append(chips("答案格", BOXES, s.box, (box) => go({ box })));
+    const boxField = chips("答案格", BOXES, s.box, (box) => go({ box }));
+    if (s.layout === "vertical") boxField.hidden = true;
+    panel.append(boxField);
     panel.append(chips("答案页", [["1", "附答案页"], ["0", "不附"]], s.key ? "1" : "0", (k) => go({ key: k === "1" })));
     const actions = el("div", "calc-actions");
     const next = el("button", "button outline", "换一张");
     next.type = "button";
     next.id = "calc-next";
     next.onclick = () => {
+      if (model.unsupported) {
+        root.SheetShare?.toast("这一专项不能排成竖式，没有另出一页。");
+        return;
+      }
       if (model.exhausted) {
         root.SheetShare?.toast("这一专项的题目已经用完，没有再重复出题。");
         return;
@@ -361,9 +511,11 @@
     panel.append(actions);
     const answerPages = model.pageList.filter((p) => p.answers).length;
     const bodyPages = model.pageList.length - answerPages;
-    panel.append(el("p", "calc-note", model.problems.length
-      ? `共 ${model.problems.length} 题 · 正文 ${bodyPages} 页${answerPages ? "，另附答案 " + answerPages + " 页" : ""}。换一张保留年级、专项、格子和答案开关。`
-      : "这一专项的题目已经用完，没有再重复出题。"));
+    panel.append(el("p", "calc-note", model.unsupported
+      ? "这一专项不能排成竖式。分数、混合运算、方程、百分数和比请继续用口算。"
+      : model.problems.length
+        ? `共 ${model.problems.length} 题 · 正文 ${bodyPages} 页${answerPages ? "，另附答案 " + answerPages + " 页" : ""}。换一张保留年级、专项、排版和答案开关。`
+        : "这一专项的题目已经用完，没有再重复出题。"));
     const stack = el("section", "calc-stack");
     stack.id = "calc-stack";
     stack.setAttribute("aria-label", "计算练习预览");
@@ -388,5 +540,5 @@
     });
     pdf.save(`计算练习-${s.grade}年级-${model.title}.pdf`);
   }
-  return { BOXES, defaultBox, topics, topicForLesson, hashForLesson, parse, normalize, fromParams, toParams, build, pageMetrics, draw, open };
+  return { BOXES, defaultBox, topics, topicForLesson, hashForLesson, parse, normalize, fromParams, toParams, build, pageMetrics, stemGlyphs, draw, open };
 });
