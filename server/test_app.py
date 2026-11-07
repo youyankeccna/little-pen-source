@@ -59,6 +59,22 @@ class AccountFlow(unittest.TestCase):
   self.assertEqual(self.request('DELETE','/api/me',{'password':'newpassword123','confirmation':'注销账号'},cookie)[0],200)
   self.assertEqual(self.request('GET','/api/worksheet-snapshots/'+sid,cookie=cookie)[0],401)
   with self.server.db() as db:self.assertEqual(db.execute('SELECT COUNT(*) FROM worksheet_snapshots WHERE id=?',(sid,)).fetchone()[0],0)
+ def test_square_grid_saves_favorites_and_reloads(self):
+  status,_,cookie=self.request('POST','/api/auth/register',{'username':'square_grid','password':'abcdefgh'})
+  self.assertEqual(status,200);cookie=cookie.split(';')[0]
+  self.assertEqual(self.request('PUT','/api/preferences',{'cn':'pep','math':'pep','en':'pep'},cookie)[0],200)
+  body=self.snapshot_data();body['config']['cellType']='fg';body['config']['text']='方格'
+  status,raw,_=self.request('POST','/api/worksheet-snapshots',body,cookie)
+  self.assertEqual(status,201,raw);self.assertNotIn('格线无效',raw.decode());saved=json.loads(raw)['snapshot'];self.assertEqual(saved['config']['cellType'],'fg')
+  self.assertEqual(self.request('PUT','/api/worksheet-snapshots/'+saved['id']+'/favorite',{'favorite':True},cookie)[0],200)
+  status,raw,_=self.request('GET','/api/worksheet-snapshots/'+saved['id'],cookie=cookie)
+  self.assertEqual(status,200);self.assertEqual(json.loads(raw)['snapshot']['config']['cellType'],'fg')
+  listed=json.loads(self.request('GET','/api/worksheet-snapshots?favorite=1',cookie=cookie)[1])['worksheets']
+  self.assertEqual(len(listed),1);self.assertTrue(listed[0]['favorite']);self.assertEqual(listed[0]['id'],saved['id'])
+  layout={'context':{'subject':'cn','grade':1,'type':'hanzi','variant':'standard'},'config':{'cellType':'fg','size':14},'version':0}
+  self.assertEqual(self.request('PUT','/api/layout-preferences',layout,cookie)[0],200)
+  rows=json.loads(self.request('GET','/api/layout-preferences',cookie=cookie)[1])['layouts']
+  self.assertEqual(rows[0]['config']['cellType'],'fg');self.assertEqual(rows[0]['config']['size'],14)
  def test_real_account_permissions_and_preferences(self):
   self.assertEqual(self.request('POST','/api/output',b'%PDF-1.4',mime='application/pdf')[0],401)
   self.assertEqual(self.request('POST','/api/auth/register',{'username':'parent_test','password':'abcdefgh'},origin=False)[0],403)

@@ -34,14 +34,14 @@ function apply(lessons){
  for(const [title,chars,words,sentences] of topics){
   const l=lessons.find(l=>l.grade===1&&l.subject==='cn'&&l.term==='upper'&&l.title===title);if(!l)throw Error('Sample topic missing: '+title);
   l.packs=[group('characters',[...new Set(chars)]),group('words',words.split(' ')),group('sentences',sentences.split('|'))];
-  l.note='本站按课题逐项整理的练习选字、词语与自编短句；不是教材写字表或课文原文，正式教材对应仍待核验。';found.push(l);
+  l.note='本站按课题逐项整理的练习选字、词语与自编短句。';found.push(l);
  }
  for(const [title,values] of phonics){
   const l=lessons.find(l=>l.grade===1&&l.subject==='cn'&&l.term==='upper'&&(l.title===title||(title==='ang eng ing ong'&&l.title==='ang en ing ong')));if(!l)throw Error('Phonics topic missing: '+title);
   l.title=title;l.packs=[group('pinyin',values)];l.note='本站整理的声韵母和音节书写练习；已修正目录中 eng 的拼写，不是教材原题。';found.push(l);
  }
  const poem=lessons.find(l=>l.id==='pd-cn-1-upper');if(poem)found.push(poem);
- for(const l of found)l.curation={batch:'grade1-upper-topic-pilot-1',status:'editorial-topic-sample',textbookWritingListVerified:false,note:'已检查课题对应、练习类型及字词内容；未作教师教学审核或指定写字表完整性认证。'};
+ for(const l of found)l.curation={batch:'grade1-upper-topic-pilot-1',status:'editorial-topic-sample',textbookWritingListVerified:false,note:'按课题整理的练习样本。'};
  const order=['天地人','金木水火土','口耳目手足','日月山川',...phonics.map(p=>p[0]),'秋天','江南','雪地里的小画家','四季','对韵歌','日月明'];
  found.forEach(l=>l.teachingOrder=order.indexOf(l.title));
  return found;

@@ -6,7 +6,7 @@ window.FamilyWorks=(()=>{
  function clear(){ticket++;urls.forEach(URL.revokeObjectURL);urls=[];}
  async function open(){
   clear();const own=ticket,box=document.getElementById('personal-view');box.replaceChildren();
-  const heading=node('header',undefined,'personal-heading');heading.append(node('h1','作品墙与练字星星'),node('p','按孩子私密保存，与小程序使用同一份记录。'));box.append(heading);
+  const heading=node('header',undefined,'personal-heading');heading.append(node('h1','作品墙与练字星星'),node('p','按孩子私密保存，与小程序使用同一份记录。'),Hubs.meTabs('works'));box.append(heading);
   await WorkbookAccount.ready;const user=WorkbookAccount.user(),scope=WorkbookAccount.scope();
   if(!user){box.append(node('p','登录后可以查看孩子的作品。'),button('登录并查看',()=>WorkbookAccount.openLogin()));return;}
   const active=()=>own===ticket&&scope===WorkbookAccount.scope()&&location.hash.split('?')[0]==='#/works';

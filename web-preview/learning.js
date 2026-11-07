@@ -13,10 +13,9 @@ window.PersonalWorkspace=(()=>{
  function first(){return C.getLesson('cn-1u-tiandiren');}
  function visit(l){if(l)location.hash='#/course?'+new URLSearchParams({grade:l.grade,subject:l.subject,term:l.term,series:l.series||'pep',lesson:l.id});}
  function dashboard(){
-  renderToday();const box=by('learning-dashboard'),expanded=!!box.querySelector('details')?.open;box.replaceChildren();box.hidden=false;
-  const more=node('details',undefined,'more-practice'),grid=node('div',undefined,'more-practice-grid');more.open=expanded;more.append(node('summary','更多练习与管理'),grid);box.append(more);
-  const cards=[['按课次浏览','按单元、课次挑选内容','course','book'],['自由字帖','输入自己的练习内容','free','pencil-mark'],['我的字帖','重开收藏，保留原来的排版','library','folder'],['一周练习包','一次安排，分天练习','weekly','book'],['薄弱字复习','巩固家长记录的薄弱字','review','file-text'],['幼儿启蒙','控笔、笔画和名字练习','early','plant-2'],['作品墙与星星','回顾孩子的作品与闯关记录','works','plant-2'],['成长记录','查看已确认完成的练习','growth','plant-2'],['每日安排','打开或调整已保存的安排','daily','file-text']];
-  for(const [title,desc,route,icon]of cards){const item=node('a',undefined,'learning-card');item.href='#/'+route;const picture=node('span',undefined,'learning-icon'),img=node('img');img.src='assets/icons/'+icon+'.svg';img.alt='';picture.append(img);const copy=node('span',undefined,'learning-copy');copy.append(node('strong',title),node('span',desc));item.append(picture,copy);grid.append(item);}
+  renderToday();const box=by('learning-dashboard');box.replaceChildren();box.hidden=false;
+  const grid=node('div',undefined,'area-cards');box.append(grid);
+  for(const [title,desc,href,icon]of [['做字帖','语文 · 英语 · 数学 · 控笔，输入就能出纸','#/make','pencil-mark'],['跟课本','按年级教材选择单元、课次和练习','#/course','book'],['我的','今日练习 · 一周包 · 薄弱字 · 收藏 · 成长','#/me','folder']]){const item=node('a',undefined,'learning-card area-card');item.href=href;const picture=node('span',undefined,'learning-icon'),img=node('img');img.src='assets/icons/'+icon+'.svg';img.alt='';picture.append(img);const copy=node('span',undefined,'learning-copy');copy.append(node('strong',title),node('span',desc));item.append(picture,copy);grid.append(item);}
  }
  function renderToday(){
   const box=by('today-panel'),hero=document.querySelector('.course-heading');box.replaceChildren();
@@ -51,8 +50,12 @@ window.PersonalWorkspace=(()=>{
    if(present)chosen.delete(char);changed();notice(present?'已从薄弱字中移除。':'已加入薄弱字；这只是家长记录，不代表自动评分。');
   }catch(error){notice(error.message);}finally{busy=false;}
  }
+ // 编辑器里也能加入薄弱字：优先用当前课次，其次找含这个字的语文课次（账号接口要求课次里有这个字）。
+ function lessonFor(char,preferred){const has=l=>l&&l.subject==='cn'&&l.grade&&l.packs.some(p=>['characters','words'].includes(p.kind)&&p.items.some(i=>i.text.includes(char)));if(has(preferred))return preferred;return C.lessons.find(l=>!l.materialLibrary&&has(l))||C.lessons.find(has)||null;}
+ function editorWeakChars(text){return [...new Set(Array.from(String(text||'')).filter(t=>/^[\u4e00-\u9fff]$/.test(t)))].slice(0,60);}
+ function editorWeakPicker(text,preferredId){const box=node('div',undefined,'weak-grid'),preferred=C.getLesson(preferredId);for(const char of editorWeakChars(text)){const l=lessonFor(char,preferred),active=data.weakItems.some(i=>i.char===char),b=button((active?'✓ ':'＋ ')+char,async()=>{if(!l){notice('这个字暂不在已收录的课次里，先换一个字。');return;}await toggle(char,l);const now=data.weakItems.some(i=>i.char===char);b.textContent=(now?'✓ ':'＋ ')+char;b.classList.toggle('active',now);b.setAttribute('aria-pressed',String(now));},'weak-char'+(active?' active':''));b.setAttribute('aria-pressed',String(active));b.disabled=!l&&!active;box.append(b);}return box;}
  function weakPicker(l){const box=node('section',undefined,'weak-picker');if(l.subject!=='cn'||!l.grade)return box;const chars=[...new Set(l.packs.filter(p=>p.kind==='characters').flatMap(p=>p.items.map(i=>i.text)).filter(t=>/^[\u4e00-\u9fff]$/.test(t)))];if(!chars.length)return box;box.append(node('h3','哪些字需要再练？'),node('p',identity()?'点击汉字加入账号薄弱字，方便下次复习。':'先在本机记录；登录后可主动导入账号。'));const grid=node('div',undefined,'weak-grid');for(const char of chars){const active=data.weakItems.some(i=>i.char===char),b=button((active?'✓ ':'＋ ')+char,()=>toggle(char,l),'weak-char'+(active?' active':''));b.setAttribute('aria-pressed',String(active));b.setAttribute('aria-label',(active?'移除薄弱字':'加入薄弱字')+char);grid.append(b);}box.append(grid);return box;}
- function heading(title,subtitle){const box=by('personal-view');box.replaceChildren();const h=node('section',undefined,'personal-heading');h.append(node('h1',title),node('p',subtitle));const nav=node('div',undefined,'personal-actions');nav.append(button('返回选课',()=>location.hash='#/course'),button('每日一页',()=>location.hash='#/daily'),button('薄弱字再练',()=>location.hash='#/review'),button('最近与收藏',()=>location.hash='#/library'),button('成长记录',()=>location.hash='#/growth'),button('一周练习包',()=>location.hash='#/weekly'));h.append(nav);box.append(h);return box;}
+ function heading(title,subtitle){const box=by('personal-view');box.replaceChildren();const h=node('section',undefined,'personal-heading');h.append(node('h1',title),node('p',subtitle));const nav=Hubs.meTabs(view);h.append(nav);box.append(h);return box;}
  function renderReview(){
   const box=heading('薄弱字再练','由家长手动选择需要巩固的字，不做自动评分。可直接预览、打印和导出。');
   const panel=node('section',undefined,'personal-panel');box.append(panel);const g=guest();
@@ -91,7 +94,7 @@ window.PersonalWorkspace=(()=>{
   select('每日练习年级',[[1,'一年级'],[2,'二年级']],dailyDraft.grade,v=>{dailyDraft.grade=Number(v);resetLesson();});select('每日练习册次',[['upper','上册'],['lower','下册']],dailyDraft.term,v=>{dailyDraft.term=v;resetLesson();});
   const rows=C.getCourseBook(dailyDraft.grade,'cn',dailyDraft.term).lessons.filter(l=>l.packs.some(p=>p.kind===dailyDraft.kind));if(!rows.some(l=>l.id===dailyDraft.lessonId))dailyDraft.lessonId=rows[0]?.id;
   select('每日练习课次',rows.map(l=>[l.id,l.title+(l.curation?' · 选编样本':'')]),dailyDraft.lessonId,v=>{dailyDraft.lessonId=v;renderDaily();});select('每日练习内容',[['characters','字'],['words','词语']],dailyDraft.kind,v=>{dailyDraft.kind=v;renderDaily();});select('每日练习量',[[0,'少量：4字／2词'],[1,'适中：6字／3词'],[2,'多一些：8字／4词']],dailyDraft.level,v=>{dailyDraft.level=Number(v);renderDaily();});
-  const {l,items}=dailyItems();panel.append(node('p','本次内容：'+items.map(i=>i.text).join('、')),node('p',l?.curation?'本站选编练习，教材指定字词与教学对应待核验。':l?.note||'本课暂无可用内容。'),button(plan?'重新安排并预览一页':'生成今日一页',makeDaily,'button primary'));panel.append(node('p','重新安排会替换今天的安排并重置完成标记，已保存的历史字帖不受影响。','small'));
+  const {l,items}=dailyItems();panel.append(node('p','本次内容：'+items.map(i=>i.text).join('、')),node('p',l?.curation?'本站选编练习。':l?.note||'本课暂无可用内容。'),button(plan?'重新安排并预览一页':'生成今日一页',makeDaily,'button primary'));panel.append(node('p','重新安排会替换今天的安排并重置完成标记，已保存的历史字帖不受影响。','small'));
  }
  async function markReview(char,action){if(busy)return;busy=true;const account=identity();try{if(account){const result=await WorkbookAccount.request('/api/learning/review',{method:'PUT',body:JSON.stringify({char,action})});if(account!==identity())return;data.weakItems=result.weakItems;}else{data.weakItems=data.weakItems.map(i=>i.char===char?LearningRules.review(i,action):i);saveGuest();}changed();}catch(error){notice(error.message);}finally{busy=false;}}
 
@@ -99,5 +102,5 @@ window.PersonalWorkspace=(()=>{
  async function prepareReview(review){if(!identity())return;if(review.owner&&review.owner!==identity())throw Error('账号已切换，请重新选择复习字。');const missing=review.items.filter(i=>!data.weakItems.some(w=>w.char===i.char));if(missing.length){data.weakItems=(await WorkbookAccount.request('/api/learning/weak-items',{method:'PUT',body:JSON.stringify({operation:'add',items:missing.map(i=>({char:i.char,lessonId:i.lessonId}))})})).weakItems;changed();}}
  let initialized=false,ready=WorkbookAccount.ready.then(()=>{initialized=true;return load();});
  window.addEventListener('accountchange',()=>{if(!initialized)return;clearTimeout(cursorTimer);if(owner===identity())return;data={cursor:null,weakItems:[]};chosen.clear();ready=load();if(location.hash.startsWith('#/library'))ready.then(()=>{if(location.hash.startsWith('#/library'))renderLibrary();});if(location.hash.startsWith('#/daily'))ready.then(()=>{if(location.hash.startsWith('#/daily'))FamilyWorkspace.open('daily');});});
- return {currentCursor,resume,state:()=>structuredClone(data),completeDaily,openDailyPlan,get ready(){return ready;},open,remember,dashboard,weakPicker,favorite,reviewSelection,reload:load,prepareReview};
+ return {currentCursor,resume,state:()=>structuredClone(data),completeDaily,openDailyPlan,get ready(){return ready;},open,remember,dashboard,weakPicker,editorWeakPicker,editorWeakChars,lessonFor,favorite,reviewSelection,reload:load,prepareReview};
 })();

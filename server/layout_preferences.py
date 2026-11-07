@@ -2,7 +2,7 @@
 import json, math, re, time
 
 RANGES={'size':(6,30),'rowGap':(0,10),'scale':(48,128),'offset':(-50,50),'traceNum':(0,200),'letterSpace':(-10,10)}
-ENUMS={'font':['kaiti','wenkai','song','italic','sans','pinyin1','pinyin2'],'fontWeight':['normal','bold'],'cellType':['zwg','num','tzg','mzg','htg','hmg','jgg','hxg','hgg','sxg','dxg','lxg','blank','none']}
+ENUMS={'font':['kaiti','wenkai','song','italic','sans','pinyin1','pinyin2'],'fontWeight':['normal','bold'],'cellType':['zwg','num','tzg','mzg','htg','hmg','jgg','hxg','hgg','fg','sxg','dxg','lxg','blank','none']}
 BOOLS={'leading','blankRow','blankCol','fillPage'}
 COLORS={'traceColor','lineColor'}
 

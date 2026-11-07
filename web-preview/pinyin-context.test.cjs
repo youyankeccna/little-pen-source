@@ -1,0 +1,12 @@
+const assert=require('node:assert/strict');
+globalThis.pinyinPro=require('./vendor/pinyin-pro.js');
+const E=require('./engine.js');
+const r=(text,row)=>E.readingsFor(row,{text,readings:{}})[0];
+assert.equal(r('长大银行重要','长'),'zhǎng');
+assert.equal(r('长大银行重要','行'),'háng');
+assert.equal(r('长大银行重要','重'),'zhòng');
+assert.equal(r('长城','长'),'cháng');
+assert.equal(E.readingsFor('长',{text:'长大',readings:{'长':'cháng'}})[0],'cháng','家长手动改的读音优先');
+assert.deepEqual(E.readingsFor('银行',{text:'银行',readings:{}}),['yín','háng']);
+assert(E.readingOptions('长').includes('zhǎng')&&E.readingOptions('长').includes('cháng'));
+console.log('PASS: 多音字按整句上下文注音（长大/银行/重要），手动读音优先，候选读音');

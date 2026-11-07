@@ -1,8 +1,8 @@
 (function(root){
-  const chineseGrids = [['zwg','作文格'],['tzg','田字格'],['mzg','米字格'],['hgg','回宫格'],['jgg','九宫格'],['htg','回田格'],['hmg','回米格']];
+  const chineseGrids = [['zwg','作文格'],['tzg','田字格'],['mzg','米字格'],['hgg','回宫格'],['fg','方格'],['jgg','九宫格'],['htg','回田格'],['hmg','回米格']];
   const englishGrids = [['sxg','四线格'],['lxg','两线格'],['dxg','单线格']];
   const types = {
-    hanzi:{name:'语文 · 汉字字帖',group:'cn',description:'逐字练写，打牢书写基本功',placeholder:'请输入要练习的汉字，例如“你好世界”，支持插入空白行。',text:'你好世界',cellType:'tzg',scale:75,offset:0},
+    hanzi:{name:'语文 · 汉字字帖',group:'cn',description:'逐字练写，打牢书写基本功',placeholder:'请输入要练习的汉字，例如“大小天人”，支持插入空白行。',text:'大小天人',cellType:'tzg',scale:75,offset:0},
     cizu:{name:'语文 · 词组字帖',group:'cn',description:'边写边记，练字识词两不误',placeholder:'请输入词组，用空格或逗号分隔，例如“你好 世界”，支持插入空白行。',text:'你好 世界',cellType:'tzg',scale:75,offset:0},
     duanluo:{name:'语文 · 段落字帖',group:'cn',description:'粘贴任意文本，即刻生成字帖',placeholder:'请输入段落或文章内容',text:'  昨夜雨疏风骤，浓睡不消残酒，试问卷帘人，却道海棠依旧。知否，知否，应是绿肥红瘦。',cellType:'hxg',scale:68,offset:0},
     bihua:{name:'语文 · 笔画字帖',group:'cn',description:'横竖撇捺，从零开始',placeholder:'点击输入笔画和例字',text:'',cellType:'tzg',scale:68,offset:0},
@@ -25,7 +25,9 @@
   const strokes=strokeNames.map((name,i)=>({id:i+1,name,path:strokePaths[i],examples:strokeExamples[i]}));
   const patternNames=['平行横线','平行竖线','横折线','竖折线','向内螺旋','向外螺旋','网格线','菱形网格','折角线','交错折角','交错竖线','交错横线','方形螺旋','反向方形螺旋','阶梯线','反向阶梯线','上折线','下折线','横波浪','竖波浪','斜线','反向斜线','横向连圈','竖向连圈','向下弧线','斜方框','向上弧线','圆形组合','方形组合','五角星','连写八字','爱心'];
   const patternCodes=Array.from('123456789ABCDEFGHIJKLMNOPQRSTUVW');
-  function defaults(type){const t=types[type];return {text:t.text,size:t.group==='cn'?(type==='duanluo'?8:type==='bihua'?11:10):['number','pinyin'].includes(type)?9:10,rowGap:type==='pen-control'?0:t.group==='cn'||['number','pinyin'].includes(type)?1.5:2,padding:[36,36,36,36],cellType:t.cellType,font:t.group==='cn'?'kaiti':type==='pinyin'?'pinyin1':'italic',fontWeight:type==='pen-control'?'bold':'normal',scale:t.scale,offset:t.offset,traceNum:type==='bihua'?5:20,traceColor:'#94a3b8',lineColor:'#64748b',leading:true,blankRow:false,blankCol:false,showPinyin:false,showBishun:false,pair:false,letterSpace:0,readings:{},strokes:Array.from({length:5},()=>({id:0,examples:''}))};}
-  const fonts={kaiti:{name:'楷体（系统）',family:'STKaiti, KaiTi, "Kaiti SC", "LXGW WenKai", serif'},wenkai:{name:'霞鹜文楷（开源）',family:'"LXGW WenKai", serif'},song:{name:'宋体（系统）',family:'Songti SC, SimSun, serif'},italic:{name:'意大利体（开源替代）',family:'"Practice Italic", Georgia, serif'},sans:{name:'印刷体（系统）',family:'Arial, sans-serif'},pinyin1:{name:'拼音字体-1（系统替代）',family:'Arial, sans-serif'},pinyin2:{name:'拼音字体-2（文楷）',family:'"LXGW WenKai", serif'}};
-  const api={types,chineseGrids,englishGrids,strokes,patternCodes,patternNames,defaults,fonts};root.WorkbookData=api;if(typeof module!=='undefined')module.exports=api;
+  // 每行描红格数（含第 1 个深色范字）：1–2 年级 1 范字 + 3 描红，3 年级起 1 + 2。全站共用。
+  function traceCount(grade){return grade<=2?4:3;}
+  function defaults(type){const t=types[type];return {text:t.text,size:t.group==='cn'?(type==='duanluo'?8:type==='bihua'?11:10):['number','pinyin'].includes(type)?9:10,rowGap:type==='pen-control'?0:t.group==='cn'||['number','pinyin'].includes(type)?1.5:2,padding:[36,36,36,36],cellType:t.cellType,font:t.group==='cn'?'kaiti':type==='pinyin'?'pinyin1':'italic',fontWeight:type==='pen-control'?'bold':'normal',scale:t.scale,offset:t.offset,traceNum:type==='bihua'?5:traceCount(1),traceColor:'#94a3b8',lineColor:'#64748b',leading:true,blankRow:false,blankCol:false,showPinyin:false,showBishun:false,pair:false,letterSpace:0,readings:{},strokes:Array.from({length:5},()=>({id:0,examples:''}))};}
+  const fonts={kaiti:{name:'标准楷体',family:'STKaiti, KaiTi, "Kaiti SC", "LXGW WenKai", serif'},wenkai:{name:'清秀楷体',family:'"LXGW WenKai", serif'},song:{name:'宋体',family:'Songti SC, SimSun, serif'},italic:{name:'英文手写体',family:'"Practice Italic", Georgia, serif'},sans:{name:'英文印刷体',family:'Arial, sans-serif'},pinyin1:{name:'拼音印刷体',family:'Arial, sans-serif'},pinyin2:{name:'拼音手写体',family:'"LXGW WenKai", serif'}};
+  const api={types,chineseGrids,englishGrids,strokes,patternCodes,patternNames,defaults,traceCount,fonts};root.WorkbookData=api;if(typeof module!=='undefined')module.exports=api;
 })(typeof globalThis!=='undefined'?globalThis:this);

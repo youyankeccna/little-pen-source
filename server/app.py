@@ -111,7 +111,16 @@ class Handler(SimpleHTTPRequestHandler):
     def api_path(self):
         path=urlsplit(self.path).path.replace('/api/v1/','/api/',1)
         return {'/api/me/preferences':'/api/preferences','/api/outputs':'/api/output'}.get(path,path)
+    def consume_request_body(self):
+        # A leftover request body makes the kernel RST the socket on close and drops a large response still in the send buffer.
+        try: length=int(self.headers.get('Content-Length') or 0)
+        except ValueError: return
+        while length>0:
+            chunk=self.rfile.read(min(length,65536))
+            if not chunk: break
+            length-=len(chunk)
     def do_GET(self):
+        self.consume_request_body()
         path=self.api_path()
         if works.handle(self,path):return
         if render_jobs.handle(self,path):return

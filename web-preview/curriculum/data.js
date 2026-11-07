@@ -5,7 +5,7 @@ const sources={cn:'https://www.moe.gov.cn/jyb_xxgk/s5743/s5744/202506/W020250624
 const kindInfo={characters:{label:'字',type:'hanzi'},words:{label:'词语',type:'cizu'},sentences:{label:'句段',type:'duanluo'},digits:{label:'数字',type:'number'},terms:{label:'数学用语',type:'cizu'},formulas:{label:'算式',type:'word'},letters:{label:'字母',type:'alphabet'},vocabulary:{label:'单词',type:'word'},englishSentences:{label:'句段',type:'paragraph'},pinyin:{label:'拼音',type:'pinyin'},patterns:{label:'控笔',type:'pen-control'}};
 Object.assign(kindInfo,{extraTexts:{label:'原创阅读短文',type:'duanluo'},extraCharacters:{label:'补充字库',type:'hanzi'},extraWords:{label:'补充词语',type:'cizu'},extraSentences:{label:'补充句段',type:'duanluo'},chineseTexts:{label:'课文片段',type:'duanluo'},poems:{label:'古诗',type:'duanluo'},phrases:{label:'教材短语',type:'word'},extraPhrases:{label:'主题短语',type:'word'},englishExcerpts:{label:'课文摘句',type:'paragraph'},englishTexts:{label:'原创短文',type:'paragraph'},calculations:{label:'计算练习',type:'paragraph'},calculationAnswers:{label:'计算答案',type:'paragraph'},vocabularyBilingual:{label:'单词 · 中英对照',type:'paragraph'},phrasesBilingual:{label:'教材短语 · 中英对照',type:'paragraph'},extraPhrasesBilingual:{label:'主题短语 · 中英对照',type:'paragraph'},englishSentencesBilingual:{label:'主题句子 · 中英对照',type:'paragraph'},englishExcerptsBilingual:{label:'课文摘句 · 中英对照',type:'paragraph'},englishTextsBilingual:{label:'原创短文 · 中英对照',type:'paragraph'}});
 function pack(kind,values,origin='self-authored'){return {kind,origin,items:values.map((text,i)=>({id:kind+'-'+i,text}))};}
-function cn(id,title,chars,words,sentences){return {id,grade:1,subject:'cn',term:'upper',unit:'识字 · 首批课题',title,source:sources.cn,catalogStatus:'cross-checked-topic',edition:'统编语文 · 人教出版 · 修订课题参考，具体版次待核对',packs:[pack('characters',Array.from(chars)),pack('words',words),pack('sentences',sentences)],note:'字词句段为课题相关的自编巩固内容，不是教材写字表或课文原文。'};}
+function cn(id,title,chars,words,sentences){return {id,grade:1,subject:'cn',term:'upper',unit:'识字 · 首批课题',title,source:sources.cn,catalogStatus:'cross-checked-topic',edition:'统编语文 · 人教出版',packs:[pack('characters',Array.from(chars)),pack('words',words),pack('sentences',sentences)],note:'字词句段为课题相关的自编巩固内容，不是教材写字表或课文原文。'};}
 const lessons=[
  cn('cn-1u-tiandiren','天地人','天地人你我他',['天地','大地','人们','你我'],['我和你一起看蓝天。','我们在大地上快乐地生活。']),
  cn('cn-1u-wuxing','金木水火土','一二三四五金木水火土',['金色','木头','河水','火苗','土地'],['一片叶子落在土地上。','小河里的水清清的。']),
@@ -51,8 +51,8 @@ const vocabularyTopics=[
 
 
 const currentCatalog=root.PepCurrentCatalog||(typeof require==='function'?require('./pep-current.js'):null);
-const officialEnglishUnits=currentCatalog?currentCatalog.books.filter(book=>book.status==='publisher-unit-headings').flatMap(book=>book.units.map((title,index)=>({id:'en-current-'+book.grade+(book.term==='upper'?'s':'x')+'-'+(index+1),grade:book.grade,subject:'en',term:book.term,unit:title,title,source:book.source,catalogStatus:'official-current-companion',edition:'人教 PEP 三年级起点 · 官方当前配套目录，版权页版次待核对'}))):[];
-for(const row of officialEnglishUnits){const topic=vocabularyTopics.find(x=>x.test.test(row.title));row.packs=topic?[pack('vocabulary',topic.words),pack('englishSentences',topic.sentences)]:[];if(topic?.letters)row.packs.unshift(pack('letters',topic.letters));row.note=topic?'目录名称取自人教官方配套页；词句为同主题自编巩固，不是教材词表或原文。':'目录已记录，本单元的练习内容待核对补充。';lessons.push(row);}
+const officialEnglishUnits=currentCatalog?currentCatalog.books.filter(book=>book.status==='publisher-unit-headings').flatMap(book=>book.units.map((title,index)=>({id:'en-current-'+book.grade+(book.term==='upper'?'s':'x')+'-'+(index+1),grade:book.grade,subject:'en',term:book.term,unit:title,title,source:book.source,catalogStatus:'official-current-companion',edition:'人教 PEP 三年级起点'}))):[];
+for(const row of officialEnglishUnits){const topic=vocabularyTopics.find(x=>x.test.test(row.title));row.packs=topic?[pack('vocabulary',topic.words),pack('englishSentences',topic.sentences)]:[];if(topic?.letters)row.packs.unshift(pack('letters',topic.letters));row.note=topic?'目录名称取自人教官方配套页；词句为同主题自编巩固，不是教材词表或原文。':'本单元练习整理中。';lessons.push(row);}
 const publicDomain=root.PublicDomainLibrary||(typeof require==='function'?require('./public-domain.js'):null);
 if(publicDomain)lessons.push(...publicDomain.lessons.map(l=>structuredClone(l)));
 const topicCatalog=root.TopicCatalog||(typeof require==='function'?require('./topic-catalog.js'):null);
@@ -63,14 +63,14 @@ if(topicCatalog&&topicPractice){
   const existing=new Set(lessons.map(key));
   for(const source of topicCatalog.lessons){if(existing.has(key(source)))continue;const row=topicPractice.enrich({...source});if(row.packs.length){lessons.push(row);existing.add(key(row));}}
 }
-function originLabel(origin){return origin==='user-provided-ocr'?'教材提取稿（待校订）':origin==='authorized-textbook'?'教材内容（审核记录见来源）':origin==='public-domain'?'古诗公版原作':origin==='selected-from-public-domain'?'诗中选字词（本站整理）':origin==='selected-from-title'?'课题选字词（非教材字词表）':'自编巩固内容';}
+function originLabel(origin){return origin==='user-provided-ocr'?'本册素材':origin==='authorized-textbook'?'教材内容':origin==='cross-checked-list'?'教材写字表':origin==='public-domain'?'古诗公版原作':origin==='selected-from-public-domain'?'诗中选字词（本站整理）':origin==='selected-from-title'?'课题选字词':'自编巩固内容';}
 function getBook(grade,subject,term,editionId='pep'){
   if(Number(grade)!==0&&editionId!=='pep'&&!imported.editions[subject]?.some(e=>e[0]===editionId))return {grade:Number(grade),subject,term,name:Number(grade)+'年级',lessons:[],edition:({bnu:'北师大版',sujiao:'苏教版',fltrp:'外研版（三年级起点）',yilin:'译林版（三年级起点）'})[editionId]||'所选版本',notice:'所选教材版本的内容尚未收录，可切换人教版浏览现有内容。'};
   const found=lessons.filter(x=>!x.materialLibrary&&x.grade===Number(grade)&&x.subject===subject&&(Number(grade)===0||(x.series||'pep')===editionId)&&(Number(grade)===0||x.term===term)).sort((a,b)=>(a.teachingOrder??999)-(b.teachingOrder??999));
   const hasImported=found.some(l=>l.contentStatus==='ocr-draft');
   const name=Number(grade)===0?'幼儿园':Number(grade)+'年级';
   const englishNotIncluded=subject==='en'&&[1,2].includes(Number(grade))&&!found.length;
-  return {grade:Number(grade),subject,term,name,lessons:found,edition:found[0]?.edition|| (englishNotIncluded?'当前范围：人教 PEP 三年级起点':'人教版 · 本册目录待核对'),notice:hasImported?'含用户提供的教材OCR素材，单元课次和文字待校订；未覆盖的册次继续显示原有补充内容。':englishNotIncluded?'当前英语先按 PEP 三年级起点整理，一、二年级的其他英语教材系列暂未接入。':found.length?'当前不限定新版，版次待核验。课题选字、主题自编练习与公版古诗分别标注，不等同于教材指定字词表或完整课文。':'本册尚未录入目录及练习内容。'};
+  return {grade:Number(grade),subject,term,name,lessons:found,edition:found[0]?.edition|| (englishNotIncluded?'当前范围：人教 PEP 三年级起点':'人教版'),notice:hasImported?'':englishNotIncluded?'当前英语先按 PEP 三年级起点整理，一、二年级的其他英语教材系列暂未接入。':found.length?'课题选字、自编练习与公版古诗分别标注。':'本册整理中。'};
 }
 function getLesson(id){return lessons.find(x=>x.id===id);}
 const sample=root.FirstGradeSample||(typeof require==='function'?require('./first-grade-sample.js'):null);if(sample)sample.apply(lessons);
@@ -82,9 +82,10 @@ const reviewed=root.ReviewedContent||(typeof require==='function'?require('./rev
 for(const change of reviewed){
  const index=lessons.findIndex(l=>l.id===change.id);if(index<0)continue;
  if(change.status==='withdrawn'){lessons.splice(index,1);continue;}
- if(change.status==='approved')lessons[index]={...lessons[index],title:change.title,packs:structuredClone(change.packs),source:change.source,note:'内容已按本课审核记录整理；具体版次见来源。',reviewStatus:'approved',review:{reviewer:change.reviewer,reviewedAt:change.reviewedAt,rightsBasis:change.rightsBasis},contentStatus:'reviewed-content'};
+ if(change.status==='approved')lessons[index]={...lessons[index],title:change.title,packs:structuredClone(change.packs),source:change.source,note:'内容来源见本课说明。',reviewStatus:'approved',review:{reviewer:change.reviewer,reviewedAt:change.reviewedAt,rightsBasis:change.rightsBasis},contentStatus:'reviewed-content'};
 }
 const bank=root.MaterialBankData||(typeof require==='function'?require('./material-bank.js'):null);if(bank)lessons.push(...structuredClone(bank.lessons));
+{const gate=root.ReviewGate||(typeof require==='function'?require('./review-gate.js'):null);if(gate){const gated=gate.apply(lessons);lessons.splice(0,lessons.length,...gated);}}
 for(const lesson of lessons){
  lesson.revisionId=lesson.revisionId||[lesson.subject,lesson.grade,lesson.grade?lesson.term:'activity',lesson.catalogStatus==='official-current-companion'?'companion-reference':lesson.catalogStatus==='legacy-topic-reference'?'historical-reference':'supplement-reference'].join('-');
  lesson.reviewStatus=lesson.reviewStatus||'reference-only';

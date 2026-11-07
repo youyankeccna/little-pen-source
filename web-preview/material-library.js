@@ -99,26 +99,32 @@ window.MaterialLibrary=(()=>{
  function open(params=new URLSearchParams()){
   planning++;let previous={};try{previous=JSON.parse(localStorage.getItem('little-pen-material-context:'+(WorkbookAccount.scope()||'guest'))||'{}');}catch{}
   const saved=WorkbookAccount.studyContext()||previous,subject=['cn','en','math'].includes(params.get('subject'))?params.get('subject'):saved.subject||'cn';
+  if(subject==='math'){history.replaceState(null,'','#/calc?grade='+Math.min(6,Math.max(1,Number(params.get('grade')||saved.grade)||1)));window.dispatchEvent(new HashChangeEvent('hashchange'));return;}
   const requested=C.getLesson(params.get('lesson'));
   if(saved.grade===0&&subject!=='en'&&!params.has('grade')){location.hash='#/early';return;}
   const grade=Number(params.get('grade')||saved.grade||1);context={subject,grade:WorkflowRules.normalizeGrade(grade,subject,false),term:['upper','lower'].includes(params.get('term'))?params.get('term'):saved.term||'upper',edition:WorkbookAccount.edition(subject)};
   if(subject==='en'&&grade!==context.grade){const normalized=new URLSearchParams(params);normalized.set('grade',context.grade);for(const field of ['lesson','kind','items'])normalized.delete(field);params=normalized;history.replaceState(null,'','#/materials?'+normalized);}
   rows=C.lessons.filter(l=>l.materialLibrary&&l.grade===context.grade&&l.subject===subject&&l.term===context.term&&(subject==='math'||l.series===context.edition));
   // A supplied link may choose a lesson only from the current account's edition.
-  const view=by('personal-view');view.replaceChildren();const wrap=node('div',undefined,'material-library');view.append(wrap);
-  const head=node('header',undefined,'bank-heading');head.append(node('span','整册与单元素材','bank-eyebrow'),node('h1',subject==='cn'?'语文，一册慢慢练':subject==='en'?'英语，单元里学与写':'数学，边写边算'));
+  const view=by('materials-view')||by('personal-view');view.replaceChildren();const wrap=node('div',undefined,'material-library');view.append(wrap);
+  const head=node('header',undefined,'bank-heading');const subjectTabs=node('nav',undefined,'hub-tabs textbook-tabs');subjectTabs.setAttribute('aria-label','科目');for(const [id,label] of [['cn','语文'],['en','英语'],['math','数学']]){const t=node('a',label,'hub-tab');t.href=id==='math'?'#/calc?grade='+Math.max(1,Number(context.grade)||1):'#/materials?subject='+id;if(id===subject)t.setAttribute('aria-current','page');subjectTabs.append(t);}head.append(node('span','跟课本 · 整册与单元素材','bank-eyebrow'),subjectTabs,node('h1',subject==='cn'?'语文，一册慢慢练':subject==='en'?'英语，单元里学与写':'数学，边写边算'));
   head.append(node('p',subject==='cn'?'整册字词、句段和课文片段集中选择，不必逐课查找。':subject==='en'?'选择单元，查看单词、短语与句段的中文释义。':'按年级与册次选择专项，每批题目都有对应答案。'));
-  const old=node('a','按课次浏览','bank-course-link');old.href='#/course?'+new URLSearchParams({subject,grade:context.grade,term:context.term});head.append(old);wrap.append(head);
+  const sw=node('nav',undefined,'hub-tabs textbook-switch');sw.setAttribute('aria-label','跟课本');for(const [label,href,cur] of [['按课次','#/course?'+new URLSearchParams({subject,grade:context.grade,term:context.term}),false],['素材库','#/materials?subject='+subject,true]]){const t=node('a',label,'hub-tab');t.href=href;if(cur)t.setAttribute('aria-current','page');sw.append(t);}wrap.append(sw);wrap.append(head);
   const contextBox=node('section',undefined,'bank-context');const contextText=node('strong',`${context.grade} 年级 · ${context.term==='upper'?'上册':'下册'} · ${subject==='math'?'原创计算专项':(WorkbookAccount.editionOptions[subject]?.find(e=>e[0]===context.edition)?.[1]||context.edition)}`);contextBox.append(contextText);
   const change=button('修改学习信息',()=>WorkbookAccount.openVersions(context));contextBox.append(change);wrap.append(contextBox);
+  const picker=node('section',undefined,'course-picker');picker.setAttribute('aria-label','选择科目、年级与册次');
+  const changeSelection=(field,value)=>{location.hash='#/materials?'+new URLSearchParams({subject,grade:context.grade,term:context.term,[field]:value});};
+  picker.append(TextbookPicker.row('科目',Object.entries(C.subjects),subject,value=>changeSelection('subject',value)));
   if(!WorkbookAccount.configured()){
-   const choices=node('div',undefined,'bank-filters');for(const [field,title,values] of [['grade','年级',WorkflowRules.gradeOptions(subject,false)],['term','册次',[['upper','上册'],['lower','下册']]]]){
-    const label=node('label',title),sel=node('select');sel.setAttribute('aria-label','素材库'+title);options(sel,values,String(context[field]));sel.onchange=()=>{location.hash='#/materials?'+new URLSearchParams({...context,[field]:sel.value});};label.append(sel);choices.append(label);
-   }contextText.textContent=context.subject==='math'?'原创计算专项':(WorkbookAccount.editionOptions[subject]?.find(e=>e[0]===context.edition)?.[1]||context.edition);contextBox.prepend(choices);
+   picker.append(TextbookPicker.row('年级',WorkflowRules.gradeOptions(subject,false).map(([value])=>[value,TextbookPicker.gradeNames[Number(value)]]),context.grade,value=>changeSelection('grade',value)));
+   const terms=TextbookPicker.row('册次',[['upper','上册'],['lower','下册']],context.term,value=>changeSelection('term',value));terms.classList.add('picker-term');picker.append(terms);
+   contextText.textContent=subject==='math'?'原创计算专项':(WorkbookAccount.editionOptions[subject]?.find(e=>e[0]===context.edition)?.[1]||context.edition);
   }
+  wrap.insertBefore(picker,contextBox);
+  
   const coverage=B.coverage.find(b=>b.subject===subject&&b.grade===context.grade&&b.term===context.term&&b.series===context.edition);
-  const notice=node('p',subject==='cn'?(coverage?.notice||'所选版本暂未收录整册素材。'):subject==='en'?'词汇按本单元正文匹配，包含复现词；OCR释义与本站译文待复核。原创短文另行标注。':'按常见教学进度编制的原创练习，具体学习顺序请结合学校教材。','bank-notice');wrap.append(notice);
-  if(!rows.length){wrap.append(node('p','本册暂没有可用的整册双语素材，可先按课次浏览已有内容。','bank-empty'));return;}
+  const notice=node('p',subject==='cn'?'':subject==='en'?'词汇按本单元课文整理，中文释义由本站编写；原创短文另行标注。':'按常见教学进度编制的原创练习，具体学习顺序请结合学校教材。','bank-notice');notice.hidden=!notice.textContent;wrap.append(notice);
+  const pendingRows=rows.filter(l=>l.pending);rows=rows.filter(l=>!l.pending);if(!rows.length){wrap.append(node('p',pendingRows.length?'本册整理中，可先按课次浏览练习。':'本册暂没有可用的整册双语素材，可先按课次浏览已有内容。','bank-empty'));return;}
   const unitLabel=node('label',subject==='math'?'计算专项':'单元','bank-unit-label'),unit=node('select');unit.id='bank-lesson';unit.setAttribute('aria-label',subject==='math'?'计算专项':'英语单元');options(unit,rows.map(l=>[l.id,l.title]),rows[0].id);unit.onchange=()=>chooseLesson(unit.value);unitLabel.append(unit);unitLabel.hidden=subject==='cn';wrap.append(unitLabel);
   const mathPanel=node('div',undefined,'bank-math-options');mathPanel.id='bank-math-options';wrap.append(mathPanel);
   const tabs=node('div',undefined,'bank-kinds');tabs.id='bank-kinds';tabs.setAttribute('aria-label','素材类型');wrap.append(tabs);
@@ -133,7 +139,7 @@ window.MaterialLibrary=(()=>{
   const biLabel=node('label',undefined,'bank-bilingual');biLabel.id='bank-bilingual-label';const bi=node('input');bi.type='checkbox';bi.id='bank-bilingual';bi.onchange=()=>{bilingual=bi.checked;save();if(quantity.startsWith('page-'))applyQuantity();else estimate();};biLabel.append(bi,node('span','打印中文释义'));bar.append(biLabel);
   const enLabel=node('label','英语练法 ','bank-english-mode');enLabel.id='bank-english-mode-label';const enSelect=node('select');enSelect.id='bank-english-mode';enSelect.setAttribute('aria-label','英语练法');options(enSelect,PracticeTools.englishModes,'copy');enSelect.onchange=()=>{englishMode=enSelect.value;save();renderItems();if(quantity.startsWith('page-'))applyQuantity();else estimate();};enLabel.append(enSelect);bar.append(enLabel);
   const answer=button('同批答案',()=>preview(true));answer.id='bank-answer';const start=button('预览练习纸',()=>preview(),'button primary');start.id='bank-preview';bar.append(answer,start);wrap.append(bar);
-  const detail=node('details',undefined,'bank-sources');detail.append(node('summary','收录范围与来源说明'),node('p','语文现有 9 册教材文件，四、五、六年级下册为补充练习。课文暂以可识别片段呈现，尚非完整课文库。英语优先整理人教 PEP 三至六年级；其他版本按可配对的双语词汇收录。预览时可设置铺满 A4 纸；无需登录即可导出和打印，登录后可云端保存。'));const report=node('a','查看本册数量与缺漏清单');report.href='curriculum/material-bank-coverage.json';report.target='_blank';report.rel='noopener';detail.append(report);wrap.append(detail);
+  const detail=node('details',undefined,'bank-sources');detail.append(node('summary','收录范围与来源说明'),node('p','语文现有 9 册教材文件，四、五、六年级下册为补充练习。英语优先整理人教 PEP 三至六年级；其他版本按可配对的双语词汇收录。预览时可设置铺满 A4 纸；无需登录即可导出和打印，登录后可云端保存。'));wrap.append(detail);
   let prior={};try{prior=JSON.parse(localStorage.getItem(key())||'{}');}catch{}
   if(params.has('kind'))prior.kind=params.get('kind').replace(/Bilingual$/,'');if(params.has('items')){prior.items=params.get('items').split(',');delete prior.page;}bilingual=params.has('bilingual')?params.get('bilingual')==='1':prior.bilingual??subject==='en';
   englishMode=PracticeTools.englishModes.some(m=>m[0]===prior.englishMode)?prior.englishMode:'copy';

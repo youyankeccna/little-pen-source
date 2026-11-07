@@ -24,7 +24,7 @@ def validate_snapshot(data,catalog,weak_items=None):
     padding=config.get('padding')
     if not isinstance(padding,list) or len(padding)!=4 or any(type(v) not in (int,float) or not 10<=v<=100 for v in padding):raise SnapshotError('页边距无效。')
     if config.get('font') not in ['kaiti','wenkai','song','pinyin1','pinyin2','italic','sans','local']:raise SnapshotError('字体无效。')
-    if config.get('cellType') not in ['zwg','num','tzg','mzg','htg','hmg','jgg','hxg','hgg','sxg','dxg','lxg','blank','none']:raise SnapshotError('格线无效。')
+    if config.get('cellType') not in ['zwg','num','tzg','mzg','htg','hmg','jgg','hxg','hgg','fg','sxg','dxg','lxg','blank','none']:raise SnapshotError('格线无效。')
     for name in ['traceColor','lineColor']:
         if not isinstance(config.get(name),str) or not re.fullmatch(r'#[0-9a-fA-F]{6}',config[name]):raise SnapshotError('颜色无效。')
     if config.get('fontWeight') not in ('normal','bold'):raise SnapshotError('字体粗细无效。')
