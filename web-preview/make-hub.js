@@ -35,6 +35,7 @@ window.Hubs = (() => {
     a.append(m, copy);
     return a;
   }
+  const templateChoices = {};
   function make(subject) {
     const box = document.getElementById("make-hub");
     const s = N.MAKE_SUBJECTS.find((x) => x.id === subject) || N.MAKE_SUBJECTS[0];
@@ -42,14 +43,14 @@ window.Hubs = (() => {
     const head = el("header", "hub-heading");
     head.append(
       el("span", "eyebrow", "做字帖"),
-      el("h1", "", "选科目，再选练习方式"),
-      el("p", "", "每个科目单独设置、互不影响：语文英语控笔是描红字帖，数学只出计算题。"),
+      el("h1", "", "选一份练习，直接开始"),
+      el("p", "", "内容已经备好，选模板就能练。需要时再展开自由制作。"),
     );
     const tabs = el("nav", "hub-tabs");
     tabs.setAttribute("aria-label", "科目");
     for (const x of N.MAKE_SUBJECTS) {
       const a = el("a", "hub-tab", x.label);
-      a.href = x.module === "calc" ? "#/calc" : "#/make?subject=" + x.id;
+      a.href = x.module === "calc" ? "#/calc?grade=" + Math.max(1, window.WorkbookAccount?.studyContext?.()?.grade || 1) : "#/make?subject=" + x.id;
       if (x.id === s.id) a.setAttribute("aria-current", "page");
       tabs.append(a);
     }
@@ -66,28 +67,77 @@ window.Hubs = (() => {
     link.href = "#/course" + (s.id === "pen" ? "" : "?subject=" + s.id);
     foot.append(link, "。");
     box.append(head, tabs);
-    const templates = window.TemplateGallery.templates.filter(t => t.subject === s.id);
+    const A = window.WorkbookAccount, T = window.TemplateGallery, context = A?.studyContext?.() || { grade: s.id === 'en' ? 3 : 1, term: 'upper' };
+    const edition = A?.defaultEdition?.(s.id) || 'pep';
+    const scope = [A?.scope?.() || 'guest', s.id, context.grade, context.term, edition].join(':');
+    if (!templateChoices[scope]) {
+      try { templateChoices[scope] = JSON.parse(localStorage.getItem('little-pen-template-choice:' + scope) || 'null'); } catch {}
+      templateChoices[scope] ||= { source: 'book', category: 'all' };
+    }
+    const choice = templateChoices[scope];
+    const remember = () => { try { localStorage.setItem('little-pen-template-choice:' + scope, JSON.stringify(choice)); } catch {} make(s.id); };
+    const contextBar = el('div', 'template-context');
+    const gradeLabel = context.grade === 0 ? '幼儿园' : context.grade + '年级';
+    contextBar.append(el('span', '', (A?.configured?.() ? '' : '默认浏览：') + gradeLabel + ' · ' + (context.term === 'lower' ? '下册' : '上册') + ' · ' + (A?.editionOptions?.[s.id]?.find(e => e[0] === edition)?.[1] || '启蒙专项')));
+    const change = el('button', 'button outline', '学习设置'); change.type = 'button'; change.onclick = () => A.openVersions({ ...context, subject: s.id === 'pen' ? 'cn' : s.id }); contextBar.append(change); box.append(contextBar);
+    let templates = T.templates.filter(t => t.subject === s.id);
+    if (s.id === 'en' && context.grade < 3) {
+      box.append(el('p', 'hub-sub', '英语练习从三年级开始，请在学习设置中选择三至六年级。')); return;
+    }
+    const lessons = (window.CurriculumData?.lessons || []).filter(l => l.materialLibrary && !l.pending && l.subject === s.id && l.grade === context.grade && l.term === context.term && (l.series || 'pep') === edition);
+    const sourceLabel = el('label', 'template-source', '练习内容 '), sourceSelect = el('select');
+    sourceSelect.setAttribute('aria-label', '练习内容');
+    for (const [value, text] of [['book', '自动选用本册已收录内容'], ['builtin', '内置专项练习（无需输入）'], ...lessons.map(l => [l.id, l.title])]) {
+      const o = el('option', '', text); o.value = value; sourceSelect.append(o);
+    }
+    if (!['book', 'builtin', ...lessons.map(l => l.id)].includes(choice.source)) choice.source = 'book';
+    sourceSelect.value = choice.source; sourceSelect.onchange = () => { choice.source = sourceSelect.value; remember(); }; sourceLabel.append(sourceSelect);
+    if (s.id !== 'pen') box.append(sourceLabel);
+    if (s.id !== 'pen' && !lessons.length) box.append(el('p', 'hub-sub', '本册暂无可直接带入的素材，下面提供内置专项练习；它们不标作本册课文。'));
+    const categories = { hanzi: '生字', cizu: '词语', duanluo: '句段', pinyin: '拼音', alphabet: '字母', word: '单词', paragraph: '词义与句子', 'pen-control': '控笔' };
+    const filters = el('div', 'chip-group template-filters'); filters.setAttribute('aria-label', '模板类别');
+    for (const [value, title] of [['all', '全部模板'], ...[...new Set(templates.map(t => t.type))].map(type => [type, categories[type]])]) {
+      const b = el('button', 'chip', title); b.type = 'button'; b.setAttribute('aria-pressed', String(choice.category === value)); b.onclick = () => { choice.category = value; remember(); }; filters.append(b);
+    }
+    box.append(filters);
+    templates = templates.filter(t => choice.category === 'all' || choice.category === t.type);
     if (templates.length) {
       const section = el("section", "template-gallery");
       section.setAttribute("aria-label", "常用模板");
-      section.append(el("h2", "", "选一张，直接开始"), el("p", "hub-sub", "模板内是示例内容，打开后可替换；排版还能继续调整。"));
+      const introduction = choice.source === 'builtin' || !lessons.length || s.id === 'pen'
+        ? '内置内容已经备好，选一种练法即可预览，不需要自己输入。'
+        : '按所选内容匹配练法，每张卡片标明实际来源。';
+      section.append(el("h2", "", "选一张，直接开始"), el("p", "hub-sub", introduction));
       const previews = el("div", "template-grid");
       for (const t of templates) {
         const link = el("a", "template-card"), canvas = el("canvas", "template-paper");
-        link.href = window.TemplateGallery.href(t);
+        const source = choice.source === 'builtin' ? null : T.sources(t, { ...context, edition }, lessons).find(x => choice.source === 'book' || x.lesson.id === choice.source);
+        const packSupported = ['hanzi','cizu','duanluo','word','paragraph'].includes(t.type);
+        const unavailable = choice.source !== 'book' && choice.source !== 'builtin' && !source && packSupported;
+        link.href = source ? T.contentLink(t, source) : T.href(t);
+        const sourceText = source ? source.lesson.title + ' · ' + (source.pack.label || CurriculumData.kindInfo[source.pack.kind].label) + (source.pack.items.some(i => /待校订|待复核/.test(i.translationSource || '')) ? ' · 含待校订译文' : '') : unavailable ? '所选内容不支持此练法，请换内容或选择内置专项' : '内置专项 · 可直接练习';
+        if (unavailable) { link.removeAttribute('href'); link.setAttribute('aria-disabled', 'true'); }
+
         canvas.setAttribute("aria-hidden", "true");
-        link.append(canvas, el("strong", "", t.title), el("span", "", t.description), el("span", "template-use", "使用模板 →"));
+        link.append(canvas, el("strong", "", t.title), el("span", "", t.description), el("small", "template-origin", sourceText), el("span", "template-use", unavailable ? "暂无匹配内容" : "直接练习 →"));
         previews.append(link);
         // Font loading is shared by the browser; detached galleries are not repainted.
-        window.TemplateGallery.paint(canvas, t);
-        document.fonts.load(WorkbookEngine.fontString(window.TemplateGallery.stateFor(t.id, t.type)), t.config.text).then(() => {
-          if (canvas.isConnected) window.TemplateGallery.paint(canvas, t);
+        let previewState = T.stateFor(t.id, t.type);
+        if (source) {
+          const q = new URLSearchParams(link.href.split('?')[1]);
+          const selected = CurriculumData.getSelection(q.get('course'), q.get('kind'), q.get('items').split(','));
+          previewState = T.courseConfig({ ...previewState, text: selected.text }, t.id, t.type);
+        }
+        T.paint(canvas, t, previewState);
+        document.fonts.load(WorkbookEngine.fontString(previewState), previewState.text).then(() => {
+          if (canvas.isConnected) T.paint(canvas, t, previewState);
         }).catch(() => {});
       }
       section.append(previews);
-      box.append(section, el("h2", "hub-free-title", "自由制作"));
+      box.append(section);
     }
-    box.append(el("p", "hub-sub", s.desc), grid, foot);
+    const free = el('details', 'template-free'); free.append(el('summary', '', '自由制作（需要自己编辑内容时使用）'), el('p', 'hub-sub', s.desc), grid);
+    box.append(free, foot);
   }
   // 古诗：语文下的一等类型。列出公版诗文，点一首直接进入段落字帖（整首描红）。
   function gushiList() {
@@ -166,6 +216,7 @@ window.Hubs = (() => {
   // Login/logout does not change #/me, so the hub must redraw itself.
   function onAccountChange() {
     const hash = String(typeof location === "undefined" ? "" : location.hash || "").split("?")[0];
+    if (hash === '#/make') { make(new URLSearchParams(location.hash.split('?')[1] || '').get('subject')); return; }
     if (hash !== "#/me" || !document.getElementById("personal-view")) return;
     me();
   }

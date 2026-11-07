@@ -914,6 +914,11 @@ async function route() {
       save();
     }
   }
+  if (activeCourse && TemplateGallery.find(params.get("template"), type)) {
+    state = TemplateGallery.courseConfig(state, params.get("template"), type);
+    params.delete("template");
+    history.replaceState(null, "", "#/" + key + "?" + params);
+  }
   if (activeCourse && params.has("preset"))
     state = LearningRules.presetConfig(courseDefaults(), type, params.get("preset"), activeCourse.grade);
   // v9：任何字帖都能分享（自己做的用链接，课本内容登录后可用可停用的分享）
